@@ -13,7 +13,6 @@
     background:#08080f; color:#fff; user-select:none;
   }
 
-  /* ===== Космический фон ===== */
   #space {
     position:fixed; inset:0; z-index:0; pointer-events:none;
     background:
@@ -27,36 +26,32 @@
   }
   @keyframes twinkle { 0%,100%{opacity:.15} 50%{opacity:.9} }
 
-  /* ===== Экраны ===== */
   .screen {
     position:fixed; inset:0; display:flex; flex-direction:column;
     z-index:1; transition:opacity .25s; background:transparent;
   }
   .screen.hidden { opacity:0; pointer-events:none; }
 
-  /* ===== Иконки ===== */
   .ico {
     display:inline-block; width:1em; height:1em; vertical-align:-0.12em;
-    flex-shrink:0;
+    flex-shrink:0; line-height:1;
   }
   .ico svg { width:100%; height:100%; display:block; }
 
-  /* ===== Главное меню ===== */
+  /* Меню */
   #menu { align-items:center; justify-content:center; padding:28px; text-align:center; }
-
   .brand {
     font-size:11px; color:#5a5a8a; letter-spacing:5px; text-transform:uppercase;
     margin-bottom:44px;
   }
-
   .balance-block { margin-bottom:56px; }
-  .balance-label { font-size:10px; color:#4a4a7a; letter-spacing:3px; text-transform:uppercase; margin-bottom:10px; }
+  .balance-label { font-size:10px; color:#4a4a7a; letter-spacing:3px; text-transform:uppercase; margin-bottom:12px; }
   .balance-value {
     font-size:54px; font-weight:200; letter-spacing:-1px;
     color:#fff; font-variant-numeric:tabular-nums;
-    display:flex; align-items:center; justify-content:center; gap:8px;
+    display:flex; align-items:center; justify-content:center; gap:10px;
   }
-  .balance-value .ico { font-size:22px; color:#fff; opacity:.85; }
+  .balance-value .ico { font-size:24px; color:#fff; opacity:.9; }
 
   .modes { display:flex; flex-direction:column; gap:10px; width:100%; max-width:320px; }
   .mode-btn {
@@ -81,7 +76,7 @@
   }
   .mini-btn:active { border-color:#3a3a6a; color:#8a8aba; }
 
-  /* ===== Верхняя панель ===== */
+  /* Топбар */
   .topbar {
     padding:18px 22px; display:flex; justify-content:space-between; align-items:center;
   }
@@ -93,11 +88,11 @@
   .back-btn:active { color:#aaaacc; }
   .topbar-balance {
     color:#8a8aba; font-size:14px; font-variant-numeric:tabular-nums;
-    display:flex; align-items:center; gap:5px;
+    display:flex; align-items:center; gap:6px;
   }
-  .topbar-balance .ico { font-size:13px; }
+  .topbar-balance .ico { font-size:14px; color:#8a8aba; }
 
-  /* ===== КРАШ ===== */
+  /* КРАШ */
   .crash-stage {
     flex:1; display:flex; flex-direction:column;
     align-items:center; justify-content:center; position:relative;
@@ -124,7 +119,6 @@
     transform:translateY(-30px) scale(0.9);
     pointer-events:none;
   }
-
   .crash-label {
     position:absolute;
     font-size:80px; font-weight:200; letter-spacing:8px;
@@ -133,28 +127,23 @@
     transform:translateY(40px) scale(0.85);
     transition:opacity .5s ease .15s, transform .5s cubic-bezier(0.34,1.56,0.64,1) .15s;
     text-shadow:0 0 40px rgba(255,77,77,0.5);
-    font-variant-numeric:tabular-nums;
   }
-  .crash-label.show {
-    opacity:1;
-    transform:translateY(0) scale(1);
-  }
+  .crash-label.show { opacity:1; transform:translateY(0) scale(1); }
 
   .crash-caption {
     margin-top:20px; font-size:11px; color:#4a4a7a; letter-spacing:2px;
-    text-transform:uppercase;
-    transition:opacity .3s;
+    text-transform:uppercase; transition:opacity .3s;
   }
   .crash-caption.hidden { opacity:0; }
 
   .crash-controls { padding:0 22px 30px; }
   .crash-info {
     text-align:center; font-size:13px; color:#5a5a8a;
-    margin-bottom:14px; height:18px; letter-spacing:.5px;
-    display:flex; align-items:center; justify-content:center; gap:4px;
+    margin-bottom:14px; height:20px; letter-spacing:.5px;
+    display:flex; align-items:center; justify-content:center; gap:5px;
   }
   .crash-info.active { color:#5cd65c; }
-  .crash-info .ico { font-size:12px; }
+  .crash-info .ico { font-size:13px; }
 
   .bet-row {
     display:flex; align-items:center;
@@ -169,8 +158,11 @@
     width:100%; font-family:inherit; font-variant-numeric:tabular-nums;
   }
   #betInput::placeholder { color:#3a3a5a; }
-  .bet-row .unit { color:#5a5a8a; font-size:14px; display:flex; align-items:center; gap:4px; }
-  .bet-row .unit .ico { font-size:14px; }
+  .bet-row .unit {
+    color:#5a5a8a; font-size:14px;
+    display:flex; align-items:center; gap:5px;
+  }
+  .bet-row .unit .ico { font-size:16px; color:#8a8aba; }
 
   .quick-row { display:flex; gap:6px; margin-bottom:10px; }
   .quick-btn {
@@ -178,7 +170,9 @@
     color:#6a6a9a; padding:10px; border-radius:10px; font-size:12px;
     cursor:pointer; transition:all .15s; font-family:inherit;
     font-variant-numeric:tabular-nums;
+    display:flex; align-items:center; justify-content:center; gap:3px;
   }
+  .quick-btn .ico { font-size:10px; }
   .quick-btn:active { border-color:#3a3a6a; color:#aaaacc; }
 
   .main-btn {
@@ -186,14 +180,13 @@
     border-radius:14px; padding:20px; color:#fff;
     font-size:14px; font-weight:500; letter-spacing:3px;
     cursor:pointer; transition:all .2s; font-family:inherit;
-    text-transform:uppercase;
-    backdrop-filter:blur(8px);
+    text-transform:uppercase; backdrop-filter:blur(8px);
   }
   .main-btn:active { background:rgba(50,50,100,0.5); border-color:#4a4a7a; }
   .main-btn.cashout { color:#5cd65c; border-color:#2a4a2a; }
   .main-btn:disabled { color:#2a2a4a; border-color:#151530; cursor:not-allowed; }
 
-  /* ===== КЕЙСЫ ===== */
+  /* Кейсы */
   .cases-list {
     flex:1; padding:0 22px; display:flex; flex-direction:column;
     justify-content:center; gap:10px;
@@ -207,14 +200,18 @@
   }
   .case-item:active { border-color:#3a3a6a; }
   .case-item .info .name { font-size:15px; letter-spacing:1px; font-weight:500; }
-  .case-item .info .range { color:#5a5a8a; font-size:11px; margin-top:4px; }
+  .case-item .info .range {
+    color:#5a5a8a; font-size:11px; margin-top:4px;
+    display:flex; align-items:center; gap:3px;
+  }
+  .case-item .info .range .ico { font-size:10px; }
   .case-item .price {
     font-size:15px; color:#8a8aba; font-variant-numeric:tabular-nums;
-    letter-spacing:1px; display:flex; align-items:center; gap:4px;
+    letter-spacing:1px; display:flex; align-items:center; gap:5px;
   }
-  .case-item .price .ico { font-size:13px; }
+  .case-item .price .ico { font-size:14px; color:#8a8aba; }
 
-  /* ===== РУЛЕТКА ===== */
+  /* Рулетка */
   .roulette-stage {
     flex:1; display:flex; flex-direction:column;
     align-items:center; justify-content:center;
@@ -241,7 +238,7 @@
     transition:border-color .3s, color .3s;
     background:rgba(15,15,30,0.5);
   }
-  .slot .ico { font-size:11px; }
+  .slot .ico { font-size:12px; }
   .slot.rare    { color:#8a8aba; border-color:#2a2a4a; }
   .slot.epic    { color:#bbb; border-color:#3a3a5a; }
   .slot.legend  { color:#fff; border-color:#5a5a8a; box-shadow:0 0 12px rgba(90,90,140,0.3); }
@@ -253,7 +250,6 @@
     border-radius:1px;
     box-shadow:0 0 12px rgba(255,255,255,0.5);
   }
-
   .spin-result {
     text-align:center; margin-top:36px;
     opacity:0; transition:opacity .3s;
@@ -268,11 +264,11 @@
     color:#fff; font-variant-numeric:tabular-nums;
     display:flex; align-items:center; justify-content:center; gap:8px;
   }
-  .spin-result .val .ico { font-size:24px; color:#fff; opacity:.85; }
+  .spin-result .val .ico { font-size:26px; color:#fff; opacity:.9; }
 
   .spin-controls { padding:0 22px 30px; }
 
-  /* ===== ПРОФИЛЬ ===== */
+  /* Профиль */
   .profile-content { flex:1; padding:0 22px; overflow-y:auto; }
   .profile-card {
     border:1.5px solid #22224a; background:rgba(20,20,40,0.35);
@@ -284,12 +280,11 @@
     width:60px; height:60px; border-radius:50%;
     border:1.5px solid #2a2a4a; flex-shrink:0;
     display:flex; align-items:center; justify-content:center;
-    font-size:24px; font-weight:300; color:#8a8aba;
-    background:rgba(30,30,60,0.5);
+    color:#8a8aba; background:rgba(30,30,60,0.5);
     overflow:hidden;
   }
   .profile-avatar img { width:100%; height:100%; object-fit:cover; }
-  .profile-avatar svg { width:28px; height:28px; }
+  .profile-avatar .ico { font-size:30px; }
   .profile-info .name { font-size:18px; font-weight:500; }
   .profile-info .username { color:#5a5a8a; font-size:13px; margin-top:3px; }
 
@@ -307,7 +302,9 @@
   .stat-card .stat-value {
     font-size:22px; font-weight:300; color:#fff;
     font-variant-numeric:tabular-nums;
+    display:flex; align-items:center; justify-content:center; gap:5px;
   }
+  .stat-card .stat-value .ico { font-size:16px; }
 
   .section-title {
     font-size:10px; color:#4a4a7a; letter-spacing:3px; text-transform:uppercase;
@@ -337,15 +334,14 @@
     border-radius:14px; padding:18px; color:#fff;
     cursor:pointer; font-family:inherit; font-size:13px;
     letter-spacing:1px; transition:all .2s;
-    display:flex; flex-direction:column; align-items:center; gap:6px;
+    display:flex; flex-direction:column; align-items:center; gap:8px;
   }
   .pay-btn:active { border-color:#3a3a6a; background:rgba(40,40,80,0.4); }
-  .pay-btn .pay-icon { font-size:22px; display:flex; align-items:center; justify-content:center; }
-  .pay-btn .pay-icon .ico { font-size:24px; }
+  .pay-btn .pay-icon { display:flex; align-items:center; justify-content:center; color:#8a8aba; }
+  .pay-btn .pay-icon .ico { font-size:28px; }
   .pay-btn .pay-label { font-weight:500; }
   .pay-btn .pay-sub { font-size:10px; color:#5a5a8a; }
 
-  /* ===== Тост ===== */
   #toast {
     position:fixed; top:60px; left:50%;
     transform:translateX(-50%) translateY(-40px);
@@ -355,9 +351,10 @@
     border:1px solid #2a2a4a;
     transition:transform .35s cubic-bezier(.34,1.56,.64,1), opacity .35s;
     pointer-events:none; white-space:nowrap; opacity:0;
-    letter-spacing:.5px;
-    backdrop-filter:blur(10px);
+    letter-spacing:.5px; backdrop-filter:blur(10px);
+    display:flex; align-items:center; gap:6px;
   }
+  #toast .ico { font-size:12px; }
   #toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
 </style>
 </head>
@@ -365,7 +362,7 @@
 
 <div id="space"></div>
 
-<!-- ============ ГЛАВНОЕ МЕНЮ ============ -->
+<!-- ГЛАВНОЕ МЕНЮ -->
 <div class="screen" id="menu">
   <div class="brand">Endless</div>
 
@@ -397,7 +394,7 @@
   </div>
 </div>
 
-<!-- ============ КРАШ ============ -->
+<!-- КРАШ -->
 <div class="screen hidden" id="crash">
   <div class="topbar">
     <button class="back-btn" onclick="backToMenu()">←</button>
@@ -414,7 +411,7 @@
     <div class="crash-info" id="crashInfo"></div>
     <div class="bet-row">
       <input type="number" id="betInput" placeholder="0" value="50" min="1">
-      <span class="unit"><span class="ico" data-icon="star"></span></span>
+      <span class="unit"></span>
     </div>
     <div class="quick-row" id="quickRow">
       <button class="quick-btn" onclick="setBet(10)">10</button>
@@ -427,7 +424,7 @@
   </div>
 </div>
 
-<!-- ============ ВЫБОР КЕЙСА ============ -->
+<!-- ВЫБОР КЕЙСА -->
 <div class="screen hidden" id="cases">
   <div class="topbar">
     <button class="back-btn" onclick="backToMenu()">←</button>
@@ -438,7 +435,7 @@
     <button class="case-item" onclick="buyCase('case10')">
       <div class="info">
         <div class="name">Обычный</div>
-        <div class="range">1 — 1 000</div>
+        <div class="range">1 <span class="ico" data-icon="star"></span> — 1 000 <span class="ico" data-icon="star"></span></div>
       </div>
       <div class="price">10 <span class="ico" data-icon="star"></span></div>
     </button>
@@ -446,7 +443,7 @@
     <button class="case-item" onclick="buyCase('case50')">
       <div class="info">
         <div class="name">Редкий</div>
-        <div class="range">5 — 2 000</div>
+        <div class="range">5 <span class="ico" data-icon="star"></span> — 2 000 <span class="ico" data-icon="star"></span></div>
       </div>
       <div class="price">50 <span class="ico" data-icon="star"></span></div>
     </button>
@@ -454,14 +451,14 @@
     <button class="case-item" onclick="buyCase('case100')">
       <div class="info">
         <div class="name">Легендарный</div>
-        <div class="range">10 — 5 000</div>
+        <div class="range">10 <span class="ico" data-icon="star"></span> — 5 000 <span class="ico" data-icon="star"></span></div>
       </div>
       <div class="price">100 <span class="ico" data-icon="star"></span></div>
     </button>
   </div>
 </div>
 
-<!-- ============ ОТКРЫТИЕ ============ -->
+<!-- ОТКРЫТИЕ -->
 <div class="screen hidden" id="caseOpen">
   <div class="topbar">
     <button class="back-btn" onclick="closeCase()">←</button>
@@ -485,7 +482,7 @@
   </div>
 </div>
 
-<!-- ============ ПРОФИЛЬ ============ -->
+<!-- ПРОФИЛЬ -->
 <div class="screen hidden" id="profile">
   <div class="topbar">
     <button class="back-btn" onclick="backToMenu()">←</button>
@@ -517,7 +514,7 @@
       </div>
       <div class="stat-card">
         <div class="stat-label">Профит</div>
-        <div class="stat-value" id="statProfit">0</div>
+        <div class="stat-value" id="statProfit"></div>
       </div>
     </div>
 
@@ -550,7 +547,7 @@
 const tg = window.Telegram?.WebApp;
 if (tg) { tg.ready(); tg.expand(); }
 
-/* ==================== SVG ИКОНКИ (без эмодзи) ==================== */
+/* ==================== SVG ИКОНКИ ==================== */
 const ICONS = {
   star: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
          stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round">
@@ -570,7 +567,6 @@ const ICONS = {
   </svg>`,
 };
 
-// Проставляем все иконки, у которых есть data-icon
 function renderIcons(root = document) {
   root.querySelectorAll('.ico[data-icon]').forEach(el => {
     const key = el.dataset.icon;
@@ -596,7 +592,7 @@ const state = {
 
 const $ = id => document.getElementById(id);
 
-/* ==================== КОСМИЧЕСКИЙ ФОН ==================== */
+/* ==================== ФОН ==================== */
 (function makeStars(){
   const box = $('space');
   for (let i = 0; i < 120; i++) {
@@ -623,7 +619,6 @@ function tone(freq, dur, type='sine', vol=0.05) {
   o.start(); o.stop(actx.currentTime + dur);
 }
 
-/* ==================== HAPTIC ==================== */
 function haptic(type) {
   if (!tg?.HapticFeedback) return;
   if (type === 'light')   tg.HapticFeedback.impactOccurred('light');
@@ -635,6 +630,7 @@ function haptic(type) {
 /* ==================== UI ==================== */
 function fmt(n) { return Math.floor(n).toLocaleString('ru-RU'); }
 function starIco() { return `<span class="ico" data-icon="star">${ICONS.star}</span>`; }
+function giftIco() { return `<span class="ico" data-icon="gift">${ICONS.gift}</span>`; }
 
 function updateBalance() {
   const h = starIco() + '<span class="num">' + fmt(state.balance) + '</span>';
@@ -649,13 +645,13 @@ function updateStatsUI() {
   $('statBets').textContent = fmt(state.stats.totalBets);
   $('statWins').textContent = fmt(state.stats.wins);
   $('statMaxCrash').textContent = state.stats.maxCrash.toFixed(2) + 'x';
-  $('statProfit').textContent = (state.stats.profit >= 0 ? '+' : '') + fmt(state.stats.profit);
+  $('statProfit').innerHTML = (state.stats.profit >= 0 ? '+' : '') + fmt(state.stats.profit) + starIco();
   $('statProfit').style.color = state.stats.profit >= 0 ? '#5cd65c' : '#ff4d4d';
 }
 
-function toast(msg) {
+function toast(msg, withStar = false) {
   const t = $('toast');
-  t.textContent = msg;
+  t.innerHTML = (withStar ? starIco() : '') + `<span>${msg}</span>`;
   t.className = 'show';
   clearTimeout(t._t);
   t._t = setTimeout(() => t.className = '', 1800);
@@ -677,7 +673,6 @@ function openMode(mode) {
   }
   updateBalance();
 }
-
 function backToMenu() {
   haptic('light');
   if (state.crashPhase === 'flying') cashoutCrash();
@@ -686,14 +681,12 @@ function backToMenu() {
   showScreen('menu');
   updateBalance();
 }
-
 function closeCase() {
   haptic('light');
   if (state.spinning) return;
   showScreen('cases');
   updateBalance();
 }
-
 function resetBalance() {
   haptic('light');
   state.balance = 1000;
@@ -702,7 +695,6 @@ function resetBalance() {
   updateBalance(); updateStatsUI();
   toast('Баланс восстановлен');
 }
-
 function openProfile() {
   initAudio(); haptic('light');
   const user = tg?.initDataUnsafe?.user;
@@ -713,11 +705,10 @@ function openProfile() {
     if (user.photo_url) {
       av.innerHTML = `<img src="${user.photo_url}" alt="">`;
     } else {
-      av.innerHTML = ICONS.user;
-      av.style.fontSize = '';
+      av.innerHTML = `<span class="ico">${ICONS.user}</span>`;
     }
   } else {
-    av.innerHTML = ICONS.user;
+    av.innerHTML = `<span class="ico">${ICONS.user}</span>`;
   }
   updateStatsUI();
   updateBalance();
@@ -735,7 +726,7 @@ function generateCrashPoint() {
 function startCrashRound() {
   const bet = Math.floor(Number($('betInput').value) || 0);
   if (bet <= 0) return toast('Введи ставку');
-  if (bet > state.balance) return toast('Недостаточно звёзд');
+  if (bet > state.balance) return toast('Недостаточно звёзд', true);
 
   state.crashBet = bet;
   state.balance -= bet;
@@ -778,7 +769,6 @@ function crashLoop(now) {
     return crashBoom();
   }
 
-  // ВСЕГДА белый, никаких градиентов
   const el = $('multiplier');
   el.textContent = m.toFixed(2) + 'x';
   el.style.color = '#fff';
@@ -806,8 +796,6 @@ function crashBoom() {
   $('crashInfo').innerHTML = '';
   $('crashInfo').className = 'crash-info';
 
-  // Фаза 1: 900ms красный + тряска
-  // Фаза 2: X уезжает вверх, «КРАШ» вплывает снизу
   setTimeout(() => {
     el.classList.add('hidden');
     $('crashLabel').classList.add('show');
@@ -834,7 +822,7 @@ function cashoutCrash() {
   $('crashCaption').classList.remove('hidden');
   $('crashInfo').innerHTML = '';
   $('crashInfo').className = 'crash-info';
-  toast(`+${fmt(win)}`);
+  toast(`+${fmt(win)}`, true);
 
   setTimeout(() => endCrashRound(), 1200);
 }
@@ -861,7 +849,6 @@ function handleCrashAction() {
   if (state.crashPhase === 'flying') cashoutCrash();
   else if (state.crashPhase === 'idle') startCrashRound();
 }
-
 function setBet(v) {
   haptic('light');
   if (v === 'all') $('betInput').value = Math.max(1, Math.floor(state.balance));
@@ -935,7 +922,7 @@ const STOP_INDEX = 50;
 function buyCase(caseKey) {
   initAudio(); haptic('light');
   const c = CASES[caseKey];
-  if (state.balance < c.price) return toast('Недостаточно звёзд');
+  if (state.balance < c.price) return toast('Недостаточно звёзд', true);
 
   state.currentCase = caseKey;
   state.balance -= c.price;
@@ -951,7 +938,7 @@ function buyCase(caseKey) {
   $('track').style.transform = 'translateX(0)';
 
   showScreen('caseOpen');
-  toast(`Кейс куплен · −${c.price}`);
+  toast(`Кейс куплен · −${c.price}`, true);
 }
 
 function spin() {
@@ -1024,21 +1011,20 @@ function finishSpin(prize, c) {
   $('spinValue').innerHTML = fmt(prize) + ' ' + starIco();
   $('spinResult').className = 'spin-result show';
 
-  const isProfit = prize >= c.price;
-  if (isProfit) {
+  if (prize >= c.price) {
     haptic('success');
     tone(660, 0.1); setTimeout(()=>tone(880, 0.12), 80); setTimeout(()=>tone(1320, 0.15), 160);
-    toast(`+${fmt(prize)}`);
+    toast(`+${fmt(prize)}`, true);
   } else {
     haptic('error');
     tone(300, 0.15, 'sine', 0.05);
-    toast(`выпало ${fmt(prize)}`);
+    toast(`выпало ${fmt(prize)}`, true);
   }
 
   $('spinBtn').disabled = false;
   $('spinBtn').textContent = 'Ещё раз';
   $('spinBtn').onclick = () => {
-    if (state.balance < c.price) return toast('Недостаточно звёзд');
+    if (state.balance < c.price) return toast('Недостаточно звёзд', true);
     buyCase(state.currentCase);
     setTimeout(spin, 250);
   };
@@ -1058,13 +1044,14 @@ function applyPromo() {
   updateBalance();
   $('promoInput').value = '';
   haptic('success');
-  toast(`+${fmt(amount)}`);
+  toast(`+${fmt(amount)}`, true);
 }
 
 /* ==================== ОПЛАТА ==================== */
 function payWithStars() {
   haptic('light');
   if (!tg?.initData) return toast('Открой из Telegram');
+  // Замени на URL своего бэкенда
   fetch('https://ТВОЙ_БЭКЕНД/create-invoice', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -1085,7 +1072,7 @@ function payWithStars() {
 
 function giftInfo() {
   haptic('light');
-  const botUsername = 'ТВОЙ_БОТ';
+  const botUsername = 'test01_mybot';
   if (tg) tg.openTelegramLink(`https://t.me/${botUsername}`);
   else window.open(`https://t.me/${botUsername}`, '_blank');
 }
