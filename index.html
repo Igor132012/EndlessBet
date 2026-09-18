@@ -10,67 +10,103 @@
   html, body {
     height:100%; overflow:hidden;
     font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
-    background:#0a0a0a; color:#fff; user-select:none;
+    background:#08080f; color:#fff; user-select:none;
   }
+
+  /* ===== Космический фон ===== */
+  #space {
+    position:fixed; inset:0; z-index:0; pointer-events:none;
+    background:
+      radial-gradient(ellipse 60% 40% at 20% 10%, rgba(80,40,140,0.25), transparent),
+      radial-gradient(ellipse 50% 50% at 85% 80%, rgba(30,60,120,0.2), transparent),
+      #08080f;
+  }
+  .star {
+    position:absolute; background:#fff; border-radius:50%;
+    animation:twinkle 4s infinite ease-in-out;
+  }
+  @keyframes twinkle { 0%,100%{opacity:.15} 50%{opacity:.9} }
 
   /* ===== Экраны ===== */
   .screen {
     position:fixed; inset:0; display:flex; flex-direction:column;
-    background:#0a0a0a;
-    transition:opacity .25s;
+    z-index:1; transition:opacity .25s; background:transparent;
   }
   .screen.hidden { opacity:0; pointer-events:none; }
+
+  /* ===== Звёздочка (белая линия) ===== */
+  .star-line {
+    display:inline-block; width:1em; height:1em; vertical-align:-0.1em;
+    background:currentColor;
+    clip-path:polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+  }
+  .star-line.sm { font-size:0.85em; }
+  .star-line.lg { font-size:1.3em; }
+
+  /* ===== Общие обводки ===== */
+  .outlined {
+    border:1.5px solid #2a2a4a;
+    background:rgba(20,20,40,0.35);
+    backdrop-filter:blur(8px);
+    border-radius:16px;
+  }
+  .outlined:hover, .outlined:focus-within { border-color:#4a4a7a; }
 
   /* ===== Главное меню ===== */
   #menu { align-items:center; justify-content:center; padding:28px; text-align:center; }
 
   .brand {
-    font-size:13px; color:#555; letter-spacing:4px; text-transform:uppercase;
-    margin-bottom:40px;
+    font-size:11px; color:#5a5a8a; letter-spacing:5px; text-transform:uppercase;
+    margin-bottom:44px;
   }
 
-  .balance-block { margin-bottom:52px; }
-  .balance-label { font-size:11px; color:#555; letter-spacing:2px; text-transform:uppercase; margin-bottom:8px; }
+  .balance-block { margin-bottom:56px; }
+  .balance-label { font-size:10px; color:#4a4a7a; letter-spacing:3px; text-transform:uppercase; margin-bottom:10px; }
   .balance-value {
-    font-size:52px; font-weight:200; letter-spacing:-1px;
+    font-size:54px; font-weight:200; letter-spacing:-1px;
     color:#fff; font-variant-numeric:tabular-nums;
+    display:flex; align-items:center; justify-content:center; gap:6px;
   }
-  .balance-value span { color:#555; font-size:24px; margin-left:6px; }
+  .balance-value .star-line { color:#fff; opacity:.9; }
 
   .modes { display:flex; flex-direction:column; gap:10px; width:100%; max-width:320px; }
   .mode-btn {
-    background:transparent; border:1px solid #1e1e1e;
-    border-radius:14px; padding:20px 24px; color:#fff; cursor:pointer;
+    border:1.5px solid #22224a; background:rgba(20,20,40,0.35);
+    backdrop-filter:blur(8px); border-radius:14px;
+    padding:20px 24px; color:#fff; cursor:pointer;
     display:flex; justify-content:space-between; align-items:center;
     transition:border-color .2s, background .2s; font-family:inherit;
     font-size:15px; letter-spacing:1px;
   }
-  .mode-btn:active { background:#141414; border-color:#2a2a2a; }
+  .mode-btn:active { background:rgba(40,40,80,0.4); border-color:#3a3a6a; }
   .mode-btn .label { font-weight:500; }
-  .mode-btn .sub { color:#555; font-size:12px; margin-top:2px; letter-spacing:0; }
-  .mode-btn .arrow { color:#333; font-size:18px; }
+  .mode-btn .sub { color:#4a4a7a; font-size:11px; margin-top:3px; letter-spacing:0; }
+  .mode-btn .arrow { color:#3a3a6a; font-size:18px; }
 
-  .reset-btn {
-    margin-top:36px; background:transparent; border:none;
-    color:#333; font-size:12px; letter-spacing:1px; cursor:pointer;
-    font-family:inherit; padding:8px 16px;
+  .menu-footer { margin-top:36px; display:flex; gap:10px; }
+  .mini-btn {
+    background:transparent; border:1.5px solid #1a1a35; color:#4a4a7a;
+    font-size:12px; letter-spacing:1px; cursor:pointer;
+    font-family:inherit; padding:10px 18px; border-radius:10px;
+    transition:all .2s;
   }
-  .reset-btn:active { color:#555; }
+  .mini-btn:active { border-color:#3a3a6a; color:#8a8aba; }
 
   /* ===== Верхняя панель ===== */
   .topbar {
     padding:18px 22px; display:flex; justify-content:space-between; align-items:center;
   }
   .back-btn {
-    background:transparent; border:none; color:#666;
+    background:transparent; border:none; color:#5a5a8a;
     font-size:22px; cursor:pointer; padding:6px 10px;
     font-family:inherit; line-height:1;
   }
-  .back-btn:active { color:#aaa; }
+  .back-btn:active { color:#aaaacc; }
   .topbar-balance {
-    color:#888; font-size:14px; font-variant-numeric:tabular-nums;
+    color:#8a8aba; font-size:14px; font-variant-numeric:tabular-nums;
+    display:flex; align-items:center; gap:4px;
   }
-  .topbar-balance span { color:#444; font-size:11px; margin-left:4px; }
+  .topbar-balance .star-line { color:#8a8aba; }
 
   /* ===== КРАШ ===== */
   .crash-stage {
@@ -80,56 +116,57 @@
   .crash-x {
     font-size:112px; font-weight:100; letter-spacing:-4px;
     color:#fff; font-variant-numeric:tabular-nums;
-    transition:color .2s;
-    line-height:1;
+    transition:color .2s; line-height:1;
   }
-  .crash-x.crashed { color:#ff3b3b; }
+  .crash-x.crashed { color:#ff4d4d; }
   .crash-caption {
-    margin-top:20px; font-size:12px; color:#444; letter-spacing:2px;
+    margin-top:20px; font-size:11px; color:#4a4a7a; letter-spacing:2px;
     text-transform:uppercase;
   }
 
   .crash-controls { padding:0 22px 30px; }
   .crash-info {
-    text-align:center; font-size:13px; color:#555;
+    text-align:center; font-size:13px; color:#5a5a8a;
     margin-bottom:14px; height:18px; letter-spacing:.5px;
+    display:flex; align-items:center; justify-content:center; gap:4px;
   }
   .crash-info.active { color:#5cd65c; }
 
   .bet-row {
     display:flex; align-items:center;
-    border:1px solid #1e1e1e; border-radius:14px;
-    padding:0 18px; margin-bottom:10px;
+    border:1.5px solid #22224a; background:rgba(20,20,40,0.35);
+    border-radius:14px; padding:0 18px; margin-bottom:10px;
     transition:border-color .2s;
   }
-  .bet-row:focus-within { border-color:#333; }
+  .bet-row:focus-within { border-color:#4a4a7a; }
   #betInput {
     flex:1; background:none; border:none; color:#fff;
     font-size:20px; font-weight:400; padding:18px 0; outline:none;
     width:100%; font-family:inherit; font-variant-numeric:tabular-nums;
   }
-  #betInput::placeholder { color:#333; }
-  .bet-row .unit { color:#444; font-size:14px; }
+  #betInput::placeholder { color:#3a3a5a; }
+  .bet-row .unit { color:#5a5a8a; font-size:14px; }
 
   .quick-row { display:flex; gap:6px; margin-bottom:10px; }
   .quick-btn {
-    flex:1; background:transparent; border:1px solid #1a1a1a;
-    color:#666; padding:10px; border-radius:10px; font-size:12px;
+    flex:1; background:rgba(20,20,40,0.35); border:1.5px solid #1a1a35;
+    color:#6a6a9a; padding:10px; border-radius:10px; font-size:12px;
     cursor:pointer; transition:all .15s; font-family:inherit;
     font-variant-numeric:tabular-nums;
   }
-  .quick-btn:active { border-color:#333; color:#aaa; }
+  .quick-btn:active { border-color:#3a3a6a; color:#aaaacc; }
 
   .main-btn {
-    width:100%; background:transparent; border:1px solid #2a2a2a;
+    width:100%; background:rgba(30,30,60,0.4); border:1.5px solid #2a2a4a;
     border-radius:14px; padding:20px; color:#fff;
     font-size:14px; font-weight:500; letter-spacing:3px;
     cursor:pointer; transition:all .2s; font-family:inherit;
     text-transform:uppercase;
+    backdrop-filter:blur(8px);
   }
-  .main-btn:active { background:#141414; }
+  .main-btn:active { background:rgba(50,50,100,0.5); border-color:#4a4a7a; }
   .main-btn.cashout { color:#5cd65c; border-color:#2a4a2a; }
-  .main-btn:disabled { color:#2a2a2a; border-color:#151515; cursor:not-allowed; }
+  .main-btn:disabled { color:#2a2a4a; border-color:#151530; cursor:not-allowed; }
 
   /* ===== КЕЙСЫ ===== */
   .cases-list {
@@ -137,20 +174,19 @@
     justify-content:center; gap:10px;
   }
   .case-item {
-    background:transparent; border:1px solid #1e1e1e;
-    border-radius:14px; padding:20px 24px; color:#fff;
-    cursor:pointer; display:flex; justify-content:space-between;
-    align-items:center; transition:border-color .2s; font-family:inherit;
-    text-align:left;
+    border:1.5px solid #22224a; background:rgba(20,20,40,0.35);
+    backdrop-filter:blur(8px); border-radius:14px;
+    padding:20px 24px; color:#fff; cursor:pointer;
+    display:flex; justify-content:space-between; align-items:center;
+    transition:border-color .2s; font-family:inherit; text-align:left;
   }
-  .case-item:active { border-color:#333; }
+  .case-item:active { border-color:#3a3a6a; }
   .case-item .info .name { font-size:15px; letter-spacing:1px; font-weight:500; }
-  .case-item .info .range { color:#555; font-size:12px; margin-top:4px; }
+  .case-item .info .range { color:#5a5a8a; font-size:11px; margin-top:4px; }
   .case-item .price {
-    font-size:15px; color:#888; font-variant-numeric:tabular-nums;
-    letter-spacing:1px;
+    font-size:15px; color:#8a8aba; font-variant-numeric:tabular-nums;
+    letter-spacing:1px; display:flex; align-items:center; gap:3px;
   }
-  .case-item .price span { color:#444; font-size:11px; margin-left:3px; }
 
   /* ===== РУЛЕТКА ===== */
   .roulette-stage {
@@ -158,42 +194,37 @@
     align-items:center; justify-content:center;
     position:relative; overflow:hidden;
   }
-
-  .roulette {
-    position:relative; width:100%; height:110px;
-    overflow:hidden;
-  }
+  .roulette { position:relative; width:100%; height:110px; overflow:hidden; }
   .roulette::before, .roulette::after {
     content:""; position:absolute; top:0; bottom:0; width:80px; z-index:4;
     pointer-events:none;
   }
-  .roulette::before { left:0; background:linear-gradient(to right, #0a0a0a 10%, transparent); }
-  .roulette::after { right:0; background:linear-gradient(to left, #0a0a0a 10%, transparent); }
+  .roulette::before { left:0; background:linear-gradient(to right, #08080f 10%, transparent); }
+  .roulette::after { right:0; background:linear-gradient(to left, #08080f 10%, transparent); }
 
   .track {
     position:absolute; top:0; left:0; height:100%;
-    display:flex; align-items:center;
-    will-change:transform;
+    display:flex; align-items:center; will-change:transform;
   }
-
   .slot {
     width:80px; height:90px; margin:0 5px; flex-shrink:0;
-    border:1px solid #1a1a1a; border-radius:12px;
+    border:1.5px solid #1a1a35; border-radius:12px;
     display:flex; align-items:center; justify-content:center;
-    font-size:16px; font-weight:400; color:#666;
+    font-size:16px; font-weight:400; color:#6a6a9a;
     font-variant-numeric:tabular-nums;
     transition:border-color .3s, color .3s;
+    background:rgba(15,15,30,0.5);
   }
-  .slot.rare    { color:#888; border-color:#2a2a2a; }
-  .slot.epic    { color:#bbb; border-color:#3a3a3a; }
-  .slot.legend  { color:#fff; border-color:#555; }
+  .slot.rare    { color:#8a8aba; border-color:#2a2a4a; }
+  .slot.epic    { color:#bbb; border-color:#3a3a5a; }
+  .slot.legend  { color:#fff; border-color:#5a5a8a; box-shadow:0 0 12px rgba(90,90,140,0.3); }
 
   .pointer {
     position:absolute; top:50%; left:50%;
     transform:translate(-50%,-50%);
     width:2px; height:120px; background:#fff; z-index:5;
     border-radius:1px;
-    box-shadow:0 0 12px rgba(255,255,255,.5);
+    box-shadow:0 0 12px rgba(255,255,255,0.5);
   }
 
   .spin-result {
@@ -202,33 +233,112 @@
   }
   .spin-result.show { opacity:1; }
   .spin-result .label {
-    font-size:11px; color:#555; letter-spacing:2px; text-transform:uppercase;
+    font-size:10px; color:#5a5a8a; letter-spacing:3px; text-transform:uppercase;
     margin-bottom:8px;
   }
   .spin-result .val {
     font-size:44px; font-weight:200; letter-spacing:-1px;
     color:#fff; font-variant-numeric:tabular-nums;
+    display:flex; align-items:center; justify-content:center; gap:6px;
   }
-  .spin-result .val span { color:#555; font-size:20px; margin-left:6px; }
+  .spin-result .val .star-line { color:#fff; opacity:.9; }
 
   .spin-controls { padding:0 22px 30px; }
+
+  /* ===== ПРОФИЛЬ ===== */
+  .profile-content { flex:1; padding:0 22px; overflow-y:auto; }
+  .profile-card {
+    border:1.5px solid #22224a; background:rgba(20,20,40,0.35);
+    backdrop-filter:blur(8px); border-radius:18px;
+    padding:24px; margin-bottom:16px;
+    display:flex; align-items:center; gap:16px;
+  }
+  .profile-avatar {
+    width:60px; height:60px; border-radius:50%;
+    border:1.5px solid #2a2a4a; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    font-size:24px; font-weight:300; color:#8a8aba;
+    background:rgba(30,30,60,0.5);
+    overflow:hidden;
+  }
+  .profile-avatar img { width:100%; height:100%; object-fit:cover; }
+  .profile-info .name { font-size:18px; font-weight:500; }
+  .profile-info .username { color:#5a5a8a; font-size:13px; margin-top:3px; }
+
+  .stats-grid {
+    display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px;
+  }
+  .stat-card {
+    border:1.5px solid #1a1a35; background:rgba(15,15,30,0.5);
+    border-radius:14px; padding:18px; text-align:center;
+  }
+  .stat-card .stat-label {
+    font-size:10px; color:#4a4a7a; letter-spacing:2px; text-transform:uppercase;
+    margin-bottom:8px;
+  }
+  .stat-card .stat-value {
+    font-size:22px; font-weight:300; color:#fff;
+    font-variant-numeric:tabular-nums;
+  }
+
+  .section-title {
+    font-size:10px; color:#4a4a7a; letter-spacing:3px; text-transform:uppercase;
+    margin:20px 0 10px;
+  }
+
+  .promo-row {
+    display:flex; gap:8px;
+  }
+  .promo-input {
+    flex:1; background:rgba(15,15,30,0.5); border:1.5px solid #1a1a35;
+    border-radius:12px; padding:16px 18px; color:#fff;
+    font-size:14px; outline:none; font-family:inherit;
+    letter-spacing:1px;
+  }
+  .promo-input::placeholder { color:#3a3a5a; }
+  .promo-input:focus { border-color:#3a3a6a; }
+  .promo-btn {
+    background:rgba(30,30,60,0.5); border:1.5px solid #2a2a4a;
+    border-radius:12px; padding:0 20px; color:#8a8aba;
+    font-size:13px; cursor:pointer; font-family:inherit;
+    letter-spacing:1px; transition:all .2s;
+  }
+  .promo-btn:active { background:rgba(50,50,100,0.5); border-color:#4a4a7a; }
+
+  .pay-row {
+    display:flex; gap:10px; margin-bottom:10px;
+  }
+  .pay-btn {
+    flex:1; background:rgba(20,20,40,0.35); border:1.5px solid #22224a;
+    border-radius:14px; padding:18px; color:#fff;
+    cursor:pointer; font-family:inherit; font-size:13px;
+    letter-spacing:1px; transition:all .2s;
+    display:flex; flex-direction:column; align-items:center; gap:6px;
+  }
+  .pay-btn:active { border-color:#3a3a6a; background:rgba(40,40,80,0.4); }
+  .pay-btn .pay-icon { font-size:20px; }
+  .pay-btn .pay-label { font-weight:500; }
+  .pay-btn .pay-sub { font-size:10px; color:#5a5a8a; }
 
   /* ===== Тост ===== */
   #toast {
     position:fixed; top:60px; left:50%;
     transform:translateX(-50%) translateY(-40px);
-    background:#141414; color:#ccc;
+    background:rgba(30,30,60,0.95); color:#ccc;
     padding:12px 22px; border-radius:100px;
     font-size:13px; z-index:100;
-    border:1px solid #222;
+    border:1px solid #2a2a4a;
     transition:transform .35s cubic-bezier(.34,1.56,.64,1), opacity .35s;
     pointer-events:none; white-space:nowrap; opacity:0;
     letter-spacing:.5px;
+    backdrop-filter:blur(10px);
   }
   #toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
 </style>
 </head>
 <body>
+
+<div id="space"></div>
 
 <!-- ============ ГЛАВНОЕ МЕНЮ ============ -->
 <div class="screen" id="menu">
@@ -236,7 +346,7 @@
 
   <div class="balance-block">
     <div class="balance-label">Баланс</div>
-    <div class="balance-value" id="menuBalance">1000<span>⭐</span></div>
+    <div class="balance-value" id="menuBalance">1000 <span class="star-line"></span></div>
   </div>
 
   <div class="modes">
@@ -256,14 +366,17 @@
     </button>
   </div>
 
-  <button class="reset-btn" onclick="resetBalance()">сбросить баланс</button>
+  <div class="menu-footer">
+    <button class="mini-btn" onclick="openProfile()">профиль</button>
+    <button class="mini-btn" onclick="resetBalance()">сбросить</button>
+  </div>
 </div>
 
 <!-- ============ КРАШ ============ -->
 <div class="screen hidden" id="crash">
   <div class="topbar">
     <button class="back-btn" onclick="backToMenu()">←</button>
-    <div class="topbar-balance" id="crashBalance">1000<span>⭐</span></div>
+    <div class="topbar-balance" id="crashBalance">1000 <span class="star-line sm"></span></div>
   </div>
 
   <div class="crash-stage">
@@ -275,7 +388,7 @@
     <div class="crash-info" id="crashInfo"></div>
     <div class="bet-row">
       <input type="number" id="betInput" placeholder="0" value="50" min="1">
-      <span class="unit">⭐</span>
+      <span class="unit"><span class="star-line sm"></span></span>
     </div>
     <div class="quick-row" id="quickRow">
       <button class="quick-btn" onclick="setBet(10)">10</button>
@@ -292,7 +405,7 @@
 <div class="screen hidden" id="cases">
   <div class="topbar">
     <button class="back-btn" onclick="backToMenu()">←</button>
-    <div class="topbar-balance" id="casesBalance">1000<span>⭐</span></div>
+    <div class="topbar-balance" id="casesBalance">1000 <span class="star-line sm"></span></div>
   </div>
 
   <div class="cases-list">
@@ -301,7 +414,7 @@
         <div class="name">Обычный</div>
         <div class="range">1 — 1 000</div>
       </div>
-      <div class="price">10<span>⭐</span></div>
+      <div class="price">10 <span class="star-line sm"></span></div>
     </button>
 
     <button class="case-item" onclick="buyCase('case50')">
@@ -309,7 +422,7 @@
         <div class="name">Редкий</div>
         <div class="range">5 — 2 000</div>
       </div>
-      <div class="price">50<span>⭐</span></div>
+      <div class="price">50 <span class="star-line sm"></span></div>
     </button>
 
     <button class="case-item" onclick="buyCase('case100')">
@@ -317,7 +430,7 @@
         <div class="name">Легендарный</div>
         <div class="range">10 — 5 000</div>
       </div>
-      <div class="price">100<span>⭐</span></div>
+      <div class="price">100 <span class="star-line sm"></span></div>
     </button>
   </div>
 </div>
@@ -326,7 +439,7 @@
 <div class="screen hidden" id="caseOpen">
   <div class="topbar">
     <button class="back-btn" onclick="closeCase()">←</button>
-    <div class="topbar-balance" id="openBalance">1000<span>⭐</span></div>
+    <div class="topbar-balance" id="openBalance">1000 <span class="star-line sm"></span></div>
   </div>
 
   <div class="roulette-stage">
@@ -337,12 +450,74 @@
 
     <div class="spin-result" id="spinResult">
       <div class="label">Выпало</div>
-      <div class="val" id="spinValue">0<span>⭐</span></div>
+      <div class="val" id="spinValue">0 <span class="star-line"></span></div>
     </div>
   </div>
 
   <div class="spin-controls">
     <button class="main-btn" id="spinBtn" onclick="spin()">Открыть</button>
+  </div>
+</div>
+
+<!-- ============ ПРОФИЛЬ ============ -->
+<div class="screen hidden" id="profile">
+  <div class="topbar">
+    <button class="back-btn" onclick="backToMenu()">←</button>
+    <div class="topbar-balance" id="profileBalance">1000 <span class="star-line sm"></span></div>
+  </div>
+
+  <div class="profile-content">
+    <!-- Карточка юзера -->
+    <div class="profile-card">
+      <div class="profile-avatar" id="avatar">👤</div>
+      <div class="profile-info">
+        <div class="name" id="userName">Гость</div>
+        <div class="username" id="userUsername">@username</div>
+      </div>
+    </div>
+
+    <!-- Статистика -->
+    <div class="section-title">Статистика</div>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Всего ставок</div>
+        <div class="stat-value" id="statBets">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Побед</div>
+        <div class="stat-value" id="statWins">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Макс. краш</div>
+        <div class="stat-value" id="statMaxCrash">0x</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Профит</div>
+        <div class="stat-value" id="statProfit">0</div>
+      </div>
+    </div>
+
+    <!-- Промокод -->
+    <div class="section-title">Промокод</div>
+    <div class="promo-row">
+      <input type="text" class="promo-input" id="promoInput" placeholder="ВВЕДИ КОД" maxlength="16">
+      <button class="promo-btn" onclick="applyPromo()">ОК</button>
+    </div>
+
+    <!-- Оплата -->
+    <div class="section-title">Пополнить баланс</div>
+    <div class="pay-row">
+      <button class="pay-btn" onclick="payWithStars()">
+        <span class="pay-icon"><span class="star-line lg"></span></span>
+        <span class="pay-label">Звёздами</span>
+        <span class="pay-sub">Telegram Stars</span>
+      </button>
+      <button class="pay-btn" onclick="giftInfo()">
+        <span class="pay-icon">🎁</span>
+        <span class="pay-label">Подарком</span>
+        <span class="pay-sub">авто-выдача</span>
+      </button>
+    </div>
   </div>
 </div>
 
@@ -364,16 +539,43 @@ const state = {
   crashRaf: null,
   spinning: false,
   currentCase: null,
+  // Статистика
+  stats: {
+    totalBets: 0,
+    wins: 0,
+    maxCrash: 0,
+    profit: 0,
+  },
+  // Промокоды (демо — в реальном проекте на бэке)
+  promos: {
+    'ENDLESS': 500,
+    'STARS': 1000,
+    'WELCOME': 250,
+  },
+  usedPromos: [],
 };
 
 /* ==================== DOM ==================== */
 const $ = id => document.getElementById(id);
 
+/* ==================== ЗВЁЗДЫ ==================== */
+(function makeStars(){
+  const box = $('space');
+  for (let i = 0; i < 120; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    const size = Math.random() * 1.8 + 0.4;
+    const hue = Math.random() * 60 + 220;
+    s.style.cssText = `width:${size}px;height:${size}px;left:${Math.random()*100}%;top:${Math.random()*100}%;animation-delay:${Math.random()*4}s;background:hsl(${hue},60%,${70+Math.random()*30}%)`;
+    box.appendChild(s);
+  }
+})();
+
 /* ==================== ЗВУК ==================== */
 const AudioCtx = window.AudioContext || window.webkitAudioContext;
 let actx = null;
 function initAudio() { if (!actx) actx = new AudioCtx(); if (actx.state === 'suspended') actx.resume(); }
-function tone(freq, dur, type='sine', vol=0.06) {
+function tone(freq, dur, type='sine', vol=0.05) {
   if (!actx) return;
   const o = actx.createOscillator(), g = actx.createGain();
   o.type = type; o.frequency.value = freq;
@@ -394,12 +596,22 @@ function haptic(type) {
 
 /* ==================== UI ==================== */
 function fmt(n) { return Math.floor(n).toLocaleString('ru-RU'); }
+function starHtml() { return '<span class="star-line sm"></span>'; }
 function updateBalance() {
   const b = fmt(state.balance);
-  $('menuBalance').innerHTML = b + '<span>⭐</span>';
-  $('crashBalance').innerHTML = b + '<span>⭐</span>';
-  $('casesBalance').innerHTML = b + '<span>⭐</span>';
-  $('openBalance').innerHTML = b + '<span>⭐</span>';
+  const h = b + ' ' + starHtml();
+  $('menuBalance').innerHTML = h;
+  $('crashBalance').innerHTML = h;
+  $('casesBalance').innerHTML = h;
+  $('openBalance').innerHTML = h;
+  $('profileBalance').innerHTML = h;
+}
+function updateStatsUI() {
+  $('statBets').textContent = fmt(state.stats.totalBets);
+  $('statWins').textContent = fmt(state.stats.wins);
+  $('statMaxCrash').textContent = state.stats.maxCrash.toFixed(2) + 'x';
+  $('statProfit').textContent = (state.stats.profit >= 0 ? '+' : '') + fmt(state.stats.profit);
+  $('statProfit').style.color = state.stats.profit >= 0 ? '#5cd65c' : '#ff4d4d';
 }
 function toast(msg) {
   const t = $('toast');
@@ -441,8 +653,27 @@ function closeCase() {
 function resetBalance() {
   haptic('light');
   state.balance = 1000;
-  updateBalance();
+  state.stats = { totalBets:0, wins:0, maxCrash:0, profit:0 };
+  state.usedPromos = [];
+  updateBalance(); updateStatsUI();
   toast('Баланс восстановлен');
+}
+function openProfile() {
+  initAudio(); haptic('light');
+  // Заполняем профиль из Telegram
+  const user = tg?.initDataUnsafe?.user;
+  if (user) {
+    $('userName').textContent = [user.first_name, user.last_name].filter(Boolean).join(' ') || 'Без имени';
+    $('userUsername').textContent = user.username ? '@' + user.username : '—';
+    if (user.photo_url) {
+      $('avatar').innerHTML = `<img src="${user.photo_url}" alt="">`;
+    } else {
+      $('avatar').textContent = (user.first_name || '?')[0].toUpperCase();
+    }
+  }
+  updateStatsUI();
+  updateBalance();
+  showScreen('profile');
 }
 
 /* ==================== КРАШ ==================== */
@@ -460,6 +691,8 @@ function startCrashRound() {
 
   state.crashBet = bet;
   state.balance -= bet;
+  state.stats.totalBets++;
+  state.stats.profit -= bet;
   updateBalance();
 
   state.crashPhase = 'flying';
@@ -494,14 +727,13 @@ function crashLoop(now) {
 
   $('multiplier').textContent = m.toFixed(2) + 'x';
 
-  // Плавное обесцвечивание: от белого к красному через серый
   const t = Math.min(m / 10, 1);
   const r = Math.floor(255 * (0.5 + t * 0.5));
   const gb = Math.floor(255 * (1 - t * 0.85));
   $('multiplier').style.color = `rgb(${r},${gb},${gb})`;
 
   const potential = Math.floor(state.crashBet * m);
-  $('crashInfo').textContent = `${fmt(potential)} ⭐`;
+  $('crashInfo').innerHTML = `${fmt(potential)} ⭐`;
   $('crashInfo').className = 'crash-info active';
 
   state.crashRaf = requestAnimationFrame(crashLoop);
@@ -513,11 +745,13 @@ function crashBoom() {
   tone(200, 0.5, 'sawtooth', 0.1);
   haptic('error');
 
+  if (state.crashAt > state.stats.maxCrash) state.stats.maxCrash = state.crashAt;
+
   const el = $('multiplier');
   el.className = 'crash-x crashed';
   el.textContent = state.crashAt.toFixed(2) + 'x';
   $('crashCaption').textContent = `крах · ставка сгорела`;
-  $('crashInfo').textContent = '';
+  $('crashInfo').innerHTML = '';
   $('crashInfo').className = 'crash-info';
 
   setTimeout(() => endCrashRound(), 1600);
@@ -532,11 +766,13 @@ function cashoutCrash() {
 
   const win = Math.floor(state.crashBet * state.crashMultiplier);
   state.balance += win;
+  state.stats.wins++;
+  state.stats.profit += win;
   updateBalance();
 
   $('multiplier').style.color = '#5cd65c';
   $('crashCaption').textContent = `забрано · +${fmt(win)} ⭐`;
-  $('crashInfo').textContent = '';
+  $('crashInfo').innerHTML = '';
   $('crashInfo').className = 'crash-info';
   toast(`+${fmt(win)} ⭐`);
 
@@ -553,7 +789,7 @@ function endCrashRound() {
   $('betInput').parentElement.style.display = 'flex';
   $('actionBtn').textContent = 'Старт';
   $('actionBtn').className = 'main-btn';
-  $('crashInfo').textContent = '';
+  $('crashInfo').innerHTML = '';
   $('crashInfo').className = 'crash-info';
 }
 
@@ -640,22 +876,12 @@ function makeSlot(prize, c) {
   const el = document.createElement('div');
   const tier = tierOf(prize, c);
   el.className = 'slot' + (tier ? ' ' + tier : '');
-  el.textContent = prize;
+  el.innerHTML = prize + ' ' + starHtml();
   return el;
 }
 
-/* ============================================================
-   ВАЖНО: синхронизация визуала и результата
-   ————————————————————————————————————————————————
-   1. Сначала честно выбираем приз через pickPrize().
-   2. Строим трек из N слотов так, чтобы в позиции STOP_INDEX
-      лежал именно этот приз. Остальные слоты — случайные.
-   3. Останавливаем ленту так, чтобы центр слота STOP_INDEX
-      совпал с указателем. Ширина слота берётся из реального
-      DOM (getBoundingClientRect), а не из магических чисел.
-   ============================================================ */
-const TRACK_SIZE  = 60;   // всего слотов в ленте
-const STOP_INDEX  = 50;   // на каком слоте остановимся (не последний — для плавности)
+const TRACK_SIZE = 60;
+const STOP_INDEX = 50;
 
 function buyCase(caseKey) {
   initAudio(); haptic('light');
@@ -671,7 +897,6 @@ function buyCase(caseKey) {
   $('spinBtn').disabled = false;
   $('spinBtn').onclick = spin;
 
-  // Пустой трек — заполним при спине
   $('track').innerHTML = '';
   $('track').style.transition = 'none';
   $('track').style.transform = 'translateX(0)';
@@ -690,18 +915,14 @@ function spin() {
   const caseKey = state.currentCase;
   const c = CASES[caseKey];
   const track = $('track');
-
-  /* --- 1. ЧЕСТНО ВЫБИРАЕМ ПРИЗ --- */
   const winPrize = pickPrize(caseKey);
 
-  /* --- 2. СТРОИМ ТРЕК --- */
   track.innerHTML = '';
   for (let i = 0; i < TRACK_SIZE; i++) {
     let prize;
     if (i === STOP_INDEX) {
-      prize = winPrize;                           // сюда встанет указатель
+      prize = winPrize;
     } else if (Math.abs(i - STOP_INDEX) === 1) {
-      // Соседи — соседний по редкости приз (драма «чуть не докрутилось»)
       const idx = c.prizes.findIndex(p => p.prize === winPrize);
       const neighborIdx = Math.max(0, Math.min(c.prizes.length - 1,
         idx + (Math.random() < 0.5 ? 1 : -1)));
@@ -712,41 +933,29 @@ function spin() {
     track.appendChild(makeSlot(prize, c));
   }
 
-  /* --- 3. ВЫЧИСЛЯЕМ ТОЧНУЮ ПОЗИЦИЮ ОСТАНОВКИ --- */
-  // Форсируем reflow, чтобы слоты получили размеры
   void track.offsetWidth;
 
   const wrap = track.parentElement;
   const wrapW = wrap.clientWidth;
-
-  // Реальные размеры и позиции слотов
   const slots = track.children;
   const targetSlot = slots[STOP_INDEX];
   const trackRect = track.getBoundingClientRect();
   const slotRect = targetSlot.getBoundingClientRect();
-
-  // Центр слота относительно начала трека
   const slotCenter = (slotRect.left - trackRect.left) + slotRect.width / 2;
-
-  // Нам нужно, чтобы slotCenter оказался в wrapW/2
-  // Текущий transform = 0, значит смещение = wrapW/2 - slotCenter
   const targetX = wrapW / 2 - slotCenter;
 
-  // Сброс перед анимацией
   track.style.transition = 'none';
   track.style.transform = 'translateX(0)';
   void track.offsetWidth;
 
-  /* --- 4. АНИМАЦИЯ --- */
   const duration = 5000;
   track.style.transition = `transform ${duration}ms cubic-bezier(0.12, 0.85, 0.18, 1)`;
   track.style.transform = `translateX(${targetX}px)`;
 
-  // Тикающий звук замедляется к концу
   let elapsed = 0;
   const tickSchedule = [];
   while (elapsed < duration - 200) {
-    const interval = 40 + elapsed * 0.08; // ускоряемся-замедляемся
+    const interval = 40 + elapsed * 0.08;
     elapsed += interval;
     tickSchedule.push(elapsed);
   }
@@ -754,7 +963,6 @@ function spin() {
     setTimeout(() => tone(1200, 0.015, 'square', 0.02), t);
   });
 
-  /* --- 5. ФИНАЛ --- */
   setTimeout(() => {
     state.spinning = false;
     finishSpin(winPrize, c);
@@ -765,7 +973,7 @@ function finishSpin(prize, c) {
   state.balance += prize;
   updateBalance();
 
-  $('spinValue').innerHTML = fmt(prize) + '<span>⭐</span>';
+  $('spinValue').innerHTML = fmt(prize) + ' ' + starHtml();
   $('spinResult').className = 'spin-result show';
 
   const isProfit = prize >= c.price;
@@ -788,8 +996,41 @@ function finishSpin(prize, c) {
   };
 }
 
+/* ==================== ПРОМОКОД ==================== */
+function applyPromo() {
+  haptic('light');
+  const code = $('promoInput').value.trim().toUpperCase();
+  if (!code) return toast('Введи код');
+  if (state.usedPromos.includes(code)) return toast('Код уже использован');
+  if (!state.promos[code]) return toast('Неверный код');
+
+  const amount = state.promos[code];
+  state.balance += amount;
+  state.usedPromos.push(code);
+  updateBalance();
+  $('promoInput').value = '';
+  haptic('success');
+  toast(`+${fmt(amount)} ⭐`);
+}
+
+/* ==================== ОПЛАТА ==================== */
+function payWithStars() {
+  haptic('light');
+  toast('Требуется бэкенд для оплаты');
+  // Здесь будет вызов бэкенда:
+  // window.location.href = 'https://твой-бэкенд/create-invoice';
+}
+
+function giftInfo() {
+  haptic('light');
+  toast('Отправь подарок боту в ЛС');
+  // Здесь будет ссылка на бота:
+  // window.open('https://t.me/твой_бот', '_blank');
+}
+
 /* ==================== INIT ==================== */
 updateBalance();
+updateStatsUI();
 </script>
 </body>
 </html>
