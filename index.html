@@ -34,21 +34,12 @@
   }
   .screen.hidden { opacity:0; pointer-events:none; }
 
-  /* ===== Звёздочка (SVG-иконка, белая линия) ===== */
+  /* ===== Иконки ===== */
   .ico {
     display:inline-block; width:1em; height:1em; vertical-align:-0.12em;
     flex-shrink:0;
   }
-  .ico-star { color:currentColor; }
-  .ico-star svg { width:100%; height:100%; display:block; }
-
-  /* ===== Общие обводки ===== */
-  .outlined {
-    border:1.5px solid #2a2a4a;
-    background:rgba(20,20,40,0.35);
-    backdrop-filter:blur(8px);
-    border-radius:16px;
-  }
+  .ico svg { width:100%; height:100%; display:block; }
 
   /* ===== Главное меню ===== */
   #menu { align-items:center; justify-content:center; padding:28px; text-align:center; }
@@ -114,7 +105,8 @@
   .crash-x {
     font-size:112px; font-weight:100; letter-spacing:-4px;
     color:#fff; font-variant-numeric:tabular-nums;
-    transition:color .15s, opacity .3s; line-height:1;
+    line-height:1;
+    transition:color .15s ease, opacity .5s ease, transform .5s cubic-bezier(0.4,0,0.2,1);
   }
   .crash-x.crashed {
     color:#ff4d4d;
@@ -127,18 +119,25 @@
     60% { transform:translateX(-5px); }
     80% { transform:translateX(5px); }
   }
-  .crash-x.hidden { opacity:0; pointer-events:none; }
+  .crash-x.hidden {
+    opacity:0;
+    transform:translateY(-30px) scale(0.9);
+    pointer-events:none;
+  }
 
   .crash-label {
     position:absolute;
-    font-size:80px; font-weight:200; letter-spacing:6px;
+    font-size:80px; font-weight:200; letter-spacing:8px;
     color:#ff4d4d;
-    opacity:0; transform:scale(0.9);
-    transition:opacity .35s, transform .35s;
+    opacity:0;
+    transform:translateY(40px) scale(0.85);
+    transition:opacity .5s ease .15s, transform .5s cubic-bezier(0.34,1.56,0.64,1) .15s;
+    text-shadow:0 0 40px rgba(255,77,77,0.5);
     font-variant-numeric:tabular-nums;
   }
   .crash-label.show {
-    opacity:1; transform:scale(1);
+    opacity:1;
+    transform:translateY(0) scale(1);
   }
 
   .crash-caption {
@@ -236,7 +235,7 @@
   .slot {
     width:80px; height:90px; margin:0 5px; flex-shrink:0;
     border:1.5px solid #1a1a35; border-radius:12px;
-    display:flex; align-items:center; justify-content:center; gap:3px;
+    display:flex; align-items:center; justify-content:center; gap:4px;
     font-size:16px; font-weight:400; color:#6a6a9a;
     font-variant-numeric:tabular-nums;
     transition:border-color .3s, color .3s;
@@ -290,6 +289,7 @@
     overflow:hidden;
   }
   .profile-avatar img { width:100%; height:100%; object-fit:cover; }
+  .profile-avatar svg { width:28px; height:28px; }
   .profile-info .name { font-size:18px; font-weight:500; }
   .profile-info .username { color:#5a5a8a; font-size:13px; margin-top:3px; }
 
@@ -340,8 +340,8 @@
     display:flex; flex-direction:column; align-items:center; gap:6px;
   }
   .pay-btn:active { border-color:#3a3a6a; background:rgba(40,40,80,0.4); }
-  .pay-btn .pay-icon { font-size:22px; display:flex; }
-  .pay-btn .pay-icon .ico { font-size:22px; }
+  .pay-btn .pay-icon { font-size:22px; display:flex; align-items:center; justify-content:center; }
+  .pay-btn .pay-icon .ico { font-size:24px; }
   .pay-btn .pay-label { font-weight:500; }
   .pay-btn .pay-sub { font-size:10px; color:#5a5a8a; }
 
@@ -371,10 +371,7 @@
 
   <div class="balance-block">
     <div class="balance-label">Баланс</div>
-    <div class="balance-value" id="menuBalance">
-      <span class="ico ico-star"></span>
-      <span class="num">1000</span>
-    </div>
+    <div class="balance-value" id="menuBalance"></div>
   </div>
 
   <div class="modes">
@@ -417,7 +414,7 @@
     <div class="crash-info" id="crashInfo"></div>
     <div class="bet-row">
       <input type="number" id="betInput" placeholder="0" value="50" min="1">
-      <span class="unit"><span class="ico ico-star"></span></span>
+      <span class="unit"><span class="ico" data-icon="star"></span></span>
     </div>
     <div class="quick-row" id="quickRow">
       <button class="quick-btn" onclick="setBet(10)">10</button>
@@ -443,7 +440,7 @@
         <div class="name">Обычный</div>
         <div class="range">1 — 1 000</div>
       </div>
-      <div class="price">10 <span class="ico ico-star"></span></div>
+      <div class="price">10 <span class="ico" data-icon="star"></span></div>
     </button>
 
     <button class="case-item" onclick="buyCase('case50')">
@@ -451,7 +448,7 @@
         <div class="name">Редкий</div>
         <div class="range">5 — 2 000</div>
       </div>
-      <div class="price">50 <span class="ico ico-star"></span></div>
+      <div class="price">50 <span class="ico" data-icon="star"></span></div>
     </button>
 
     <button class="case-item" onclick="buyCase('case100')">
@@ -459,7 +456,7 @@
         <div class="name">Легендарный</div>
         <div class="range">10 — 5 000</div>
       </div>
-      <div class="price">100 <span class="ico ico-star"></span></div>
+      <div class="price">100 <span class="ico" data-icon="star"></span></div>
     </button>
   </div>
 </div>
@@ -497,12 +494,7 @@
 
   <div class="profile-content">
     <div class="profile-card">
-      <div class="profile-avatar" id="avatar">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" style="width:28px;height:28px;">
-          <circle cx="12" cy="8" r="4"/>
-          <path d="M4 21c0-4 4-7 8-7s8 3 8 7"/>
-        </svg>
-      </div>
+      <div class="profile-avatar" id="avatar"></div>
       <div class="profile-info">
         <div class="name" id="userName">Гость</div>
         <div class="username" id="userUsername">@username</div>
@@ -538,19 +530,12 @@
     <div class="section-title">Пополнить баланс</div>
     <div class="pay-row">
       <button class="pay-btn" onclick="payWithStars()">
-        <span class="pay-icon"><span class="ico ico-star"></span></span>
+        <span class="pay-icon"><span class="ico" data-icon="star"></span></span>
         <span class="pay-label">Звёздами</span>
         <span class="pay-sub">Telegram Stars</span>
       </button>
       <button class="pay-btn" onclick="giftInfo()">
-        <span class="pay-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:24px;height:24px;">
-            <rect x="3" y="8" width="18" height="13" rx="2"/>
-            <path d="M3 12h18"/>
-            <path d="M12 8v13"/>
-            <path d="M12 8c-2 0-4-1-4-3s2-2 4 3c2-5 4-5 4-3s-2 3-4 3z"/>
-          </svg>
-        </span>
+        <span class="pay-icon"><span class="ico" data-icon="gift"></span></span>
         <span class="pay-label">Подарком</span>
         <span class="pay-sub">авто-выдача</span>
       </button>
@@ -565,17 +550,33 @@
 const tg = window.Telegram?.WebApp;
 if (tg) { tg.ready(); tg.expand(); }
 
-/* ==================== ИКОНКИ (SVG без эмодзи) ==================== */
+/* ==================== SVG ИКОНКИ (без эмодзи) ==================== */
 const ICONS = {
-  star: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round">
+  star: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+         stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round">
     <path d="M12 2.5 L14.6 9.3 L21.5 9.7 L16.1 14.2 L17.9 21 L12 17.2 L6.1 21 L7.9 14.2 L2.5 9.7 L9.4 9.3 Z"/>
+  </svg>`,
+  gift: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+         stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="3" y="8" width="18" height="13" rx="2"/>
+    <path d="M3 12h18"/>
+    <path d="M12 8v13"/>
+    <path d="M12 8c-2 0-4-1-4-3s2-2 4 3c2-5 4-5 4-3s-2 3-4 3z"/>
+  </svg>`,
+  user: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+         stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="8" r="4"/>
+    <path d="M4 21c0-4 4-7 8-7s8 3 8 7"/>
   </svg>`,
 };
 
-// Заполняем все .ico-star иконкой
-document.querySelectorAll('.ico-star').forEach(el => {
-  el.innerHTML = ICONS.star;
-});
+// Проставляем все иконки, у которых есть data-icon
+function renderIcons(root = document) {
+  root.querySelectorAll('.ico[data-icon]').forEach(el => {
+    const key = el.dataset.icon;
+    if (ICONS[key]) el.innerHTML = ICONS[key];
+  });
+}
 
 /* ==================== СОСТОЯНИЕ ==================== */
 const state = {
@@ -595,7 +596,7 @@ const state = {
 
 const $ = id => document.getElementById(id);
 
-/* ==================== ЗВЁЗДЫ ==================== */
+/* ==================== КОСМИЧЕСКИЙ ФОН ==================== */
 (function makeStars(){
   const box = $('space');
   for (let i = 0; i < 120; i++) {
@@ -633,7 +634,8 @@ function haptic(type) {
 
 /* ==================== UI ==================== */
 function fmt(n) { return Math.floor(n).toLocaleString('ru-RU'); }
-function starIco() { return '<span class="ico ico-star"></span>'; }
+function starIco() { return `<span class="ico" data-icon="star">${ICONS.star}</span>`; }
+
 function updateBalance() {
   const h = starIco() + '<span class="num">' + fmt(state.balance) + '</span>';
   $('menuBalance').innerHTML = h;
@@ -642,6 +644,7 @@ function updateBalance() {
   $('openBalance').innerHTML = h;
   $('profileBalance').innerHTML = h;
 }
+
 function updateStatsUI() {
   $('statBets').textContent = fmt(state.stats.totalBets);
   $('statWins').textContent = fmt(state.stats.wins);
@@ -649,6 +652,7 @@ function updateStatsUI() {
   $('statProfit').textContent = (state.stats.profit >= 0 ? '+' : '') + fmt(state.stats.profit);
   $('statProfit').style.color = state.stats.profit >= 0 ? '#5cd65c' : '#ff4d4d';
 }
+
 function toast(msg) {
   const t = $('toast');
   t.textContent = msg;
@@ -656,6 +660,7 @@ function toast(msg) {
   clearTimeout(t._t);
   t._t = setTimeout(() => t.className = '', 1800);
 }
+
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
   $(id).classList.remove('hidden');
@@ -672,6 +677,7 @@ function openMode(mode) {
   }
   updateBalance();
 }
+
 function backToMenu() {
   haptic('light');
   if (state.crashPhase === 'flying') cashoutCrash();
@@ -680,12 +686,14 @@ function backToMenu() {
   showScreen('menu');
   updateBalance();
 }
+
 function closeCase() {
   haptic('light');
   if (state.spinning) return;
   showScreen('cases');
   updateBalance();
 }
+
 function resetBalance() {
   haptic('light');
   state.balance = 1000;
@@ -694,17 +702,22 @@ function resetBalance() {
   updateBalance(); updateStatsUI();
   toast('Баланс восстановлен');
 }
+
 function openProfile() {
   initAudio(); haptic('light');
   const user = tg?.initDataUnsafe?.user;
+  const av = $('avatar');
   if (user) {
     $('userName').textContent = [user.first_name, user.last_name].filter(Boolean).join(' ') || 'Без имени';
     $('userUsername').textContent = user.username ? '@' + user.username : '—';
     if (user.photo_url) {
-      $('avatar').innerHTML = `<img src="${user.photo_url}" alt="">`;
+      av.innerHTML = `<img src="${user.photo_url}" alt="">`;
     } else {
-      $('avatar').textContent = (user.first_name || '?')[0].toUpperCase();
+      av.innerHTML = ICONS.user;
+      av.style.fontSize = '';
     }
+  } else {
+    av.innerHTML = ICONS.user;
   }
   updateStatsUI();
   updateBalance();
@@ -743,8 +756,11 @@ function startCrashRound() {
   $('crashCaption').textContent = `ставка ${fmt(bet)}`;
   $('crashCaption').classList.remove('hidden');
   $('crashLabel').classList.remove('show');
-  $('multiplier').classList.remove('hidden', 'crashed');
-  $('multiplier').style.color = '#fff';
+
+  const el = $('multiplier');
+  el.classList.remove('hidden', 'crashed');
+  el.style.color = '#fff';
+  el.textContent = '1.00x';
 
   initAudio(); tone(220, 0.08, 'sine');
   haptic('medium');
@@ -762,8 +778,10 @@ function crashLoop(now) {
     return crashBoom();
   }
 
-  $('multiplier').textContent = m.toFixed(2) + 'x';
-  $('multiplier').style.color = '#fff';
+  // ВСЕГДА белый, никаких градиентов
+  const el = $('multiplier');
+  el.textContent = m.toFixed(2) + 'x';
+  el.style.color = '#fff';
 
   const potential = Math.floor(state.crashBet * m);
   $('crashInfo').innerHTML = fmt(potential) + ' ' + starIco();
@@ -783,17 +801,19 @@ function crashBoom() {
   const el = $('multiplier');
   el.className = 'crash-x crashed';
   el.textContent = state.crashAt.toFixed(2) + 'x';
+
   $('crashCaption').classList.add('hidden');
   $('crashInfo').innerHTML = '';
   $('crashInfo').className = 'crash-info';
 
-  // Через 700ms — скрываем число, показываем "КРАШ"
+  // Фаза 1: 900ms красный + тряска
+  // Фаза 2: X уезжает вверх, «КРАШ» вплывает снизу
   setTimeout(() => {
     el.classList.add('hidden');
     $('crashLabel').classList.add('show');
-  }, 700);
+  }, 900);
 
-  setTimeout(() => endCrashRound(), 2000);
+  setTimeout(() => endCrashRound(), 2400);
 }
 
 function cashoutCrash() {
@@ -821,9 +841,10 @@ function cashoutCrash() {
 
 function endCrashRound() {
   state.crashPhase = 'idle';
-  $('multiplier').textContent = '1.00x';
-  $('multiplier').className = 'crash-x';
-  $('multiplier').style.color = '#fff';
+  const el = $('multiplier');
+  el.textContent = '1.00x';
+  el.className = 'crash-x';
+  el.style.color = '#fff';
   $('crashLabel').classList.remove('show');
   $('crashCaption').textContent = 'нажми старт';
   $('crashCaption').classList.remove('hidden');
@@ -840,6 +861,7 @@ function handleCrashAction() {
   if (state.crashPhase === 'flying') cashoutCrash();
   else if (state.crashPhase === 'idle') startCrashRound();
 }
+
 function setBet(v) {
   haptic('light');
   if (v === 'all') $('betInput').value = Math.max(1, Math.floor(state.balance));
@@ -1042,24 +1064,17 @@ function applyPromo() {
 /* ==================== ОПЛАТА ==================== */
 function payWithStars() {
   haptic('light');
-  // Отправляем запрос в бота за инвойсом
   if (!tg?.initData) return toast('Открой из Telegram');
   fetch('https://ТВОЙ_БЭКЕНД/create-invoice', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      initData: tg.initData,
-      amount: 100, // пакет на 100 звёзд, поменяй под себя
-    })
+    body: JSON.stringify({ initData: tg.initData, amount: 100 })
   })
   .then(r => r.json())
   .then(data => {
     if (data.invoice_link) {
       tg.openInvoice(data.invoice_link, (status) => {
-        if (status === 'paid') {
-          toast('Оплата прошла');
-          // Обновить баланс с бэка
-        }
+        if (status === 'paid') toast('Оплата прошла');
       });
     } else {
       toast('Ошибка создания счёта');
@@ -1070,13 +1085,13 @@ function payWithStars() {
 
 function giftInfo() {
   haptic('light');
-  // Открываем чат с ботом
-  const botUsername = 'ТВОЙ_БОТ'; // поменяй
+  const botUsername = 'ТВОЙ_БОТ';
   if (tg) tg.openTelegramLink(`https://t.me/${botUsername}`);
   else window.open(`https://t.me/${botUsername}`, '_blank');
 }
 
 /* ==================== INIT ==================== */
+renderIcons();
 updateBalance();
 updateStatsUI();
 </script>
