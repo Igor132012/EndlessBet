@@ -10,417 +10,342 @@
   html, body {
     height:100%; overflow:hidden;
     font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
-    background:#0a0a1a; color:#fff; user-select:none;
+    background:#0a0a0a; color:#fff; user-select:none;
   }
-  body { background:radial-gradient(ellipse at top, #1a1a3a 0%, #0a0a1a 50%, #000 100%); }
-
-  /* ===== Звёзды ===== */
-  #stars { position:fixed; inset:0; pointer-events:none; z-index:0; }
-  .star { position:absolute; background:#fff; border-radius:50%; animation:twinkle 3s infinite ease-in-out; }
-  @keyframes twinkle { 0%,100%{opacity:.2} 50%{opacity:1} }
 
   /* ===== Экраны ===== */
   .screen {
     position:fixed; inset:0; display:flex; flex-direction:column;
-    z-index:1; transition:opacity .3s, transform .3s;
+    background:#0a0a0a;
+    transition:opacity .25s;
   }
-  .screen.hidden { opacity:0; pointer-events:none; transform:scale(.96); }
+  .screen.hidden { opacity:0; pointer-events:none; }
 
   /* ===== Главное меню ===== */
-  #menu { align-items:center; justify-content:center; padding:24px; text-align:center; }
-  .logo {
-    font-size:56px; margin-bottom:8px;
-    animation:float 3s ease-in-out infinite;
-    filter:drop-shadow(0 0 20px #00d4ff);
-  }
-  @keyframes float {
-    0%,100% { transform:translateY(0) rotate(-5deg); }
-    50% { transform:translateY(-12px) rotate(5deg); }
-  }
-  .title {
-    font-size:30px; font-weight:800; letter-spacing:2px;
-    background:linear-gradient(135deg, #00d4ff, #ff00e5, #ffb800);
-    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-    background-clip:text; margin-bottom:6px; animation:shimmer 3s infinite;
-  }
-  @keyframes shimmer { 0%,100%{filter:brightness(1)} 50%{filter:brightness(1.4)} }
-  .subtitle { color:#7a7a9a; font-size:12px; margin-bottom:24px; letter-spacing:1px; }
+  #menu { align-items:center; justify-content:center; padding:28px; text-align:center; }
 
-  .balance-card {
-    background:linear-gradient(135deg, rgba(0,212,255,.15), rgba(255,0,229,.15));
-    border:1px solid rgba(0,212,255,.3); border-radius:20px;
-    padding:18px 32px; margin-bottom:28px; backdrop-filter:blur(10px);
-    box-shadow:0 8px 32px rgba(0,212,255,.2);
+  .brand {
+    font-size:13px; color:#555; letter-spacing:4px; text-transform:uppercase;
+    margin-bottom:40px;
   }
-  .balance-label { font-size:11px; color:#8a8aaa; letter-spacing:2px; text-transform:uppercase; }
-  .balance-value { font-size:34px; font-weight:800; margin-top:4px; }
-  .balance-value::after { content:" ⭐"; font-size:22px; }
 
-  /* ===== Меню режимов ===== */
-  .modes {
-    display:flex; flex-direction:column; gap:14px; width:100%; max-width:340px;
+  .balance-block { margin-bottom:52px; }
+  .balance-label { font-size:11px; color:#555; letter-spacing:2px; text-transform:uppercase; margin-bottom:8px; }
+  .balance-value {
+    font-size:52px; font-weight:200; letter-spacing:-1px;
+    color:#fff; font-variant-numeric:tabular-nums;
   }
+  .balance-value span { color:#555; font-size:24px; margin-left:6px; }
+
+  .modes { display:flex; flex-direction:column; gap:10px; width:100%; max-width:320px; }
   .mode-btn {
-    background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12);
-    border-radius:18px; padding:18px 20px; color:#fff; cursor:pointer;
-    display:flex; align-items:center; gap:14px;
-    transition:all .2s; text-align:left; font-family:inherit;
+    background:transparent; border:1px solid #1e1e1e;
+    border-radius:14px; padding:20px 24px; color:#fff; cursor:pointer;
+    display:flex; justify-content:space-between; align-items:center;
+    transition:border-color .2s, background .2s; font-family:inherit;
+    font-size:15px; letter-spacing:1px;
   }
-  .mode-btn:active { transform:scale(.97); background:rgba(255,255,255,.12); }
-  .mode-btn .icon {
-    width:44px; height:44px; border-radius:12px; display:flex;
-    align-items:center; justify-content:center; font-size:22px; flex-shrink:0;
-  }
-  .mode-btn.crash .icon { background:linear-gradient(135deg,#ff00e5,#ff0080); box-shadow:0 0 20px rgba(255,0,229,.5); }
-  .mode-btn.cases .icon { background:linear-gradient(135deg,#ffb800,#ff6b00); box-shadow:0 0 20px rgba(255,184,0,.5); }
-  .mode-btn .text { flex:1; }
-  .mode-btn .name { font-size:16px; font-weight:700; letter-spacing:.5px; }
-  .mode-btn .desc { font-size:12px; color:#8a8aaa; margin-top:2px; }
-  .mode-btn .arrow { color:#5a5a7a; font-size:18px; }
+  .mode-btn:active { background:#141414; border-color:#2a2a2a; }
+  .mode-btn .label { font-weight:500; }
+  .mode-btn .sub { color:#555; font-size:12px; margin-top:2px; letter-spacing:0; }
+  .mode-btn .arrow { color:#333; font-size:18px; }
 
-  /* ===== Верхняя панель игр ===== */
-  .game-top {
-    padding:16px 20px; display:flex; justify-content:space-between; align-items:center; z-index:2;
+  .reset-btn {
+    margin-top:36px; background:transparent; border:none;
+    color:#333; font-size:12px; letter-spacing:1px; cursor:pointer;
+    font-family:inherit; padding:8px 16px;
+  }
+  .reset-btn:active { color:#555; }
+
+  /* ===== Верхняя панель ===== */
+  .topbar {
+    padding:18px 22px; display:flex; justify-content:space-between; align-items:center;
   }
   .back-btn {
-    background:rgba(255,255,255,.08); border:none; color:#fff;
-    width:40px; height:40px; border-radius:12px; font-size:20px; cursor:pointer;
-    display:flex; align-items:center; justify-content:center; transition:background .2s;
+    background:transparent; border:none; color:#666;
+    font-size:22px; cursor:pointer; padding:6px 10px;
+    font-family:inherit; line-height:1;
   }
-  .back-btn:active { background:rgba(255,255,255,.2); }
-  .game-balance {
-    background:rgba(255,255,255,.08); padding:8px 16px; border-radius:12px;
-    font-weight:700; font-size:15px;
+  .back-btn:active { color:#aaa; }
+  .topbar-balance {
+    color:#888; font-size:14px; font-variant-numeric:tabular-nums;
   }
-  .game-balance::after { content:" ⭐"; font-size:13px; }
+  .topbar-balance span { color:#444; font-size:11px; margin-left:4px; }
 
   /* ===== КРАШ ===== */
-  #crash { padding:0; }
-  .crash-area {
-    flex:1; display:flex; align-items:center; justify-content:center; position:relative;
+  .crash-stage {
+    flex:1; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; position:relative;
   }
-  .crash-multiplier {
-    font-size:96px; font-weight:900; letter-spacing:-3px;
-    color:#00ff88; text-shadow:0 0 40px currentColor;
-    transition:color .3s, transform .15s;
+  .crash-x {
+    font-size:112px; font-weight:100; letter-spacing:-4px;
+    color:#fff; font-variant-numeric:tabular-nums;
+    transition:color .2s;
+    line-height:1;
   }
-  .crash-multiplier.crashed {
-    color:#ff2d55; animation:crashPulse .5s ease-out;
-  }
-  @keyframes crashPulse {
-    0% { transform:scale(1); }
-    40% { transform:scale(1.4); }
-    100% { transform:scale(1); }
-  }
-  .crash-status {
-    position:absolute; bottom:14%; font-size:14px; color:#8a8aaa; letter-spacing:1px;
-    text-align:center; width:100%;
+  .crash-x.crashed { color:#ff3b3b; }
+  .crash-caption {
+    margin-top:20px; font-size:12px; color:#444; letter-spacing:2px;
+    text-transform:uppercase;
   }
 
-  .controls { padding:16px 20px 28px; z-index:2; background:linear-gradient(to top, rgba(0,0,0,.6), transparent); }
-  .bet-input-wrap {
-    flex:1; position:relative;
-    background:rgba(255,255,255,.06); border-radius:16px;
-    border:1px solid rgba(255,255,255,.1);
-    display:flex; align-items:center; padding:0 16px;
+  .crash-controls { padding:0 22px 30px; }
+  .crash-info {
+    text-align:center; font-size:13px; color:#555;
+    margin-bottom:14px; height:18px; letter-spacing:.5px;
   }
-  .bet-input-wrap:focus-within { border-color:#00d4ff; box-shadow:0 0 0 3px rgba(0,212,255,.2); }
+  .crash-info.active { color:#5cd65c; }
+
+  .bet-row {
+    display:flex; align-items:center;
+    border:1px solid #1e1e1e; border-radius:14px;
+    padding:0 18px; margin-bottom:10px;
+    transition:border-color .2s;
+  }
+  .bet-row:focus-within { border-color:#333; }
   #betInput {
-    flex:1; background:none; border:none; color:#fff; font-size:18px;
-    font-weight:700; padding:16px 0; outline:none; width:100%;
+    flex:1; background:none; border:none; color:#fff;
+    font-size:20px; font-weight:400; padding:18px 0; outline:none;
+    width:100%; font-family:inherit; font-variant-numeric:tabular-nums;
   }
-  #betInput::placeholder { color:#5a5a7a; }
-  .bet-unit { color:#8a8aaa; font-size:16px; }
-  .quick-bets { display:flex; gap:8px; margin-top:10px; }
+  #betInput::placeholder { color:#333; }
+  .bet-row .unit { color:#444; font-size:14px; }
+
+  .quick-row { display:flex; gap:6px; margin-bottom:10px; }
   .quick-btn {
-    flex:1; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1);
-    color:#c0c0dd; padding:8px; border-radius:10px; font-size:12px; font-weight:600;
+    flex:1; background:transparent; border:1px solid #1a1a1a;
+    color:#666; padding:10px; border-radius:10px; font-size:12px;
     cursor:pointer; transition:all .15s; font-family:inherit;
+    font-variant-numeric:tabular-nums;
   }
-  .quick-btn:active { background:rgba(0,212,255,.2); border-color:#00d4ff; }
-  .btn-action {
-    flex:1; padding:0 24px; border:none; border-radius:16px;
-    font-size:17px; font-weight:800; letter-spacing:1px; cursor:pointer;
-    color:#fff; transition:all .2s; min-height:56px; font-family:inherit;
-    width:100%; margin-top:12px;
+  .quick-btn:active { border-color:#333; color:#aaa; }
+
+  .main-btn {
+    width:100%; background:transparent; border:1px solid #2a2a2a;
+    border-radius:14px; padding:20px; color:#fff;
+    font-size:14px; font-weight:500; letter-spacing:3px;
+    cursor:pointer; transition:all .2s; font-family:inherit;
+    text-transform:uppercase;
   }
-  .btn-action:active { transform:scale(.96); }
-  .btn-start {
-    background:linear-gradient(135deg, #00d4ff, #0088ff);
-    box-shadow:0 8px 24px rgba(0,212,255,.4);
-  }
-  .btn-cashout {
-    background:linear-gradient(135deg, #00ff88, #00cc66);
-    box-shadow:0 8px 24px rgba(0,255,136,.5);
-    animation:cashPulse 1s infinite;
-  }
-  @keyframes cashPulse {
-    0%,100% { box-shadow:0 8px 24px rgba(0,255,136,.5); }
-    50% { box-shadow:0 8px 32px rgba(0,255,136,.9); }
-  }
-  .btn-action:disabled { background:rgba(255,255,255,.1); color:#5a5a7a; box-shadow:none; cursor:not-allowed; animation:none; }
-  .cashout-info {
-    text-align:center; font-size:14px; color:#00ff88; font-weight:700;
-    margin-bottom:10px; min-height:20px; text-shadow:0 0 12px rgba(0,255,136,.6);
-  }
+  .main-btn:active { background:#141414; }
+  .main-btn.cashout { color:#5cd65c; border-color:#2a4a2a; }
+  .main-btn:disabled { color:#2a2a2a; border-color:#151515; cursor:not-allowed; }
 
   /* ===== КЕЙСЫ ===== */
-  #cases { padding:0; }
-  .case-select {
-    flex:1; padding:24px 20px; display:flex; flex-direction:column; gap:16px;
-    overflow-y:auto;
+  .cases-list {
+    flex:1; padding:0 22px; display:flex; flex-direction:column;
+    justify-content:center; gap:10px;
   }
-  .case-select h2 { font-size:22px; margin-bottom:8px; letter-spacing:1px; text-align:center; }
-  .case-select p { color:#8a8aaa; font-size:13px; text-align:center; margin-bottom:12px; }
-  .case-card {
-    background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1);
-    border-radius:20px; padding:18px 20px; display:flex; align-items:center; gap:16px;
-    cursor:pointer; transition:all .2s; font-family:inherit; color:#fff; text-align:left;
+  .case-item {
+    background:transparent; border:1px solid #1e1e1e;
+    border-radius:14px; padding:20px 24px; color:#fff;
+    cursor:pointer; display:flex; justify-content:space-between;
+    align-items:center; transition:border-color .2s; font-family:inherit;
+    text-align:left;
   }
-  .case-card:active { transform:scale(.97); }
-  .case-card.tier10 { border-color:rgba(0,212,255,.4); background:linear-gradient(135deg, rgba(0,212,255,.1), rgba(255,255,255,.03)); }
-  .case-card.tier50 { border-color:rgba(255,184,0,.4); background:linear-gradient(135deg, rgba(255,184,0,.1), rgba(255,255,255,.03)); }
-  .case-card.tier100 { border-color:rgba(255,0,229,.4); background:linear-gradient(135deg, rgba(255,0,229,.1), rgba(255,255,255,.03)); }
-  .case-icon {
-    width:56px; height:56px; border-radius:14px; display:flex;
-    align-items:center; justify-content:center; font-size:28px; flex-shrink:0;
+  .case-item:active { border-color:#333; }
+  .case-item .info .name { font-size:15px; letter-spacing:1px; font-weight:500; }
+  .case-item .info .range { color:#555; font-size:12px; margin-top:4px; }
+  .case-item .price {
+    font-size:15px; color:#888; font-variant-numeric:tabular-nums;
+    letter-spacing:1px;
   }
-  .case-card.tier10 .case-icon { background:linear-gradient(135deg,#00d4ff,#0088ff); box-shadow:0 0 20px rgba(0,212,255,.5); }
-  .case-card.tier50 .case-icon { background:linear-gradient(135deg,#ffb800,#ff6b00); box-shadow:0 0 20px rgba(255,184,0,.5); }
-  .case-card.tier100 .case-icon { background:linear-gradient(135deg,#ff00e9,#ff0080); box-shadow:0 0 20px rgba(255,0,229,.5); }
-  .case-info { flex:1; }
-  .case-name { font-size:16px; font-weight:700; }
-  .case-range { font-size:12px; color:#8a8aaa; margin-top:4px; }
-  .case-price { font-size:16px; font-weight:800; color:#ffb800; white-space:nowrap; }
-  .case-price::after { content:" ⭐"; font-size:12px; }
+  .case-item .price span { color:#444; font-size:11px; margin-left:3px; }
 
-  /* ===== ОТКРЫТИЕ КЕЙСА ===== */
-  #caseOpen { padding:0; }
-  .case-open-area {
-    flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  /* ===== РУЛЕТКА ===== */
+  .roulette-stage {
+    flex:1; display:flex; flex-direction:column;
+    align-items:center; justify-content:center;
     position:relative; overflow:hidden;
   }
-  .roulette-wrap {
-    position:relative; width:100%; height:140px;
-    background:rgba(0,0,0,.4); border-top:1px solid rgba(255,255,255,.1);
-    border-bottom:1px solid rgba(255,255,255,.1);
+
+  .roulette {
+    position:relative; width:100%; height:110px;
     overflow:hidden;
   }
-  .roulette-track {
-    position:absolute; top:0; left:50%; height:100%;
+  .roulette::before, .roulette::after {
+    content:""; position:absolute; top:0; bottom:0; width:80px; z-index:4;
+    pointer-events:none;
+  }
+  .roulette::before { left:0; background:linear-gradient(to right, #0a0a0a 10%, transparent); }
+  .roulette::after { right:0; background:linear-gradient(to left, #0a0a0a 10%, transparent); }
+
+  .track {
+    position:absolute; top:0; left:0; height:100%;
     display:flex; align-items:center;
     will-change:transform;
   }
+
   .slot {
-    width:100px; height:110px; margin:0 4px; flex-shrink:0;
-    border-radius:12px; display:flex; flex-direction:column;
-    align-items:center; justify-content:center;
-    background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12);
-    font-weight:800; font-size:18px;
+    width:80px; height:90px; margin:0 5px; flex-shrink:0;
+    border:1px solid #1a1a1a; border-radius:12px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:16px; font-weight:400; color:#666;
+    font-variant-numeric:tabular-nums;
+    transition:border-color .3s, color .3s;
   }
-  .slot .slot-stars { font-size:20px; }
-  .slot .slot-unit { font-size:11px; color:#8a8aaa; margin-top:2px; }
-  .slot.common { background:rgba(90,90,120,.25); border-color:rgba(120,120,160,.4); }
-  .slot.uncommon { background:rgba(0,212,255,.15); border-color:rgba(0,212,255,.5); color:#00d4ff; }
-  .slot.rare { background:rgba(255,0,229,.15); border-color:rgba(255,0,229,.5); color:#ff6bff; }
-  .slot.epic { background:rgba(255,184,0,.15); border-color:rgba(255,184,0,.5); color:#ffb800; }
-  .slot.legendary {
-    background:linear-gradient(135deg, rgba(255,0,229,.25), rgba(255,184,0,.25));
-    border-color:#ffb800; color:#fff;
-    box-shadow:0 0 20px rgba(255,184,0,.6), inset 0 0 20px rgba(255,0,229,.3);
-    animation:legendaryGlow 1.5s infinite alternate;
-  }
-  @keyframes legendaryGlow {
-    from { box-shadow:0 0 20px rgba(255,184,0,.6), inset 0 0 20px rgba(255,0,229,.3); }
-    to { box-shadow:0 0 35px rgba(255,184,0,.9), inset 0 0 30px rgba(255,0,229,.5); }
-  }
-  .roulette-pointer {
-    position:absolute; top:0; left:50%; transform:translateX(-50%);
-    width:4px; height:100%; background:linear-gradient(to bottom, #ff2d55, #ffb800);
-    z-index:5; box-shadow:0 0 15px #ff2d55;
-    border-radius:2px;
-  }
-  .roulette-pointer::before, .roulette-pointer::after {
-    content:""; position:absolute; left:50%; transform:translateX(-50%);
-    border-left:10px solid transparent; border-right:10px solid transparent;
-  }
-  .roulette-pointer::before {
-    top:-2px; border-top:14px solid #ff2d55;
-  }
-  .roulette-pointer::after {
-    bottom:-2px; border-bottom:14px solid #ff2d55;
+  .slot.rare    { color:#888; border-color:#2a2a2a; }
+  .slot.epic    { color:#bbb; border-color:#3a3a3a; }
+  .slot.legend  { color:#fff; border-color:#555; }
+
+  .pointer {
+    position:absolute; top:50%; left:50%;
+    transform:translate(-50%,-50%);
+    width:2px; height:120px; background:#fff; z-index:5;
+    border-radius:1px;
+    box-shadow:0 0 12px rgba(255,255,255,.5);
   }
 
-  .case-result {
-    text-align:center; padding:20px; z-index:3;
+  .spin-result {
+    text-align:center; margin-top:36px;
+    opacity:0; transition:opacity .3s;
   }
-  .case-result .label { color:#8a8aaa; font-size:13px; letter-spacing:2px; text-transform:uppercase; }
-  .case-result .value {
-    font-size:48px; font-weight:900; margin-top:8px;
-    background:linear-gradient(135deg,#ffb800,#ff6b00);
-    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-    background-clip:text; filter:drop-shadow(0 0 20px rgba(255,184,0,.6));
+  .spin-result.show { opacity:1; }
+  .spin-result .label {
+    font-size:11px; color:#555; letter-spacing:2px; text-transform:uppercase;
+    margin-bottom:8px;
   }
-  .case-result .value::after { content:" ⭐"; font-size:28px; }
-  .case-result.win .value {
-    background:linear-gradient(135deg,#00ff88,#00d4ff);
-    -webkit-background-clip:text; background-clip:text;
-    filter:drop-shadow(0 0 20px rgba(0,255,136,.6));
+  .spin-result .val {
+    font-size:44px; font-weight:200; letter-spacing:-1px;
+    color:#fff; font-variant-numeric:tabular-nums;
   }
-  .case-result.lose .value {
-    background:linear-gradient(135deg,#ff2d55,#ff6b00);
-    -webkit-background-clip:text; background-clip:text;
-  }
-  .case-open-btn-wrap { padding:0 20px 28px; }
+  .spin-result .val span { color:#555; font-size:20px; margin-left:6px; }
+
+  .spin-controls { padding:0 22px 30px; }
 
   /* ===== Тост ===== */
   #toast {
-    position:fixed; top:80px; left:50%; transform:translateX(-50%) translateY(-100px);
-    background:rgba(0,0,0,.9); color:#fff; padding:14px 24px; border-radius:14px;
-    font-weight:700; font-size:15px; z-index:100;
-    transition:transform .4s cubic-bezier(.34,1.56,.64,1);
-    border:1px solid rgba(255,255,255,.15); backdrop-filter:blur(10px);
-    pointer-events:none; white-space:nowrap;
+    position:fixed; top:60px; left:50%;
+    transform:translateX(-50%) translateY(-40px);
+    background:#141414; color:#ccc;
+    padding:12px 22px; border-radius:100px;
+    font-size:13px; z-index:100;
+    border:1px solid #222;
+    transition:transform .35s cubic-bezier(.34,1.56,.64,1), opacity .35s;
+    pointer-events:none; white-space:nowrap; opacity:0;
+    letter-spacing:.5px;
   }
-  #toast.show { transform:translateX(-50%) translateY(0); }
-  #toast.win { border-color:#00ff88; box-shadow:0 0 24px rgba(0,255,136,.5); }
-  #toast.lose { border-color:#ff2d55; box-shadow:0 0 24px rgba(255,45,85,.5); }
-
-  #flash { position:fixed; inset:0; background:#ff2d55; opacity:0; pointer-events:none; z-index:99; transition:opacity .4s; }
-  #flash.active { opacity:.35; }
+  #toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
 </style>
 </head>
 <body>
 
-<div id="stars"></div>
-
 <!-- ============ ГЛАВНОЕ МЕНЮ ============ -->
 <div class="screen" id="menu">
-  <div class="logo">💎</div>
-  <div class="title">ENDLESS BET</div>
-  <div class="subtitle">ВЫБЕРИ РЕЖИМ</div>
+  <div class="brand">Endless</div>
 
-  <div class="balance-card">
+  <div class="balance-block">
     <div class="balance-label">Баланс</div>
-    <div class="balance-value" id="menuBalance">1000</div>
+    <div class="balance-value" id="menuBalance">1000<span>⭐</span></div>
   </div>
 
   <div class="modes">
-    <button class="mode-btn crash" onclick="openMode('crash')">
-      <div class="icon">📈</div>
-      <div class="text">
-        <div class="name">КРАШ</div>
-        <div class="desc">Успей забрать до краха</div>
+    <button class="mode-btn" onclick="openMode('crash')">
+      <div>
+        <div class="label">Краш</div>
+        <div class="sub">Успей забрать</div>
       </div>
-      <div class="arrow">›</div>
+      <div class="arrow">→</div>
     </button>
-    <button class="mode-btn cases" onclick="openMode('cases')">
-      <div class="icon">🎁</div>
-      <div class="text">
-        <div class="name">КЕЙСЫ</div>
-        <div class="desc">Испытай удачу</div>
+    <button class="mode-btn" onclick="openMode('cases')">
+      <div>
+        <div class="label">Кейсы</div>
+        <div class="sub">Испытай удачу</div>
       </div>
-      <div class="arrow">›</div>
+      <div class="arrow">→</div>
     </button>
   </div>
 
-  <button class="btn-action btn-start" style="max-width:340px; margin-top:24px;" onclick="resetBalance()">Сбросить баланс</button>
+  <button class="reset-btn" onclick="resetBalance()">сбросить баланс</button>
 </div>
 
 <!-- ============ КРАШ ============ -->
 <div class="screen hidden" id="crash">
-  <div class="game-top">
+  <div class="topbar">
     <button class="back-btn" onclick="backToMenu()">←</button>
-    <div class="game-balance" id="crashBalance">1000</div>
+    <div class="topbar-balance" id="crashBalance">1000<span>⭐</span></div>
   </div>
 
-  <div class="crash-area">
-    <div class="crash-multiplier" id="multiplier">1.00x</div>
-    <div class="crash-status" id="crashStatus">Введи ставку и нажми СТАРТ</div>
+  <div class="crash-stage">
+    <div class="crash-x" id="multiplier">1.00x</div>
+    <div class="crash-caption" id="crashCaption">нажми старт</div>
   </div>
 
-  <div class="controls">
-    <div class="cashout-info" id="cashoutInfo"></div>
-    <div class="bet-input-wrap">
-      <input type="number" id="betInput" placeholder="Ставка" value="50" min="1">
-      <span class="bet-unit">⭐</span>
+  <div class="crash-controls">
+    <div class="crash-info" id="crashInfo"></div>
+    <div class="bet-row">
+      <input type="number" id="betInput" placeholder="0" value="50" min="1">
+      <span class="unit">⭐</span>
     </div>
-    <div class="quick-bets" id="quickBets">
+    <div class="quick-row" id="quickRow">
       <button class="quick-btn" onclick="setBet(10)">10</button>
       <button class="quick-btn" onclick="setBet(50)">50</button>
       <button class="quick-btn" onclick="setBet(100)">100</button>
       <button class="quick-btn" onclick="setBet(500)">500</button>
-      <button class="quick-btn" onclick="setBet('all')">MAX</button>
+      <button class="quick-btn" onclick="setBet('all')">max</button>
     </div>
-    <button class="btn-action btn-start" id="actionBtn" onclick="handleCrashAction()">СТАРТ</button>
+    <button class="main-btn" id="actionBtn" onclick="handleCrashAction()">Старт</button>
   </div>
 </div>
 
 <!-- ============ ВЫБОР КЕЙСА ============ -->
 <div class="screen hidden" id="cases">
-  <div class="game-top">
+  <div class="topbar">
     <button class="back-btn" onclick="backToMenu()">←</button>
-    <div class="game-balance" id="casesBalance">1000</div>
+    <div class="topbar-balance" id="casesBalance">1000<span>⭐</span></div>
   </div>
 
-  <div class="case-select">
-    <h2>КЕЙСЫ</h2>
-    <p>Выбери кейс — чем дороже, тем крупнее призы</p>
-
-    <button class="case-card tier10" onclick="openCase('case10')">
-      <div class="case-icon">🎁</div>
-      <div class="case-info">
-        <div class="case-name">Обычный кейс</div>
-        <div class="case-range">от 1 ⭐ до 1000 ⭐</div>
+  <div class="cases-list">
+    <button class="case-item" onclick="buyCase('case10')">
+      <div class="info">
+        <div class="name">Обычный</div>
+        <div class="range">1 — 1 000</div>
       </div>
-      <div class="case-price">10</div>
+      <div class="price">10<span>⭐</span></div>
     </button>
 
-    <button class="case-card tier50" onclick="openCase('case50')">
-      <div class="case-icon">🎁</div>
-      <div class="case-info">
-        <div class="case-name">Редкий кейс</div>
-        <div class="case-range">от 5 ⭐ до 2000 ⭐</div>
+    <button class="case-item" onclick="buyCase('case50')">
+      <div class="info">
+        <div class="name">Редкий</div>
+        <div class="range">5 — 2 000</div>
       </div>
-      <div class="case-price">50</div>
+      <div class="price">50<span>⭐</span></div>
     </button>
 
-    <button class="case-card tier100" onclick="openCase('case100')">
-      <div class="case-icon">💎</div>
-      <div class="case-info">
-        <div class="case-name">Легендарный кейс</div>
-        <div class="case-range">от 10 ⭐ до 5000 ⭐</div>
+    <button class="case-item" onclick="buyCase('case100')">
+      <div class="info">
+        <div class="name">Легендарный</div>
+        <div class="range">10 — 5 000</div>
       </div>
-      <div class="case-price">100</div>
+      <div class="price">100<span>⭐</span></div>
     </button>
   </div>
 </div>
 
-<!-- ============ ОТКРЫТИЕ КЕЙСА ============ -->
+<!-- ============ ОТКРЫТИЕ ============ -->
 <div class="screen hidden" id="caseOpen">
-  <div class="game-top">
+  <div class="topbar">
     <button class="back-btn" onclick="closeCase()">←</button>
-    <div class="game-balance" id="openBalance">1000</div>
+    <div class="topbar-balance" id="openBalance">1000<span>⭐</span></div>
   </div>
 
-  <div class="case-open-area">
-    <div class="roulette-wrap">
-      <div class="roulette-track" id="rouletteTrack"></div>
-      <div class="roulette-pointer"></div>
+  <div class="roulette-stage">
+    <div class="roulette">
+      <div class="track" id="track"></div>
+      <div class="pointer"></div>
     </div>
 
-    <div class="case-result" id="caseResult" style="opacity:0;">
-      <div class="label">Твой выигрыш</div>
-      <div class="value" id="caseResultValue">0</div>
+    <div class="spin-result" id="spinResult">
+      <div class="label">Выпало</div>
+      <div class="val" id="spinValue">0<span>⭐</span></div>
     </div>
   </div>
 
-  <div class="case-open-btn-wrap" id="caseOpenBtnWrap">
-    <button class="btn-action btn-start" id="caseOpenBtn" onclick="startCaseSpin()">ОТКРЫТЬ</button>
+  <div class="spin-controls">
+    <button class="main-btn" id="spinBtn" onclick="spin()">Открыть</button>
   </div>
 </div>
 
-<div id="flash"></div>
 <div id="toast"></div>
 
 <script>
@@ -431,38 +356,24 @@ if (tg) { tg.ready(); tg.expand(); }
 /* ==================== СОСТОЯНИЕ ==================== */
 const state = {
   balance: 1000,
-  // Краш
-  crashPhase: 'idle',   // idle | flying | crashed | cashed
+  crashPhase: 'idle',
   crashMultiplier: 1.0,
   crashAt: 2.0,
   crashStart: 0,
   crashBet: 0,
   crashRaf: null,
-  // Кейс
-  caseSpinning: false,
+  spinning: false,
   currentCase: null,
 };
 
 /* ==================== DOM ==================== */
 const $ = id => document.getElementById(id);
 
-/* ==================== ЗВЁЗДЫ ==================== */
-(function makeStars(){
-  const box = $('stars');
-  for (let i = 0; i < 80; i++) {
-    const s = document.createElement('div');
-    s.className = 'star';
-    const size = Math.random() * 2 + 1;
-    s.style.cssText = `width:${size}px;height:${size}px;left:${Math.random()*100}%;top:${Math.random()*100}%;animation-delay:${Math.random()*3}s`;
-    box.appendChild(s);
-  }
-})();
-
 /* ==================== ЗВУК ==================== */
 const AudioCtx = window.AudioContext || window.webkitAudioContext;
 let actx = null;
 function initAudio() { if (!actx) actx = new AudioCtx(); if (actx.state === 'suspended') actx.resume(); }
-function beep(freq, dur, type='sine', vol=0.08) {
+function tone(freq, dur, type='sine', vol=0.06) {
   if (!actx) return;
   const o = actx.createOscillator(), g = actx.createGain();
   o.type = type; o.frequency.value = freq;
@@ -471,46 +382,31 @@ function beep(freq, dur, type='sine', vol=0.08) {
   o.connect(g); g.connect(actx.destination);
   o.start(); o.stop(actx.currentTime + dur);
 }
-function sfxStart() { initAudio(); beep(220,0.1,'sawtooth'); setTimeout(()=>beep(330,0.1,'sawtooth'),80); }
-function sfxTick() { if (actx) beep(600, 0.02, 'square', 0.02); }
-function sfxCrash() {
-  if (!actx) return;
-  const o = actx.createOscillator(), g = actx.createGain();
-  o.type='sawtooth'; o.frequency.setValueAtTime(400, actx.currentTime);
-  o.frequency.exponentialRampToValueAtTime(40, actx.currentTime + 0.6);
-  g.gain.setValueAtTime(0.2, actx.currentTime);
-  g.gain.exponentialRampToValueAtTime(0.001, actx.currentTime + 0.6);
-  o.connect(g); g.connect(actx.destination);
-  o.start(); o.stop(actx.currentTime + 0.6);
-}
-function sfxCashout() { initAudio(); beep(660,0.1); setTimeout(()=>beep(880,0.1),80); setTimeout(()=>beep(1320,0.15),160); }
-function sfxWin() { initAudio(); [523,659,784,1047].forEach((f,i)=>setTimeout(()=>beep(f,0.15,'triangle',0.1),i*90)); }
-function sfxLose() { initAudio(); beep(220,0.3,'sawtooth',0.08); setTimeout(()=>beep(160,0.4,'sawtooth',0.08),150); }
 
 /* ==================== HAPTIC ==================== */
 function haptic(type) {
   if (!tg?.HapticFeedback) return;
-  if (type === 'light') tg.HapticFeedback.impactOccurred('light');
-  if (type === 'medium') tg.HapticFeedback.impactOccurred('medium');
-  if (type === 'heavy') tg.HapticFeedback.impactOccurred('heavy');
+  if (type === 'light')   tg.HapticFeedback.impactOccurred('light');
+  if (type === 'medium')  tg.HapticFeedback.impactOccurred('medium');
   if (type === 'success') tg.HapticFeedback.notificationOccurred('success');
-  if (type === 'error') tg.HapticFeedback.notificationOccurred('error');
+  if (type === 'error')   tg.HapticFeedback.notificationOccurred('error');
 }
 
 /* ==================== UI ==================== */
+function fmt(n) { return Math.floor(n).toLocaleString('ru-RU'); }
 function updateBalance() {
-  const b = Math.floor(state.balance);
-  $('menuBalance').textContent = b;
-  $('crashBalance').textContent = b;
-  $('casesBalance').textContent = b;
-  $('openBalance').textContent = b;
+  const b = fmt(state.balance);
+  $('menuBalance').innerHTML = b + '<span>⭐</span>';
+  $('crashBalance').innerHTML = b + '<span>⭐</span>';
+  $('casesBalance').innerHTML = b + '<span>⭐</span>';
+  $('openBalance').innerHTML = b + '<span>⭐</span>';
 }
-function toast(msg, kind='') {
+function toast(msg) {
   const t = $('toast');
   t.textContent = msg;
-  t.className = 'show ' + kind;
+  t.className = 'show';
   clearTimeout(t._t);
-  t._t = setTimeout(() => t.className = kind, 2200);
+  t._t = setTimeout(() => t.className = '', 1800);
 }
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
@@ -523,7 +419,7 @@ function openMode(mode) {
   if (mode === 'crash') {
     showScreen('crash');
     $('betInput').value = Math.min(50, Math.max(1, Math.floor(state.balance)));
-  } else if (mode === 'cases') {
+  } else {
     showScreen('cases');
   }
   updateBalance();
@@ -538,7 +434,7 @@ function backToMenu() {
 }
 function closeCase() {
   haptic('light');
-  if (state.caseSpinning) return;
+  if (state.spinning) return;
   showScreen('cases');
   updateBalance();
 }
@@ -546,7 +442,7 @@ function resetBalance() {
   haptic('light');
   state.balance = 1000;
   updateBalance();
-  toast('Баланс восстановлен', 'win');
+  toast('Баланс восстановлен');
 }
 
 /* ==================== КРАШ ==================== */
@@ -559,8 +455,8 @@ function generateCrashPoint() {
 
 function startCrashRound() {
   const bet = Math.floor(Number($('betInput').value) || 0);
-  if (bet <= 0) return toast('Введи ставку', 'lose');
-  if (bet > state.balance) return toast('Недостаточно звёзд', 'lose');
+  if (bet <= 0) return toast('Введи ставку');
+  if (bet > state.balance) return toast('Недостаточно звёзд');
 
   state.crashBet = bet;
   state.balance -= bet;
@@ -571,16 +467,17 @@ function startCrashRound() {
   state.crashAt = generateCrashPoint();
   state.crashStart = performance.now();
 
-  $('quickBets').style.display = 'none';
+  $('quickRow').style.display = 'none';
   $('betInput').parentElement.style.display = 'none';
-  $('actionBtn').textContent = 'ЗАБРАТЬ';
-  $('actionBtn').className = 'btn-action btn-cashout';
+  $('actionBtn').textContent = 'Забрать';
+  $('actionBtn').className = 'main-btn cashout';
   $('actionBtn').disabled = false;
-  $('crashStatus').textContent = `Ставка: ${bet} ⭐`;
-  $('multiplier').className = 'crash-multiplier';
-  $('multiplier').style.color = '#00ff88';
+  $('crashCaption').textContent = `ставка ${fmt(bet)} ⭐`;
+  $('multiplier').className = 'crash-x';
+  $('multiplier').style.color = '#fff';
 
-  sfxStart(); haptic('medium');
+  initAudio(); tone(220, 0.08, 'sine');
+  haptic('medium');
   state.crashRaf = requestAnimationFrame(crashLoop);
 }
 
@@ -595,15 +492,17 @@ function crashLoop(now) {
     return crashBoom();
   }
 
-  // UI
   $('multiplier').textContent = m.toFixed(2) + 'x';
-  const hue = Math.max(0, 140 - (m - 1) * 20);
-  $('multiplier').style.color = `hsl(${hue}, 100%, 60%)`;
-  const scale = Math.min(1 + (m - 1) * 0.05, 1.5);
-  $('multiplier').style.transform = `scale(${scale})`;
+
+  // Плавное обесцвечивание: от белого к красному через серый
+  const t = Math.min(m / 10, 1);
+  const r = Math.floor(255 * (0.5 + t * 0.5));
+  const gb = Math.floor(255 * (1 - t * 0.85));
+  $('multiplier').style.color = `rgb(${r},${gb},${gb})`;
 
   const potential = Math.floor(state.crashBet * m);
-  $('cashoutInfo').textContent = `Забрать: ${potential} ⭐ (+${potential - state.crashBet})`;
+  $('crashInfo').textContent = `${fmt(potential)} ⭐`;
+  $('crashInfo').className = 'crash-info active';
 
   state.crashRaf = requestAnimationFrame(crashLoop);
 }
@@ -611,52 +510,51 @@ function crashLoop(now) {
 function crashBoom() {
   state.crashPhase = 'crashed';
   cancelAnimationFrame(state.crashRaf);
-  sfxCrash(); haptic('error');
+  tone(200, 0.5, 'sawtooth', 0.1);
+  haptic('error');
 
   const el = $('multiplier');
-  el.className = 'crash-multiplier crashed';
+  el.className = 'crash-x crashed';
   el.textContent = state.crashAt.toFixed(2) + 'x';
-  el.style.transform = 'scale(1)';
-  $('crashStatus').textContent = `💥 КРАХ на ${state.crashAt.toFixed(2)}x — ставка сгорела`;
-  $('cashoutInfo').textContent = '';
+  $('crashCaption').textContent = `крах · ставка сгорела`;
+  $('crashInfo').textContent = '';
+  $('crashInfo').className = 'crash-info';
 
-  $('flash').classList.add('active');
-  setTimeout(() => $('flash').classList.remove('active'), 150);
-
-  setTimeout(() => endCrashRound(), 1800);
+  setTimeout(() => endCrashRound(), 1600);
 }
 
 function cashoutCrash() {
   if (state.crashPhase !== 'flying') return;
   state.crashPhase = 'cashed';
   cancelAnimationFrame(state.crashRaf);
-  sfxCashout(); haptic('success');
+  tone(660, 0.1); setTimeout(()=>tone(880, 0.15), 80);
+  haptic('success');
 
   const win = Math.floor(state.crashBet * state.crashMultiplier);
-  const profit = win - state.crashBet;
   state.balance += win;
   updateBalance();
 
-  $('multiplier').style.color = '#00ff88';
-  $('crashStatus').textContent = `✅ Забрано ${win} ⭐ (+${profit})`;
-  $('cashoutInfo').textContent = '';
-  toast(`+${win} ⭐`, 'win');
+  $('multiplier').style.color = '#5cd65c';
+  $('crashCaption').textContent = `забрано · +${fmt(win)} ⭐`;
+  $('crashInfo').textContent = '';
+  $('crashInfo').className = 'crash-info';
+  toast(`+${fmt(win)} ⭐`);
 
-  setTimeout(() => endCrashRound(), 1400);
+  setTimeout(() => endCrashRound(), 1200);
 }
 
 function endCrashRound() {
   state.crashPhase = 'idle';
   $('multiplier').textContent = '1.00x';
-  $('multiplier').className = 'crash-multiplier';
-  $('multiplier').style.color = '#00ff88';
-  $('multiplier').style.transform = 'scale(1)';
-  $('crashStatus').textContent = 'Введи ставку и нажми СТАРТ';
-  $('quickBets').style.display = 'flex';
+  $('multiplier').className = 'crash-x';
+  $('multiplier').style.color = '#fff';
+  $('crashCaption').textContent = 'нажми старт';
+  $('quickRow').style.display = 'flex';
   $('betInput').parentElement.style.display = 'flex';
-  $('actionBtn').textContent = 'СТАРТ';
-  $('actionBtn').className = 'btn-action btn-start';
-  $('cashoutInfo').textContent = '';
+  $('actionBtn').textContent = 'Старт';
+  $('actionBtn').className = 'main-btn';
+  $('crashInfo').textContent = '';
+  $('crashInfo').className = 'crash-info';
 }
 
 function handleCrashAction() {
@@ -671,29 +569,24 @@ function setBet(v) {
 }
 
 /* ==================== КЕЙСЫ ==================== */
-// Каждый кейс: массив слотов с prize и weight (вес = шанс)
-// Чем выше вес — тем чаще выпадает
 const CASES = {
   case10: {
-    price: 10,
-    min: 1, max: 1000,
+    price: 10, min: 1, max: 1000,
     prizes: [
-      // Приз, вес
-      { prize: 1,    weight: 3500 },  // 35%
-      { prize: 2,    weight: 2500 },  // 25%
-      { prize: 5,    weight: 1500 },  // 15%
-      { prize: 10,   weight: 1000 },  // 10%
-      { prize: 25,   weight: 700 },   // 7%
-      { prize: 50,   weight: 500 },   // 5%
-      { prize: 100,  weight: 200 },   // 2%
-      { prize: 250,  weight: 70 },    // 0.7%
-      { prize: 500,  weight: 25 },    // 0.25%
-      { prize: 1000, weight: 5 },     // 0.05%
+      { prize: 1,    weight: 3500 },
+      { prize: 2,    weight: 2500 },
+      { prize: 5,    weight: 1500 },
+      { prize: 10,   weight: 1000 },
+      { prize: 25,   weight: 700 },
+      { prize: 50,   weight: 500 },
+      { prize: 100,  weight: 200 },
+      { prize: 250,  weight: 70 },
+      { prize: 500,  weight: 25 },
+      { prize: 1000, weight: 5 },
     ]
   },
   case50: {
-    price: 50,
-    min: 5, max: 2000,
+    price: 50, min: 5, max: 2000,
     prizes: [
       { prize: 5,    weight: 3500 },
       { prize: 15,   weight: 2500 },
@@ -708,8 +601,7 @@ const CASES = {
     ]
   },
   case100: {
-    price: 100,
-    min: 10, max: 5000,
+    price: 100, min: 10, max: 5000,
     prizes: [
       { prize: 10,   weight: 3500 },
       { prize: 30,   weight: 2500 },
@@ -736,163 +628,163 @@ function pickPrize(caseKey) {
   return c.prizes[0].prize;
 }
 
-function prizeTier(prize, caseKey) {
-  const c = CASES[caseKey];
+function tierOf(prize, c) {
   const ratio = (prize - c.min) / (c.max - c.min);
-  if (ratio >= 0.85) return 'legendary';
+  if (ratio >= 0.85) return 'legend';
   if (ratio >= 0.6)  return 'epic';
   if (ratio >= 0.35) return 'rare';
-  if (ratio >= 0.15) return 'uncommon';
-  return 'common';
+  return '';
 }
 
-function makeSlot(prize, caseKey) {
+function makeSlot(prize, c) {
   const el = document.createElement('div');
-  const tier = prizeTier(prize, caseKey);
-  el.className = 'slot ' + tier;
-  el.innerHTML = `<div class="slot-stars">${prize} ⭐</div><div class="slot-unit">${tier === 'legendary' ? 'ЛЕГЕНДА' : tier === 'epic' ? 'ЭПИК' : tier === 'rare' ? 'РЕДКО' : tier === 'uncommon' ? 'НЕОБЫЧ.' : 'ОБЫЧН.'}</div>`;
+  const tier = tierOf(prize, c);
+  el.className = 'slot' + (tier ? ' ' + tier : '');
+  el.textContent = prize;
   return el;
 }
 
-function openCase(caseKey) {
+/* ============================================================
+   ВАЖНО: синхронизация визуала и результата
+   ————————————————————————————————————————————————
+   1. Сначала честно выбираем приз через pickPrize().
+   2. Строим трек из N слотов так, чтобы в позиции STOP_INDEX
+      лежал именно этот приз. Остальные слоты — случайные.
+   3. Останавливаем ленту так, чтобы центр слота STOP_INDEX
+      совпал с указателем. Ширина слота берётся из реального
+      DOM (getBoundingClientRect), а не из магических чисел.
+   ============================================================ */
+const TRACK_SIZE  = 60;   // всего слотов в ленте
+const STOP_INDEX  = 50;   // на каком слоте остановимся (не последний — для плавности)
+
+function buyCase(caseKey) {
   initAudio(); haptic('light');
   const c = CASES[caseKey];
-  if (state.balance < c.price) return toast('Недостаточно звёзд', 'lose');
+  if (state.balance < c.price) return toast('Недостаточно звёзд');
 
   state.currentCase = caseKey;
   state.balance -= c.price;
   updateBalance();
 
-  // Очищаем трек
-  const track = $('rouletteTrack');
-  track.innerHTML = '';
-  track.style.transition = 'none';
-  track.style.transform = 'translateX(0)';
+  $('spinResult').className = 'spin-result';
+  $('spinBtn').textContent = 'Открыть';
+  $('spinBtn').disabled = false;
+  $('spinBtn').onclick = spin;
 
-  // Результат (скрыт)
-  $('caseResult').style.opacity = '0';
-  $('caseOpenBtn').disabled = false;
-  $('caseOpenBtn').textContent = 'ОТКРЫТЬ';
-
-  // Заполняем трек случайными слотами для визуала
-  // Мы генерируем 50 слотов, а реальный приз будет выбран на момент прокрутки
-  for (let i = 0; i < 60; i++) {
-    const rnd = c.prizes[Math.floor(Math.random() * c.prizes.length)].prize;
-    track.appendChild(makeSlot(rnd, caseKey));
-  }
+  // Пустой трек — заполним при спине
+  $('track').innerHTML = '';
+  $('track').style.transition = 'none';
+  $('track').style.transform = 'translateX(0)';
 
   showScreen('caseOpen');
-  toast(`Кейс куплен за ${c.price} ⭐`, '');
+  toast(`Кейс куплен · −${c.price} ⭐`);
 }
 
-function startCaseSpin() {
-  if (state.caseSpinning) return;
+function spin() {
+  if (state.spinning) return;
   initAudio(); haptic('medium');
-  state.caseSpinning = true;
-  $('caseOpenBtn').disabled = true;
+  state.spinning = true;
+  $('spinBtn').disabled = true;
+  $('spinBtn').textContent = '...';
 
   const caseKey = state.currentCase;
   const c = CASES[caseKey];
-  const track = $('rouletteTrack');
+  const track = $('track');
 
-  // Реальный выигрыш
+  /* --- 1. ЧЕСТНО ВЫБИРАЕМ ПРИЗ --- */
   const winPrize = pickPrize(caseKey);
 
-  // Строим новый трек: 60 слотов, и в позиции, например, 52-й — выигрыш
+  /* --- 2. СТРОИМ ТРЕК --- */
   track.innerHTML = '';
-  const WIN_INDEX = 52;
-  for (let i = 0; i < 60; i++) {
+  for (let i = 0; i < TRACK_SIZE; i++) {
     let prize;
-    if (i === WIN_INDEX) {
-      prize = winPrize;
+    if (i === STOP_INDEX) {
+      prize = winPrize;                           // сюда встанет указатель
+    } else if (Math.abs(i - STOP_INDEX) === 1) {
+      // Соседи — соседний по редкости приз (драма «чуть не докрутилось»)
+      const idx = c.prizes.findIndex(p => p.prize === winPrize);
+      const neighborIdx = Math.max(0, Math.min(c.prizes.length - 1,
+        idx + (Math.random() < 0.5 ? 1 : -1)));
+      prize = c.prizes[neighborIdx].prize;
     } else {
-      // Соседние слоты вокруг выигрыша делаем "почти как выигрыш", чтобы драма была
-      if (Math.abs(i - WIN_INDEX) === 1) {
-        // Рядом — другой приз, но иногда "дорогой", чтобы обмануть ожидания
-        prize = c.prizes[Math.min(c.prizes.length - 1, c.prizes.findIndex(p => p.prize === winPrize) + 1)]?.prize 
-                || c.prizes[0].prize;
-      } else {
-        prize = c.prizes[Math.floor(Math.random() * c.prizes.length)].prize;
-      }
+      prize = c.prizes[Math.floor(Math.random() * c.prizes.length)].prize;
     }
-    track.appendChild(makeSlot(prize, caseKey));
+    track.appendChild(makeSlot(prize, c));
   }
 
-  // Вычисляем позицию для остановки
-  const wrapW = track.parentElement.clientWidth;
-  const slotW = 108; // 100 + 4*2 margin
-  // Слот WIN_INDEX должен оказаться по центру
-  const targetOffset = -(WIN_INDEX * slotW + slotW / 2 - wrapW / 2);
-  // Небольшой случайный разброс, чтобы не всегда точно по центру
-  const jitter = (Math.random() - 0.5) * (slotW * 0.5);
-  const finalOffset = targetOffset + jitter;
-
-  // Анимация
-  track.style.transition = 'none';
-  track.style.transform = 'translateX(0)';
-  // Форсируем reflow
+  /* --- 3. ВЫЧИСЛЯЕМ ТОЧНУЮ ПОЗИЦИЮ ОСТАНОВКИ --- */
+  // Форсируем reflow, чтобы слоты получили размеры
   void track.offsetWidth;
 
-  const duration = 4500 + Math.random() * 1500;
-  track.style.transition = `transform ${duration}ms cubic-bezier(0.15, 0.8, 0.2, 1)`;
-  track.style.transform = `translateX(${finalOffset}px)`;
+  const wrap = track.parentElement;
+  const wrapW = wrap.clientWidth;
 
-  // Тики во время прокрутки
-  let ticks = 0;
-  const tickInterval = setInterval(() => {
-    ticks++;
-    if (ticks % 2 === 0) sfxTick();
-  }, 100);
-  setTimeout(() => clearInterval(tickInterval), duration - 200);
+  // Реальные размеры и позиции слотов
+  const slots = track.children;
+  const targetSlot = slots[STOP_INDEX];
+  const trackRect = track.getBoundingClientRect();
+  const slotRect = targetSlot.getBoundingClientRect();
 
-  // Финал
+  // Центр слота относительно начала трека
+  const slotCenter = (slotRect.left - trackRect.left) + slotRect.width / 2;
+
+  // Нам нужно, чтобы slotCenter оказался в wrapW/2
+  // Текущий transform = 0, значит смещение = wrapW/2 - slotCenter
+  const targetX = wrapW / 2 - slotCenter;
+
+  // Сброс перед анимацией
+  track.style.transition = 'none';
+  track.style.transform = 'translateX(0)';
+  void track.offsetWidth;
+
+  /* --- 4. АНИМАЦИЯ --- */
+  const duration = 5000;
+  track.style.transition = `transform ${duration}ms cubic-bezier(0.12, 0.85, 0.18, 1)`;
+  track.style.transform = `translateX(${targetX}px)`;
+
+  // Тикающий звук замедляется к концу
+  let elapsed = 0;
+  const tickSchedule = [];
+  while (elapsed < duration - 200) {
+    const interval = 40 + elapsed * 0.08; // ускоряемся-замедляемся
+    elapsed += interval;
+    tickSchedule.push(elapsed);
+  }
+  tickSchedule.forEach(t => {
+    setTimeout(() => tone(1200, 0.015, 'square', 0.02), t);
+  });
+
+  /* --- 5. ФИНАЛ --- */
   setTimeout(() => {
-    state.caseSpinning = false;
-    finishCase(winPrize, caseKey);
-  }, duration + 100);
+    state.spinning = false;
+    finishSpin(winPrize, c);
+  }, duration + 80);
 }
 
-function finishCase(prize, caseKey) {
+function finishSpin(prize, c) {
   state.balance += prize;
   updateBalance();
 
-  const res = $('caseResult');
-  res.style.opacity = '1';
+  $('spinValue').innerHTML = fmt(prize) + '<span>⭐</span>';
+  $('spinResult').className = 'spin-result show';
 
-  const c = CASES[caseKey];
   const isProfit = prize >= c.price;
-  const isJackpot = prizeTier(prize, caseKey) === 'legendary' || prizeTier(prize, caseKey) === 'epic';
-
-  $('caseResultValue').textContent = prize;
-
-  if (isJackpot) {
-    res.className = 'case-result win';
-    sfxWin(); haptic('success');
-    toast(`🎉 ДЖЕКПОТ! +${prize} ⭐`, 'win');
-    // Вспышка золотым
-    $('flash').style.background = '#ffb800';
-    $('flash').classList.add('active');
-    setTimeout(() => { $('flash').classList.remove('active'); $('flash').style.background = '#ff2d55'; }, 200);
-  } else if (isProfit) {
-    res.className = 'case-result win';
-    sfxWin(); haptic('success');
-    toast(`+${prize} ⭐`, 'win');
+  if (isProfit) {
+    haptic('success');
+    tone(660, 0.1); setTimeout(()=>tone(880, 0.12), 80); setTimeout(()=>tone(1320, 0.15), 160);
+    toast(`+${fmt(prize)} ⭐`);
   } else {
-    res.className = 'case-result lose';
-    sfxLose(); haptic('error');
-    toast(`Выпало ${prize} ⭐`, 'lose');
+    haptic('error');
+    tone(300, 0.15, 'sine', 0.05);
+    toast(`выпало ${fmt(prize)} ⭐`);
   }
 
-  $('caseOpenBtn').disabled = false;
-  $('caseOpenBtn').textContent = 'ЕЩЁ РАЗ';
-  $('caseOpenBtn').onclick = () => {
-    if (state.balance < c.price) {
-      toast('Недостаточно звёзд', 'lose');
-      return;
-    }
-    openCase(caseKey);
-    // Автостарт через мгновение
-    setTimeout(() => startCaseSpin(), 300);
+  $('spinBtn').disabled = false;
+  $('spinBtn').textContent = 'Ещё раз';
+  $('spinBtn').onclick = () => {
+    if (state.balance < c.price) return toast('Недостаточно звёзд');
+    buyCase(state.currentCase);
+    setTimeout(spin, 250);
   };
 }
 
