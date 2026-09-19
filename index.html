@@ -540,17 +540,12 @@
       <button class="promo-btn" onclick="applyPromo()">ОК</button>
     </div>
 
-    <div class="section-title">Действия</div>
+    <div class="section-title">Вывод</div>
     <div class="pay-row">
-      <button class="pay-btn" onclick="openWithdrawInBot()">
+      <button class="pay-btn" onclick="withdrawOpen()">
         <span class="pay-icon"><span class="ico" data-icon="star"></span></span>
         <span class="pay-label">Вывод</span>
         <span class="pay-sub">от 100 ★</span>
-      </button>
-      <button class="pay-btn" onclick="openTopupInBot()">
-        <span class="pay-icon"><span class="ico" data-icon="star"></span></span>
-        <span class="pay-label">Пополнить</span>
-        <span class="pay-sub">в боте</span>
       </button>
     </div>
   </div>
@@ -562,6 +557,24 @@
 /* ==================== TELEGRAM ==================== */
 const tg = window.Telegram?.WebApp;
 if (tg) { tg.ready(); tg.expand(); }
+
+/* ==================== API ==================== */
+const API_URL = 'https://endlessbet.i-makarov2012.workers.dev';
+
+async function apiCall(path, body) {
+  const r = await fetch(API_URL + path, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  const data = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(data.error || 'API error');
+  return data;
+}
+
+function getUserId() {
+  return tg?.initDataUnsafe?.user?.id || null;
+}
 
 /* ==================== SVG ИКОНКИ ==================== */
 const ICONS = {
@@ -589,32 +602,9 @@ function renderIcons(root = document) {
 }
 
 /* ==================== СОСТОЯНИЕ ==================== */
-// Важно: локально храним только визуальные цифры. Реальный баланс — на бэкенде.
-// Для демо — берём из localStorage, чтобы при перезагрузке не сбрасывалось.
-const STORAGE_KEY = 'endlessbet_state_v1';
-
-function loadState() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return null;
-    return JSON.parse(raw);
-  } catch { return null; }
-}
-function saveState() {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({
-      balance: state.balance,
-      withdrawable: state.withdrawable,
-      stats: state.stats,
-      usedPromos: state.usedPromos,
-    }));
-  } catch {}
-}
-
-const saved = loadState() || {};
 const state = {
-  balance: saved.balance ?? 0,
-  withdrawable: saved.withdrawable ?? 0,
+  balance: 0,
+  withdrawable: 0,
   crashPhase: 'idle',
   crashMultiplier: 1.0,
   crashAt: 2.0,
@@ -623,9 +613,7 @@ const state = {
   crashRaf: null,
   spinning: false,
   currentCase: null,
-  stats: saved.stats ?? { totalBets:0, wins:0, maxCrash:0, profit:0 },
-  promos: { 'ENDLESS': 500, 'STARS': 1000, 'WELCOME': 250 },
-  usedPromos: saved.usedPromos ?? [],
+  stats: { totalBets:0, wins:0, maxCrash:0, profit:0 },
 };
 
 const $ = id => document.getElementById(id);
@@ -665,45 +653,12 @@ function haptic(type) {
   if (type === 'error')   tg.HapticFeedback.notificationOccurred('error');
 }
 
-/* ==================== ДВЕ ВАЛЮТЫ ==================== */
-// Списываем: сначала с withdrawable (если есть), потом с balance
-// (то есть при трате «доступные к выводу» уходят первыми)
-function spend(amount) {
-  if (state.balance < amount) return false;
-  let left = amount;
-  if (state.withdrawable > 0) {
-    const fromWd = Math.min(state.withdrawable, left);
-    state.withdrawable -= fromWd;
-    left -= fromWd;
-  }
-  state.balance -= left;      // снимаем остаток с обычных
-  // итог: с общей суммы снялось ровно amount
-  saveState();
-  return true;
-}
-
-// Начисление выигрыша: +X к обычным, +X к withdrawable
-function creditWin(amount) {
-  state.balance += amount;
-  state.withdrawable += amount;
-  saveState();
-}
-
-// Начисление пополнения/промо: только к обычным (не к выводу)
-function creditDeposit(amount) {
-  state.balance += amount;
-  saveState();
-}
-
 /* ==================== UI ==================== */
 function fmt(n) { return Math.floor(n).toLocaleString('ru-RU'); }
 function starIco() { return `<span class="ico" data-icon="star">${ICONS.star}</span>`; }
 
 function updateBalance() {
-  // На главной: сумма + звезда справа
-  $('menuBalance').innerHTML =
-    `<span class="num">${fmt(state.balance)}</span>${starIco()}`;
-
+  $('menuBalance').innerHTML = `<span class="num">${fmt(state.balance)}</span>${starIco()}`;
   const h = starIco() + '<span class="num">' + fmt(state.balance) + '</span>';
   $('crashBalance').innerHTML = h;
   $('casesBalance').innerHTML = h;
@@ -721,7 +676,6 @@ function updateStatsUI() {
   $('statWithdrawable').innerHTML = fmt(state.withdrawable) + starIco();
 }
 
-// Тост: просто "+X⭐️" или "-X⭐️"
 function toastDelta(amount) {
   const t = $('toast');
   const sign = amount >= 0 ? '+' : '';
@@ -741,6 +695,41 @@ function toastText(msg) {
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
   $(id).classList.remove('hidden');
+}
+
+/* ==================== API-ОБЁРТКИ ==================== */
+async function syncBalance() {
+  const uid = getUserId();
+  if (!uid) return;
+  try {
+    const d = await apiCall('/api/balance', { user_id: uid });
+    state.balance = d.balance || 0;
+    state.withdrawable = d.withdrawable || 0;
+    updateBalance(); updateStatsUI();
+  } catch (e) { console.warn('syncBalance:', e); }
+}
+
+async function spendAPI(amount) {
+  const uid = getUserId();
+  if (!uid) { toastText('Открой из Telegram'); return false; }
+  try {
+    const d = await apiCall('/api/balance/change', { user_id: uid, amount: -amount });
+    state.balance = d.balance;
+    state.withdrawable = d.withdrawable;
+    updateBalance(); updateStatsUI();
+    return true;
+  } catch (e) { toastText(e.message); return false; }
+}
+
+async function winAPI(amount) {
+  const uid = getUserId();
+  if (!uid) return;
+  try {
+    const d = await apiCall('/api/balance/win', { user_id: uid, amount });
+    state.balance = d.balance;
+    state.withdrawable = d.withdrawable;
+    updateBalance(); updateStatsUI();
+  } catch (e) { console.warn(e); }
 }
 
 /* ==================== НАВИГАЦИЯ ==================== */
@@ -775,16 +764,12 @@ function openProfile() {
   if (user) {
     $('userName').textContent = [user.first_name, user.last_name].filter(Boolean).join(' ') || 'Без имени';
     $('userUsername').textContent = user.username ? '@' + user.username : '—';
-    if (user.photo_url) {
-      av.innerHTML = `<img src="${user.photo_url}" alt="">`;
-    } else {
-      av.innerHTML = `<span class="ico">${ICONS.user}</span>`;
-    }
+    if (user.photo_url) av.innerHTML = `<img src="${user.photo_url}" alt="">`;
+    else av.innerHTML = `<span class="ico">${ICONS.user}</span>`;
   } else {
     av.innerHTML = `<span class="ico">${ICONS.user}</span>`;
   }
-  updateStatsUI();
-  updateBalance();
+  updateStatsUI(); updateBalance();
   showScreen('profile');
 }
 
@@ -796,16 +781,16 @@ function generateCrashPoint() {
   return Math.max(1.01, Math.floor(raw * 100) / 100);
 }
 
-function startCrashRound() {
+async function startCrashRound() {
   const bet = Math.floor(Number($('betInput').value) || 0);
   if (bet <= 0) return toastText('Введи ставку');
   if (bet > state.balance) return toastText('Недостаточно звёзд');
 
-  spend(bet);
-  state.stats.totalBets++;
-  updateBalance();
-  toastDelta(-bet);
+  const ok = await spendAPI(bet);
+  if (!ok) return;
 
+  toastDelta(-bet);
+  state.stats.totalBets++;
   state.crashBet = bet;
   state.crashPhase = 'flying';
   state.crashMultiplier = 1.0;
@@ -877,7 +862,7 @@ function crashBoom() {
   setTimeout(() => endCrashRound(), 2400);
 }
 
-function cashoutCrash() {
+async function cashoutCrash() {
   if (state.crashPhase !== 'flying') return;
   state.crashPhase = 'cashed';
   cancelAnimationFrame(state.crashRaf);
@@ -887,10 +872,10 @@ function cashoutCrash() {
   const win = Math.floor(state.crashBet * state.crashMultiplier);
   const profit = win - state.crashBet;
 
-  creditWin(win);
+  await winAPI(win);
   state.stats.wins++;
   state.stats.profit += profit;
-  updateBalance();
+  updateStatsUI();
 
   $('multiplier').style.color = '#5cd65c';
   $('crashCaption').textContent = `забрано · +${fmt(win)}`;
@@ -994,16 +979,16 @@ function makeSlot(prize, c) {
 const TRACK_SIZE = 60;
 const STOP_INDEX = 50;
 
-function buyCase(caseKey) {
+async function buyCase(caseKey) {
   initAudio(); haptic('light');
   const c = CASES[caseKey];
   if (state.balance < c.price) return toastText('Недостаточно звёзд');
 
-  state.currentCase = caseKey;
-  spend(c.price);
-  updateBalance();
+  const ok = await spendAPI(c.price);
+  if (!ok) return;
   toastDelta(-c.price);
 
+  state.currentCase = caseKey;
   $('spinResult').className = 'spin-result';
   $('spinBtn').textContent = 'Открыть';
   $('spinBtn').disabled = false;
@@ -1031,9 +1016,8 @@ function spin() {
   track.innerHTML = '';
   for (let i = 0; i < TRACK_SIZE; i++) {
     let prize;
-    if (i === STOP_INDEX) {
-      prize = winPrize;
-    } else if (Math.abs(i - STOP_INDEX) === 1) {
+    if (i === STOP_INDEX) prize = winPrize;
+    else if (Math.abs(i - STOP_INDEX) === 1) {
       const idx = c.prizes.findIndex(p => p.prize === winPrize);
       const neighborIdx = Math.max(0, Math.min(c.prizes.length - 1,
         idx + (Math.random() < 0.5 ? 1 : -1)));
@@ -1073,15 +1057,14 @@ function spin() {
     setTimeout(() => tone(1200, 0.015, 'square', 0.02), t);
   });
 
-  setTimeout(() => {
+  setTimeout(async () => {
     state.spinning = false;
-    finishSpin(winPrize, c);
+    await finishSpin(winPrize, c);
   }, duration + 80);
 }
 
-function finishSpin(prize, c) {
-  // В кейсах выигрыш = доход, добавляем в withdrawable
-  creditWin(prize);
+async function finishSpin(prize, c) {
+  await winAPI(prize);
   updateBalance();
 
   $('spinValue').innerHTML = fmt(prize) + ' ' + starIco();
@@ -1100,42 +1083,52 @@ function finishSpin(prize, c) {
 }
 
 /* ==================== ПРОМОКОД ==================== */
-function applyPromo() {
+async function applyPromo() {
   haptic('light');
   const code = $('promoInput').value.trim().toUpperCase();
   if (!code) return toastText('Введи код');
-  if (state.usedPromos.includes(code)) return toastText('Код уже использован');
-  if (!state.promos[code]) return toastText('Неверный код');
 
-  const amount = state.promos[code];
-  creditDeposit(amount);
-  state.usedPromos.push(code);
-  updateBalance(); updateStatsUI();
-  $('promoInput').value = '';
-  haptic('success');
-  toastDelta(amount);
+  const uid = getUserId();
+  if (!uid) return toastText('Открой из Telegram');
+
+  try {
+    const d = await apiCall('/api/promo/activate', { user_id: uid, code });
+    state.balance = d.balance;
+    state.withdrawable = d.withdrawable;
+    updateBalance(); updateStatsUI();
+    $('promoInput').value = '';
+    haptic('success');
+    toastDelta(d.stars);
+  } catch (e) {
+    toastText(e.message);
+  }
 }
 
-/* ==================== ПЕРЕХОД В БОТ ==================== */
-function openWithdrawInBot() {
+/* ==================== ВЫВОД ==================== */
+async function withdrawOpen() {
   haptic('light');
-  // Открываем чат с ботом
-  if (tg) tg.openTelegramLink('https://t.me/test01_mybot');
-  else window.open('https://t.me/test01_mybot', '_blank');
-  // Сообщаем боту, что юзер нажал "Вывод" — можно через startapp
-  // либо пользователь сам напишет "Вывод" в боте (кнопка меню)
-}
+  const amountStr = prompt('Сколько вывести? (мин. 100 ★)');
+  if (!amountStr) return;
+  const amount = parseInt(amountStr, 10);
+  if (!amount || amount < 100) return toastText('Минимум 100 ★');
 
-function openTopupInBot() {
-  haptic('light');
-  if (tg) tg.openTelegramLink('https://t.me/test01_mybot');
-  else window.open('https://t.me/test01_mybot', '_blank');
+  const uid = getUserId();
+  if (!uid) return toastText('Открой из Telegram');
+
+  try {
+    await apiCall('/api/withdraw', { user_id: uid, amount });
+    toastText('Заявка отправлена');
+    await syncBalance();
+  } catch (e) {
+    toastText(e.message);
+  }
 }
 
 /* ==================== INIT ==================== */
 renderIcons();
 updateBalance();
 updateStatsUI();
+if (getUserId()) syncBalance();
 </script>
 </body>
 </html>
