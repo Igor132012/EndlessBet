@@ -40,8 +40,8 @@ export default {
       }
 
       // POST /api/balance/change { user_id, amount }
-      // amount > 0 — пополнение к обычному балансу
       // amount < 0 — списание (сначала withdrawable, потом balance)
+      // amount > 0 — пополнение к balance
       if (url.pathname === '/api/balance/change' && request.method === 'POST') {
         const { user_id, amount } = await request.json();
         if (!user_id || typeof amount !== 'number') {
@@ -146,7 +146,6 @@ export default {
         ).bind(user_id, upCode).first();
         if (used) return Response.json({ error: 'Вы уже использовали этот промокод' }, { status: 400, headers: cors });
 
-        // Атомарно: списать использование, пометить у юзера, начислить баланс
         await env.DB.batch([
           env.DB.prepare('UPDATE promos SET uses = uses - 1 WHERE code = ?').bind(upCode),
           env.DB.prepare('INSERT INTO used_promos (user_id, code) VALUES (?, ?)').bind(user_id, upCode),
@@ -176,7 +175,7 @@ export default {
         return Response.json(rows.results, { headers: cors });
       }
 
-      // POST /api/promos — создать промокод { admin_token, code, stars, uses }
+      // POST /api/promos — создать промокод
       if (url.pathname === '/api/promos' && request.method === 'POST') {
         const { admin_token, code, stars, uses } = await request.json();
 
@@ -191,16 +190,6 @@ export default {
           'INSERT OR REPLACE INTO promos (code, stars, max_uses, uses) VALUES (?, ?, ?, ?)'
         ).bind(code.toUpperCase(), stars, uses, uses).run();
 
-        return Response.json({ ok: true }, { headers: cors });
-      }
-
-      // POST /api/promos/delete — удалить промокод { admin_token, code }
-      if (url.pathname === '/api/promos/delete' && request.method === 'POST') {
-        const { admin_token, code } = await request.json();
-        if (!admin_token || admin_token !== env.ADMIN_TOKEN) {
-          return Response.json({ error: 'Нет доступа' }, { status: 403, headers: cors });
-        }
-        await env.DB.prepare('DELETE FROM promos WHERE code = ?').bind(code.toUpperCase()).run();
         return Response.json({ ok: true }, { headers: cors });
       }
 
@@ -220,7 +209,6 @@ export default {
           return Response.json({ error: 'Недостаточно доступных для вывода' }, { status: 400, headers: cors });
         }
 
-        // Списываем с балансов и пишем заявку
         await env.DB.batch([
           env.DB.prepare(
             'UPDATE users SET balance = balance - ?, withdrawable = withdrawable - ? WHERE user_id = ?'
@@ -229,6 +217,49 @@ export default {
             'INSERT INTO withdrawals (user_id, amount, status) VALUES (?, ?, "pending")'
           ).bind(user_id, amount),
         ]);
+
+        return Response.json({ ok: true }, { headers: cors });
+      }
+
+      // GET /api/withdrawals — все pending-заявки (для админа)
+      if (url.pathname === '/api/withdrawals' && request.method === 'GET') {
+        const rows = await env.DB.prepare(
+          'SELECT id, user_id, amount, status, created_at FROM withdrawals WHERE status = "pending" ORDER BY created_at DESC'
+        ).all();
+        return Response.json(rows.results || [], { headers: cors });
+      }
+
+      // POST /api/withdrawals/action { admin_token, id, action }
+      // action: 'approve' | 'reject'
+      if (url.pathname === '/api/withdrawals/action' && request.method === 'POST') {
+        const { admin_token, id, action } = await request.json();
+        if (!admin_token || admin_token !== env.ADMIN_TOKEN) {
+          return Response.json({ error: 'Нет доступа' }, { status: 403, headers: cors });
+        }
+        if (!id || !action) {
+          return Response.json({ error: 'Не все поля' }, { status: 400, headers: cors });
+        }
+
+        const w = await env.DB.prepare(
+          'SELECT user_id, amount FROM withdrawals WHERE id = ?'
+        ).bind(id).first();
+        if (!w) {
+          return Response.json({ error: 'Заявка не найдена' }, { status: 404, headers: cors });
+        }
+
+        if (action === 'approve') {
+          await env.DB.prepare(
+            'UPDATE withdrawals SET status = "approved" WHERE id = ?'
+          ).bind(id).run();
+        } else if (action === 'reject') {
+          // Возвращаем звёзды
+          await env.DB.batch([
+            env.DB.prepare('UPDATE withdrawals SET status = "rejected" WHERE id = ?').bind(id),
+            env.DB.prepare(
+              'UPDATE users SET balance = balance + ?, withdrawable = withdrawable + ? WHERE user_id = ?'
+            ).bind(w.amount, w.amount, w.user_id),
+          ]);
+        }
 
         return Response.json({ ok: true }, { headers: cors });
       }
