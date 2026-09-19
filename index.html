@@ -10,21 +10,26 @@
   html, body {
     height:100%; overflow:hidden;
     font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
-    background:#08080f; color:#fff; user-select:none;
+    background:#000; color:#fff; user-select:none;
   }
 
   #space {
     position:fixed; inset:0; z-index:0; pointer-events:none;
     background:
-      radial-gradient(ellipse 60% 40% at 20% 10%, rgba(80,40,140,0.25), transparent),
-      radial-gradient(ellipse 50% 50% at 85% 80%, rgba(30,60,120,0.2), transparent),
-      #08080f;
+      radial-gradient(circle at 15% 15%, rgba(0,255,120,0.10), transparent 40%),
+      radial-gradient(circle at 85% 75%, rgba(0,200,90,0.08), transparent 45%),
+      radial-gradient(circle at 50% 100%, rgba(0,255,80,0.05), transparent 50%),
+      #000;
   }
-  .star {
-    position:absolute; background:#fff; border-radius:50%;
-    animation:twinkle 4s infinite ease-in-out;
+  .glow {
+    position:absolute; border-radius:50%;
+    filter:blur(80px); opacity:.3;
+    animation:floatGlow 14s infinite ease-in-out alternate;
   }
-  @keyframes twinkle { 0%,100%{opacity:.15} 50%{opacity:.9} }
+  @keyframes floatGlow {
+    0%   { transform:translate(0,0) scale(1); }
+    100% { transform:translate(40px,-40px) scale(1.25); }
+  }
 
   .screen {
     position:fixed; inset:0; display:flex; flex-direction:column;
@@ -40,56 +45,57 @@
 
   #menu { align-items:center; justify-content:center; padding:28px; text-align:center; }
   .brand {
-    font-size:11px; color:#5a5a8a; letter-spacing:5px; text-transform:uppercase;
+    font-size:11px; color:#2a6a3a; letter-spacing:5px; text-transform:uppercase;
     margin-bottom:44px;
   }
   .balance-block { margin-bottom:56px; }
-  .balance-label { font-size:10px; color:#4a4a7a; letter-spacing:3px; text-transform:uppercase; margin-bottom:12px; }
+  .balance-label { font-size:10px; color:#1a5a2a; letter-spacing:3px; text-transform:uppercase; margin-bottom:12px; }
   .balance-value {
     font-size:54px; font-weight:200; letter-spacing:-1px;
-    color:#fff; font-variant-numeric:tabular-nums;
+    color:#5cff9a; font-variant-numeric:tabular-nums;
     display:flex; align-items:center; justify-content:center; gap:10px;
+    text-shadow:0 0 30px rgba(92,255,154,0.5);
   }
-  .balance-value .ico { font-size:40px; color:#fff; opacity:.9; }
+  .balance-value .ico { font-size:40px; color:#5cff9a; opacity:.9; }
 
   .modes { display:flex; flex-direction:column; gap:10px; width:100%; max-width:320px; }
   .mode-btn {
-    border:1.5px solid #22224a; background:rgba(20,20,40,0.35);
+    border:1.5px solid #0a3a1a; background:rgba(0,30,15,0.5);
     backdrop-filter:blur(8px); border-radius:14px;
     padding:20px 24px; color:#fff; cursor:pointer;
     display:flex; justify-content:space-between; align-items:center;
     transition:border-color .2s, background .2s; font-family:inherit;
     font-size:15px; letter-spacing:1px;
   }
-  .mode-btn:active { background:rgba(40,40,80,0.4); border-color:#3a3a6a; }
-  .mode-btn .label { font-weight:500; }
-  .mode-btn .sub { color:#4a4a7a; font-size:11px; margin-top:3px; letter-spacing:0; }
+  .mode-btn:active { background:rgba(0,60,30,0.6); border-color:#0a8040; }
+  .mode-btn .label { font-weight:500; color:#5cff9a; }
+  .mode-btn .sub { color:#2a6a3a; font-size:11px; margin-top:3px; letter-spacing:0; }
 
   .menu-footer { margin-top:36px; display:flex; gap:10px; }
   .mini-btn {
-    background:transparent; border:1.5px solid #1a1a35; color:#4a4a7a;
+    background:transparent; border:1.5px solid #0a3a1a; color:#2a6a3a;
     font-size:12px; letter-spacing:1px; cursor:pointer;
     font-family:inherit; padding:10px 18px; border-radius:10px;
     transition:all .2s;
   }
-  .mini-btn:active { border-color:#3a3a6a; color:#8a8aba; }
+  .mini-btn:active { border-color:#0a8040; color:#5cff9a; }
 
   .topbar {
     padding:18px 22px; display:flex; justify-content:space-between; align-items:center;
   }
   .close-btn {
-    background:transparent; border:none; color:#5a5a8a;
+    background:transparent; border:none; color:#2a6a3a;
     cursor:pointer; padding:6px 10px; line-height:1;
     display:flex; align-items:center; justify-content:center;
     transition:color .2s;
   }
-  .close-btn:active { color:#aaaacc; }
+  .close-btn:active { color:#5cff9a; }
   .close-btn .ico { font-size:20px; }
   .topbar-balance {
-    color:#8a8aba; font-size:14px; font-variant-numeric:tabular-nums;
+    color:#5cff9a; font-size:14px; font-variant-numeric:tabular-nums;
     display:flex; align-items:center; gap:6px;
   }
-  .topbar-balance .ico { font-size:14px; color:#8a8aba; }
+  .topbar-balance .ico { font-size:14px; color:#5cff9a; }
 
   .crash-stage {
     flex:1; display:flex; flex-direction:column;
@@ -113,15 +119,12 @@
     80% { transform:translateX(5px); }
   }
   .crash-x.hidden {
-    opacity:0;
-    transform:translateY(-30px) scale(0.9);
-    pointer-events:none;
+    opacity:0; transform:translateY(-30px) scale(0.9); pointer-events:none;
   }
   .crash-label {
     position:absolute;
     font-size:80px; font-weight:200; letter-spacing:8px;
-    color:#ff4d4d;
-    opacity:0;
+    color:#ff4d4d; opacity:0;
     transform:translateY(40px) scale(0.85);
     transition:opacity .5s ease .15s, transform .5s cubic-bezier(0.34,1.56,0.64,1) .15s;
     text-shadow:0 0 40px rgba(255,77,77,0.5);
@@ -129,82 +132,82 @@
   .crash-label.show { opacity:1; transform:translateY(0) scale(1); }
 
   .crash-caption {
-    margin-top:20px; font-size:11px; color:#4a4a7a; letter-spacing:2px;
+    margin-top:20px; font-size:11px; color:#2a5a3a; letter-spacing:2px;
     text-transform:uppercase; transition:opacity .3s;
   }
   .crash-caption.hidden { opacity:0; }
 
   .crash-controls { padding:0 22px 30px; }
   .crash-info {
-    text-align:center; font-size:13px; color:#5a5a8a;
+    text-align:center; font-size:13px; color:#3a7a4a;
     margin-bottom:14px; height:20px; letter-spacing:.5px;
     display:flex; align-items:center; justify-content:center; gap:5px;
   }
-  .crash-info.active { color:#5cd65c; }
+  .crash-info.active { color:#5cff9a; }
   .crash-info .ico { font-size:13px; }
 
   .bet-row {
     display:flex; align-items:center;
-    border:1.5px solid #22224a; background:rgba(20,20,40,0.35);
+    border:1.5px solid #0a3a1a; background:rgba(0,30,15,0.5);
     border-radius:14px; padding:0 18px; margin-bottom:10px;
     transition:border-color .2s;
   }
-  .bet-row:focus-within { border-color:#4a4a7a; }
+  .bet-row:focus-within { border-color:#0a8040; }
   #betInput {
-    flex:1; background:none; border:none; color:#fff;
+    flex:1; background:none; border:none; color:#5cff9a;
     font-size:20px; font-weight:400; padding:18px 0; outline:none;
     width:100%; font-family:inherit; font-variant-numeric:tabular-nums;
   }
-  #betInput::placeholder { color:#3a3a5a; }
+  #betInput::placeholder { color:#1a4a2a; }
   .bet-row .unit {
-    color:#5a5a8a; font-size:14px;
+    color:#3a7a4a; font-size:14px;
     display:flex; align-items:center; gap:5px;
   }
-  .bet-row .unit .ico { font-size:16px; color:#8a8aba; }
+  .bet-row .unit .ico { font-size:16px; color:#5cff9a; }
 
   .quick-row { display:flex; gap:6px; margin-bottom:10px; }
   .quick-btn {
-    flex:1; background:rgba(20,20,40,0.35); border:1.5px solid #1a1a35;
-    color:#6a6a9a; padding:10px; border-radius:10px; font-size:12px;
+    flex:1; background:rgba(0,30,15,0.5); border:1.5px solid #0a3a1a;
+    color:#3a7a4a; padding:10px; border-radius:10px; font-size:12px;
     cursor:pointer; transition:all .15s; font-family:inherit;
     font-variant-numeric:tabular-nums;
   }
-  .quick-btn:active { border-color:#3a3a6a; color:#aaaacc; }
+  .quick-btn:active { border-color:#0a8040; color:#5cff9a; }
 
   .main-btn {
-    width:100%; background:rgba(30,30,60,0.4); border:1.5px solid #2a2a4a;
-    border-radius:14px; padding:20px; color:#fff;
+    width:100%; background:rgba(0,40,20,0.5); border:1.5px solid #0a8040;
+    border-radius:14px; padding:20px; color:#5cff9a;
     font-size:14px; font-weight:500; letter-spacing:3px;
     cursor:pointer; transition:all .2s; font-family:inherit;
     text-transform:uppercase; backdrop-filter:blur(8px);
   }
-  .main-btn:active { background:rgba(50,50,100,0.5); border-color:#4a4a7a; }
-  .main-btn.cashout { color:#5cd65c; border-color:#2a4a2a; }
-  .main-btn:disabled { color:#2a2a4a; border-color:#151530; cursor:not-allowed; }
+  .main-btn:active { background:rgba(0,80,40,0.6); border-color:#5cff9a; }
+  .main-btn.cashout { color:#000; background:#5cff9a; border-color:#5cff9a; }
+  .main-btn:disabled { color:#1a4a2a; border-color:#0a2a15; cursor:not-allowed; }
 
   .cases-list {
     flex:1; padding:0 22px; display:flex; flex-direction:column;
     justify-content:center; gap:10px;
   }
   .case-item {
-    border:1.5px solid #22224a; background:rgba(20,20,40,0.35);
+    border:1.5px solid #0a3a1a; background:rgba(0,30,15,0.5);
     backdrop-filter:blur(8px); border-radius:14px;
     padding:20px 24px; color:#fff; cursor:pointer;
     display:flex; justify-content:space-between; align-items:center;
     transition:border-color .2s; font-family:inherit; text-align:left;
   }
-  .case-item:active { border-color:#3a3a6a; }
-  .case-item .info .name { font-size:15px; letter-spacing:1px; font-weight:500; }
+  .case-item:active { border-color:#0a8040; }
+  .case-item .info .name { font-size:15px; letter-spacing:1px; font-weight:500; color:#5cff9a; }
   .case-item .info .range {
-    color:#5a5a8a; font-size:11px; margin-top:4px;
+    color:#3a7a4a; font-size:11px; margin-top:4px;
     display:flex; align-items:center; gap:3px;
   }
   .case-item .info .range .ico { font-size:10px; }
   .case-item .price {
-    font-size:15px; color:#8a8aba; font-variant-numeric:tabular-nums;
+    font-size:15px; color:#5cff9a; font-variant-numeric:tabular-nums;
     letter-spacing:1px; display:flex; align-items:center; gap:5px;
   }
-  .case-item .price .ico { font-size:14px; color:#8a8aba; }
+  .case-item .price .ico { font-size:14px; }
 
   .roulette-stage {
     flex:1; display:flex; flex-direction:column;
@@ -216,8 +219,8 @@
     content:""; position:absolute; top:0; bottom:0; width:80px; z-index:4;
     pointer-events:none;
   }
-  .roulette::before { left:0; background:linear-gradient(to right, #08080f 10%, transparent); }
-  .roulette::after { right:0; background:linear-gradient(to left, #08080f 10%, transparent); }
+  .roulette::before { left:0; background:linear-gradient(to right, #000 10%, transparent); }
+  .roulette::after { right:0; background:linear-gradient(to left, #000 10%, transparent); }
 
   .track {
     position:absolute; top:0; left:0; height:100%;
@@ -225,24 +228,24 @@
   }
   .slot {
     width:80px; height:90px; margin:0 5px; flex-shrink:0;
-    border:1.5px solid #1a1a35; border-radius:12px;
+    border:1.5px solid #0a3a1a; border-radius:12px;
     display:flex; align-items:center; justify-content:center; gap:4px;
-    font-size:16px; font-weight:400; color:#6a6a9a;
+    font-size:16px; font-weight:400; color:#3a7a4a;
     font-variant-numeric:tabular-nums;
     transition:border-color .3s, color .3s;
-    background:rgba(15,15,30,0.5);
+    background:rgba(0,20,10,0.6);
   }
   .slot .ico { font-size:12px; }
-  .slot.rare    { color:#8a8aba; border-color:#2a2a4a; }
-  .slot.epic    { color:#bbb; border-color:#3a3a5a; }
-  .slot.legend  { color:#fff; border-color:#5a5a8a; box-shadow:0 0 12px rgba(90,90,140,0.3); }
+  .slot.rare    { color:#7affaa; border-color:#0a5a2a; }
+  .slot.epic    { color:#aaffcc; border-color:#0a8040; }
+  .slot.legend  { color:#5cff9a; border-color:#5cff9a; box-shadow:0 0 12px rgba(92,255,154,0.5); }
 
   .pointer {
     position:absolute; top:50%; left:50%;
     transform:translate(-50%,-50%);
-    width:2px; height:120px; background:#fff; z-index:5;
+    width:2px; height:120px; background:#5cff9a; z-index:5;
     border-radius:1px;
-    box-shadow:0 0 12px rgba(255,255,255,0.5);
+    box-shadow:0 0 20px #5cff9a;
   }
   .spin-result {
     text-align:center; margin-top:36px;
@@ -250,102 +253,104 @@
   }
   .spin-result.show { opacity:1; }
   .spin-result .label {
-    font-size:10px; color:#5a5a8a; letter-spacing:3px; text-transform:uppercase;
+    font-size:10px; color:#3a7a4a; letter-spacing:3px; text-transform:uppercase;
     margin-bottom:8px;
   }
   .spin-result .val {
     font-size:44px; font-weight:200; letter-spacing:-1px;
-    color:#fff; font-variant-numeric:tabular-nums;
+    color:#5cff9a; font-variant-numeric:tabular-nums;
     display:flex; align-items:center; justify-content:center; gap:8px;
+    text-shadow:0 0 30px rgba(92,255,154,0.5);
   }
-  .spin-result .val .ico { font-size:26px; color:#fff; opacity:.9; }
+  .spin-result .val .ico { font-size:26px; }
 
   .spin-controls { padding:0 22px 30px; }
 
   .profile-content { flex:1; padding:0 22px; overflow-y:auto; }
   .profile-card {
-    border:1.5px solid #22224a; background:rgba(20,20,40,0.35);
+    border:1.5px solid #0a3a1a; background:rgba(0,30,15,0.5);
     backdrop-filter:blur(8px); border-radius:18px;
     padding:24px; margin-bottom:16px;
     display:flex; align-items:center; gap:16px;
   }
   .profile-avatar {
     width:60px; height:60px; border-radius:50%;
-    border:1.5px solid #2a2a4a; flex-shrink:0;
+    border:1.5px solid #0a5a2a; flex-shrink:0;
     display:flex; align-items:center; justify-content:center;
-    color:#8a8aba; background:rgba(30,30,60,0.5);
+    color:#5cff9a; background:rgba(0,40,20,0.6);
     overflow:hidden;
   }
   .profile-avatar img { width:100%; height:100%; object-fit:cover; }
   .profile-avatar .ico { font-size:30px; }
-  .profile-info .name { font-size:18px; font-weight:500; }
-  .profile-info .username { color:#5a5a8a; font-size:13px; margin-top:3px; }
+  .profile-info .name { font-size:18px; font-weight:500; color:#5cff9a; }
+  .profile-info .username { color:#3a7a4a; font-size:13px; margin-top:3px; }
 
   .stats-grid {
     display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px;
   }
   .stat-card {
-    border:1.5px solid #1a1a35; background:rgba(15,15,30,0.5);
+    border:1.5px solid #0a3a1a; background:rgba(0,20,10,0.6);
     border-radius:14px; padding:18px; text-align:center;
   }
   .stat-card .stat-label {
-    font-size:10px; color:#4a4a7a; letter-spacing:2px; text-transform:uppercase;
+    font-size:10px; color:#2a5a3a; letter-spacing:2px; text-transform:uppercase;
     margin-bottom:8px;
   }
   .stat-card .stat-value {
-    font-size:22px; font-weight:300; color:#fff;
+    font-size:22px; font-weight:300; color:#5cff9a;
     font-variant-numeric:tabular-nums;
     display:flex; align-items:center; justify-content:center; gap:5px;
   }
   .stat-card .stat-value .ico { font-size:16px; }
 
   .section-title {
-    font-size:10px; color:#4a4a7a; letter-spacing:3px; text-transform:uppercase;
+    font-size:10px; color:#2a5a3a; letter-spacing:3px; text-transform:uppercase;
     margin:20px 0 10px;
   }
 
   .promo-row { display:flex; gap:8px; }
   .promo-input {
-    flex:1; background:rgba(15,15,30,0.5); border:1.5px solid #1a1a35;
-    border-radius:12px; padding:16px 18px; color:#fff;
+    flex:1; background:rgba(0,20,10,0.6); border:1.5px solid #0a3a1a;
+    border-radius:12px; padding:16px 18px; color:#5cff9a;
     font-size:14px; outline:none; font-family:inherit;
     letter-spacing:1px;
   }
-  .promo-input::placeholder { color:#3a3a5a; }
-  .promo-input:focus { border-color:#3a3a6a; }
+  .promo-input::placeholder { color:#1a4a2a; }
+  .promo-input:focus { border-color:#0a8040; }
   .promo-btn {
-    background:rgba(30,30,60,0.5); border:1.5px solid #2a2a4a;
-    border-radius:12px; padding:0 20px; color:#8a8aba;
+    background:rgba(0,40,20,0.6); border:1.5px solid #0a8040;
+    border-radius:12px; padding:0 20px; color:#5cff9a;
     font-size:13px; cursor:pointer; font-family:inherit;
     letter-spacing:1px; transition:all .2s;
   }
-  .promo-btn:active { background:rgba(50,50,100,0.5); border-color:#4a4a7a; }
+  .promo-btn:active { background:rgba(0,80,40,0.6); border-color:#5cff9a; }
 
   .pay-row { display:flex; gap:10px; margin-bottom:10px; }
   .pay-btn {
-    flex:1; background:rgba(20,20,40,0.35); border:1.5px solid #22224a;
-    border-radius:14px; padding:18px; color:#fff;
+    flex:1; background:rgba(0,30,15,0.5); border:1.5px solid #0a3a1a;
+    border-radius:14px; padding:18px; color:#5cff9a;
     cursor:pointer; font-family:inherit; font-size:13px;
     letter-spacing:1px; transition:all .2s;
     display:flex; flex-direction:column; align-items:center; gap:8px;
   }
-  .pay-btn:active { border-color:#3a3a6a; background:rgba(40,40,80,0.4); }
-  .pay-btn .pay-icon { display:flex; align-items:center; justify-content:center; color:#8a8aba; }
+  .pay-btn:active { border-color:#0a8040; background:rgba(0,60,30,0.6); }
+  .pay-btn .pay-icon { display:flex; align-items:center; justify-content:center; color:#5cff9a; }
   .pay-btn .pay-icon .ico { font-size:28px; }
   .pay-btn .pay-label { font-weight:500; }
-  .pay-btn .pay-sub { font-size:10px; color:#5a5a8a; }
+  .pay-btn .pay-sub { font-size:10px; color:#3a7a4a; }
 
   #toast {
     position:fixed; top:60px; left:50%;
     transform:translateX(-50%) translateY(-40px);
-    background:rgba(30,30,60,0.95); color:#ccc;
+    background:rgba(0,40,20,0.95); color:#5cff9a;
     padding:12px 22px; border-radius:100px;
     font-size:13px; z-index:100;
-    border:1px solid #2a2a4a;
+    border:1px solid #0a8040;
     transition:transform .35s cubic-bezier(.34,1.56,.64,1), opacity .35s;
     pointer-events:none; white-space:nowrap; opacity:0;
     letter-spacing:.5px; backdrop-filter:blur(10px);
     display:flex; align-items:center; gap:6px;
+    box-shadow:0 0 30px rgba(92,255,154,0.3);
   }
   #toast .ico { font-size:12px; }
   #toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
@@ -353,8 +358,13 @@
 </head>
 <body>
 
-<div id="space"></div>
+<div id="space">
+  <div class="glow" style="width:300px;height:300px;left:-100px;top:-100px;background:#00ff78;"></div>
+  <div class="glow" style="width:250px;height:250px;right:-80px;bottom:20%;background:#00cc55;animation-delay:-4s;"></div>
+  <div class="glow" style="width:200px;height:200px;left:30%;bottom:-80px;background:#00ff44;animation-delay:-8s;"></div>
+</div>
 
+<!-- ГЛАВНОЕ МЕНЮ -->
 <div class="screen" id="menu">
   <div class="brand">Endless</div>
 
@@ -383,6 +393,7 @@
   </div>
 </div>
 
+<!-- КРАШ -->
 <div class="screen hidden" id="crash">
   <div class="topbar">
     <button class="close-btn" onclick="backToMenu()">
@@ -414,6 +425,7 @@
   </div>
 </div>
 
+<!-- ВЫБОР КЕЙСА -->
 <div class="screen hidden" id="cases">
   <div class="topbar">
     <button class="close-btn" onclick="backToMenu()">
@@ -423,32 +435,33 @@
   </div>
 
   <div class="cases-list">
-    <button class="case-item" onclick="buyCase('case10')">
+    <button class="case-item" onclick="openCaseScreen('case10')">
       <div class="info">
         <div class="name">Обычный</div>
         <div class="range">1 <span class="ico" data-icon="star"></span> — 1 000 <span class="ico" data-icon="star"></span></div>
       </div>
-      <div class="price">10 <span class="ico" data-icon="star"></span></div>
+      <div class="price" id="case10Label">10 <span class="ico" data-icon="star"></span></div>
     </button>
 
-    <button class="case-item" onclick="buyCase('case50')">
+    <button class="case-item" onclick="openCaseScreen('case50')">
       <div class="info">
         <div class="name">Редкий</div>
         <div class="range">5 <span class="ico" data-icon="star"></span> — 2 000 <span class="ico" data-icon="star"></span></div>
       </div>
-      <div class="price">50 <span class="ico" data-icon="star"></span></div>
+      <div class="price" id="case50Label">50 <span class="ico" data-icon="star"></span></div>
     </button>
 
-    <button class="case-item" onclick="buyCase('case100')">
+    <button class="case-item" onclick="openCaseScreen('case100')">
       <div class="info">
         <div class="name">Легендарный</div>
         <div class="range">10 <span class="ico" data-icon="star"></span> — 5 000 <span class="ico" data-icon="star"></span></div>
       </div>
-      <div class="price">100 <span class="ico" data-icon="star"></span></div>
+      <div class="price" id="case100Label">100 <span class="ico" data-icon="star"></span></div>
     </button>
   </div>
 </div>
 
+<!-- ОТКРЫТИЕ КЕЙСА -->
 <div class="screen hidden" id="caseOpen">
   <div class="topbar">
     <button class="close-btn" onclick="closeCase()">
@@ -470,10 +483,11 @@
   </div>
 
   <div class="spin-controls">
-    <button class="main-btn" id="spinBtn" onclick="spin()">Открыть</button>
+    <button class="main-btn" id="spinBtn" onclick="mainCaseAction()">Купить</button>
   </div>
 </div>
 
+<!-- ПРОФИЛЬ -->
 <div class="screen hidden" id="profile">
   <div class="topbar">
     <button class="close-btn" onclick="backToMenu()">
@@ -536,12 +550,24 @@
         <span class="pay-label">Вывод</span>
         <span class="pay-sub">от 100 ★</span>
       </button>
-      <button class="pay-btn" onclick="openTopup()">
+      <button class="pay-btn" onclick="openTopupSheet()">
         <span class="pay-icon"><span class="ico" data-icon="star"></span></span>
         <span class="pay-label">Пополнить</span>
         <span class="pay-sub">Telegram Stars</span>
       </button>
     </div>
+  </div>
+</div>
+
+<!-- МОДАЛКА ПОПОЛНЕНИЯ -->
+<div id="topupModal" style="position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:200;display:none;align-items:center;justify-content:center;padding:22px;">
+  <div style="width:100%;max-width:340px;border:1.5px solid #0a8040;background:rgba(0,20,10,0.98);border-radius:20px;padding:24px;">
+    <div style="text-align:center;margin-bottom:20px;">
+      <div style="font-size:11px;color:#2a6a3a;letter-spacing:3px;text-transform:uppercase;">Пополнение</div>
+      <div style="font-size:16px;color:#5cff9a;margin-top:8px;">Выбери пакет</div>
+    </div>
+    <div id="topupPacks" style="display:flex;flex-direction:column;gap:8px;"></div>
+    <button onclick="closeTopupSheet()" style="width:100%;margin-top:16px;background:transparent;border:1.5px solid #0a3a1a;color:#3a7a4a;border-radius:12px;padding:14px;font-size:13px;font-family:inherit;letter-spacing:1px;cursor:pointer;">Закрыть</button>
   </div>
 </div>
 
@@ -554,7 +580,6 @@ if (tg) { tg.ready(); tg.expand(); }
 
 /* ==================== API ==================== */
 const API_URL = 'https://endlessbet.i-makarov2012.workers.dev';
-const BOT_URL = 'https://t.me/test01_mybot';
 
 async function apiCall(path, body) {
   const r = await fetch(API_URL + path, {
@@ -562,6 +587,13 @@ async function apiCall(path, body) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   });
+  const data = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(data.error || 'API error');
+  return data;
+}
+
+async function apiGet(path) {
+  const r = await fetch(API_URL + path);
   const data = await r.json().catch(() => ({}));
   if (!r.ok) throw new Error(data.error || 'API error');
   return data;
@@ -600,6 +632,7 @@ function renderIcons(root = document) {
 const state = {
   balance: 0,
   withdrawable: 0,
+  inventory: {},          // { case10: 2, case50: 0, ... }
   crashPhase: 'idle',
   crashMultiplier: 1.0,
   crashAt: 2.0,
@@ -607,24 +640,14 @@ const state = {
   crashBet: 0,
   crashRaf: null,
   spinning: false,
+  idleSpinRaf: null,
   currentCase: null,
   stats: { totalBets:0, wins:0, maxCrash:0, profit:0 },
 };
 
 const $ = id => document.getElementById(id);
 
-/* ==================== ФОН (45 звёзд) ==================== */
-(function makeStars(){
-  const box = $('space');
-  for (let i = 0; i < 45; i++) {
-    const s = document.createElement('div');
-    s.className = 'star';
-    const size = Math.random() * 1.8 + 0.4;
-    const hue = Math.random() * 60 + 220;
-    s.style.cssText = `width:${size}px;height:${size}px;left:${Math.random()*100}%;top:${Math.random()*100}%;animation-delay:${Math.random()*4}s;background:hsl(${hue},60%,${70+Math.random()*30}%)`;
-    box.appendChild(s);
-  }
-})();
+/* ==================== ФОН ==================== */
 
 /* ==================== ЗВУК ==================== */
 const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -666,9 +689,26 @@ function updateStatsUI() {
   $('statWins').textContent = fmt(state.stats.wins);
   $('statMaxCrash').textContent = state.stats.maxCrash.toFixed(2) + 'x';
   $('statProfit').innerHTML = (state.stats.profit >= 0 ? '+' : '') + fmt(state.stats.profit) + starIco();
-  $('statProfit').style.color = state.stats.profit >= 0 ? '#5cd65c' : '#ff4d4d';
+  $('statProfit').style.color = state.stats.profit >= 0 ? '#5cff9a' : '#ff4d4d';
   $('statBalance').innerHTML = fmt(state.balance) + starIco();
   $('statWithdrawable').innerHTML = fmt(state.withdrawable) + starIco();
+}
+
+function updateCaseLabels() {
+  const map = { case10: 'case10Label', case50: 'case50Label', case100: 'case100Label' };
+  for (const key in map) {
+    const cnt = state.inventory[key] || 0;
+    const el = $(map[key]);
+    if (!el) continue;
+    if (cnt > 0) {
+      el.innerHTML = `${cnt} шт.`;
+      el.style.color = '#5cff9a';
+    } else {
+      const prices = { case10: 10, case50: 50, case100: 100 };
+      el.innerHTML = `${prices[key]} ${starIco()}`;
+      el.style.color = '#5cff9a';
+    }
+  }
 }
 
 function toastDelta(amount) {
@@ -704,6 +744,16 @@ async function syncBalance() {
   } catch (e) { console.warn('syncBalance:', e); }
 }
 
+async function syncInventory() {
+  const uid = getUserId();
+  if (!uid) return;
+  try {
+    const inv = await apiGet('/api/inventory?user_id=' + uid);
+    state.inventory = inv || {};
+    updateCaseLabels();
+  } catch (e) { console.warn('syncInventory:', e); }
+}
+
 async function spendAPI(amount) {
   const uid = getUserId();
   if (!uid) { toastText('Открой из Telegram'); return false; }
@@ -727,6 +777,27 @@ async function winAPI(amount) {
   } catch (e) { console.warn(e); }
 }
 
+async function inventoryAdd(caseKey) {
+  const uid = getUserId();
+  if (!uid) return;
+  try {
+    await apiCall('/api/inventory/add', { user_id: uid, case_key: caseKey });
+    state.inventory[caseKey] = (state.inventory[caseKey] || 0) + 1;
+    updateCaseLabels();
+  } catch (e) { console.warn(e); }
+}
+
+async function inventorySpend(caseKey) {
+  const uid = getUserId();
+  if (!uid) return false;
+  try {
+    const d = await apiCall('/api/inventory/spend', { user_id: uid, case_key: caseKey });
+    state.inventory[caseKey] = d.count;
+    updateCaseLabels();
+    return true;
+  } catch (e) { console.warn(e); return false; }
+}
+
 /* ==================== НАВИГАЦИЯ ==================== */
 function openMode(mode) {
   initAudio(); haptic('light');
@@ -735,6 +806,7 @@ function openMode(mode) {
     $('betInput').value = Math.min(50, Math.max(1, Math.floor(state.balance)));
   } else {
     showScreen('cases');
+    syncInventory();
   }
   updateBalance();
 }
@@ -743,12 +815,14 @@ function backToMenu() {
   if (state.crashPhase === 'flying') cashoutCrash();
   cancelAnimationFrame(state.crashRaf);
   state.crashPhase = 'idle';
+  stopIdleSpin();
   showScreen('menu');
   updateBalance(); updateStatsUI();
 }
 function closeCase() {
   haptic('light');
   if (state.spinning) return;
+  stopIdleSpin();
   showScreen('cases');
   updateBalance();
 }
@@ -872,7 +946,7 @@ async function cashoutCrash() {
   state.stats.profit += profit;
   updateStatsUI();
 
-  $('multiplier').style.color = '#5cd65c';
+  $('multiplier').style.color = '#5cff9a';
   $('crashCaption').textContent = `забрано · +${fmt(win)}`;
   $('crashCaption').classList.remove('hidden');
   $('crashInfo').innerHTML = '';
@@ -974,39 +1048,97 @@ function makeSlot(prize, c) {
 const TRACK_SIZE = 60;
 const STOP_INDEX = 50;
 
-async function buyCase(caseKey) {
+/* ====== БЕСКОНЕЧНОЕ МЕДЛЕННОЕ ВРАЩЕНИЕ (idle) ====== */
+function startIdleSpin(caseKey) {
+  stopIdleSpin();
+  const c = CASES[caseKey];
+  const track = $('track');
+  track.innerHTML = '';
+  for (let i = 0; i < 60; i++) {
+    const prize = c.prizes[Math.floor(Math.random() * c.prizes.length)].prize;
+    track.appendChild(makeSlot(prize, c));
+  }
+  track.style.transition = 'none';
+  track.style.transform = 'translateX(0)';
+
+  let pos = 0;
+  let last = performance.now();
+  function frame(now) {
+    const dt = now - last;
+    last = now;
+    pos -= dt * 0.04;   // скорость: 40px в секунду
+    if (pos < -60 * 90) pos += 60 * 90;
+    track.style.transform = `translateX(${pos}px)`;
+    state.idleSpinRaf = requestAnimationFrame(frame);
+  }
+  state.idleSpinRaf = requestAnimationFrame(frame);
+}
+function stopIdleSpin() {
+  if (state.idleSpinRaf) {
+    cancelAnimationFrame(state.idleSpinRaf);
+    state.idleSpinRaf = null;
+  }
+}
+
+/* ====== ОТКРЫТИЕ ЭКРАНА КЕЙСА ====== */
+function openCaseScreen(caseKey) {
   initAudio(); haptic('light');
+  state.currentCase = caseKey;
+  showScreen('caseOpen');
+  updateSpinButton();
+  startIdleSpin(caseKey);
+  $('spinResult').className = 'spin-result';
+  updateBalance();
+}
+
+function updateSpinButton() {
+  const caseKey = state.currentCase;
+  const count = state.inventory[caseKey] || 0;
+  const btn = $('spinBtn');
+  if (count > 0) {
+    btn.textContent = `Открыть (${count})`;
+    btn.className = 'main-btn';
+  } else {
+    const price = CASES[caseKey].price;
+    btn.textContent = `Купить за ${price} ★`;
+    btn.className = 'main-btn';
+  }
+}
+
+function mainCaseAction() {
+  const caseKey = state.currentCase;
+  const count = state.inventory[caseKey] || 0;
+  if (count > 0) {
+    spinCase();
+  } else {
+    buyCase(caseKey);
+  }
+}
+
+async function buyCase(caseKey) {
+  haptic('light');
   const c = CASES[caseKey];
   if (state.balance < c.price) return toastText('Недостаточно звёзд');
 
   const ok = await spendAPI(c.price);
   if (!ok) return;
   toastDelta(-c.price);
-
-  state.currentCase = caseKey;
-  $('spinResult').className = 'spin-result';
-  $('spinBtn').textContent = 'Открыть';
-  $('spinBtn').disabled = false;
-  $('spinBtn').onclick = spin;
-
-  $('track').innerHTML = '';
-  $('track').style.transition = 'none';
-  $('track').style.transform = 'translateX(0)';
-
-  showScreen('caseOpen');
+  await inventoryAdd(caseKey);
+  updateSpinButton();
+  toastText('Кейс куплен');
 }
 
-function spin() {
+function spinCase() {
   if (state.spinning) return;
   initAudio(); haptic('medium');
   state.spinning = true;
-  $('spinBtn').disabled = true;
-  $('spinBtn').textContent = '...';
 
   const caseKey = state.currentCase;
   const c = CASES[caseKey];
   const track = $('track');
   const winPrize = pickPrize(caseKey);
+
+  stopIdleSpin();
 
   track.innerHTML = '';
   for (let i = 0; i < TRACK_SIZE; i++) {
@@ -1054,11 +1186,12 @@ function spin() {
 
   setTimeout(async () => {
     state.spinning = false;
-    await finishSpin(winPrize, c);
+    await finishSpin(winPrize, c, caseKey);
   }, duration + 80);
 }
 
-async function finishSpin(prize, c) {
+async function finishSpin(prize, c, caseKey) {
+  await inventorySpend(caseKey);
   await winAPI(prize);
   updateBalance();
 
@@ -1068,13 +1201,15 @@ async function finishSpin(prize, c) {
   haptic(prize >= c.price ? 'success' : 'error');
   toastDelta(prize);
 
-  $('spinBtn').disabled = false;
-  $('spinBtn').textContent = 'Ещё раз';
-  $('spinBtn').onclick = () => {
-    if (state.balance < c.price) return toastText('Недостаточно звёзд');
-    buyCase(state.currentCase);
-    setTimeout(spin, 250);
-  };
+  updateSpinButton();
+
+  // Через 2 секунды — снова idle-вращение и новый трек
+  setTimeout(() => {
+    if (state.currentCase === caseKey) {
+      $('spinResult').className = 'spin-result';
+      startIdleSpin(caseKey);
+    }
+  }, 2000);
 }
 
 /* ==================== ПРОМОКОД ==================== */
@@ -1119,19 +1254,67 @@ async function withdrawOpen() {
   }
 }
 
-/* ==================== ПОПОЛНЕНИЕ ==================== */
-function openTopup() {
+/* ==================== ПОПОЛНЕНИЕ В ПРИЛОЖЕНИИ ==================== */
+const TOPUP_PACKAGES = [
+  { key: 'topup_50',   stars: 50 },
+  { key: 'topup_100',  stars: 100 },
+  { key: 'topup_500',  stars: 500 },
+  { key: 'topup_1000', stars: 1000 },
+];
+
+function openTopupSheet() {
   haptic('light');
-  if (!tg) return toastText('Открой из Telegram');
-  tg.openTelegramLink(BOT_URL);
-  toastText('Выбери пакет в боте');
+  const box = $('topupPacks');
+  box.innerHTML = '';
+  TOPUP_PACKAGES.forEach(p => {
+    const btn = document.createElement('button');
+    btn.style.cssText = 'background:rgba(0,40,20,0.6);border:1.5px solid #0a8040;border-radius:12px;padding:16px;color:#5cff9a;font-family:inherit;font-size:15px;letter-spacing:1px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;';
+    btn.innerHTML = `<span>${p.stars} ${starIco()}</span><span style="color:#3a7a4a;font-size:12px;">${p.stars} ★</span>`;
+    btn.onclick = () => buyTopup(p.key);
+    box.appendChild(btn);
+  });
+  $('topupModal').style.display = 'flex';
+}
+
+function closeTopupSheet() {
+  $('topupModal').style.display = 'none';
+}
+
+async function buyTopup(packageKey) {
+  haptic('light');
+  const uid = getUserId();
+  if (!uid) return toastText('Открой из Telegram');
+
+  closeTopupSheet();
+
+  try {
+    const d = await apiCall('/api/create-invoice', { user_id: uid, package: packageKey });
+    if (!d.invoice_link) return toastText('Ошибка создания счёта');
+
+    tg.openInvoice(d.invoice_link, async (status) => {
+      if (status === 'paid') {
+        toastText('Оплата прошла!');
+        await syncBalance();
+      } else if (status === 'cancelled') {
+        toastText('Оплата отменена');
+      } else if (status === 'failed') {
+        toastText('Ошибка оплаты');
+      }
+    });
+  } catch (e) {
+    toastText(e.message);
+  }
 }
 
 /* ==================== INIT ==================== */
 renderIcons();
 updateBalance();
 updateStatsUI();
-if (getUserId()) syncBalance();
+updateCaseLabels();
+if (getUserId()) {
+  syncBalance();
+  syncInventory();
+}
 </script>
 </body>
 </html>
