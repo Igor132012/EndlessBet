@@ -1,4 +1,7 @@
 // worker.js — API для EndlessBet
+const CHANNEL = "EndlessBet_channel";
+const CHANNEL_URL = "https://t.me/" + CHANNEL;
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -18,7 +21,6 @@ export default {
       }
 
       // ============ БАЛАНС ============
-      // POST /api/balance { user_id }
       if (url.pathname === '/api/balance' && request.method === 'POST') {
         const { user_id } = await request.json();
         if (!user_id) return Response.json({ error: 'Нет user_id' }, { status: 400, headers: cors });
@@ -36,31 +38,23 @@ export default {
         return Response.json(user, { headers: cors });
       }
 
-      // POST /api/balance/change { user_id, amount }
-      // АТОМАРНОЕ списание: один UPDATE с условием balance >= need.
-      // Если условие не выполняется — changes = 0, ничего не списывается.
       if (url.pathname === '/api/balance/change' && request.method === 'POST') {
         const { user_id, amount } = await request.json();
         if (!user_id || typeof amount !== 'number') {
           return Response.json({ error: 'Неверные данные' }, { status: 400, headers: cors });
         }
 
-        // Убеждаемся, что юзер есть
         await env.DB.prepare(
           'INSERT OR IGNORE INTO users (user_id, balance, withdrawable) VALUES (?, 0, 0)'
         ).bind(user_id).run();
 
         if (amount > 0) {
-          // Пополнение
           await env.DB.prepare(
             'UPDATE users SET balance = balance + ? WHERE user_id = ?'
           ).bind(amount, user_id).run();
         } else {
           const need = -amount;
 
-          // Одна атомарная операция:
-          //   balance -= need   (только если balance >= need)
-          //   withdrawable -= min(withdrawable, need)
           const result = await env.DB.prepare(`
             UPDATE users SET
               balance = balance - ?,
@@ -83,8 +77,6 @@ export default {
         return Response.json(user, { headers: cors });
       }
 
-      // POST /api/balance/win { user_id, amount }
-      // Начисление выигрыша: +X к balance И +X к withdrawable
       if (url.pathname === '/api/balance/win' && request.method === 'POST') {
         const { user_id, amount } = await request.json();
         if (!user_id || typeof amount !== 'number' || amount <= 0) {
@@ -104,8 +96,6 @@ export default {
         return Response.json(user, { headers: cors });
       }
 
-      // POST /api/balance/deposit { user_id, amount }
-      // Пополнение: только к balance (не к выводу)
       if (url.pathname === '/api/balance/deposit' && request.method === 'POST') {
         const { user_id, amount } = await request.json();
         if (!user_id || typeof amount !== 'number' || amount <= 0) {
@@ -140,7 +130,6 @@ export default {
         ).bind(user_id, upCode).first();
         if (used) return Response.json({ error: 'Вы уже использовали этот промокод' }, { status: 400, headers: cors });
 
-        // Атомарно уменьшаем uses с условием uses > 0
         const upd = await env.DB.prepare(
           'UPDATE promos SET uses = uses - 1 WHERE code = ? AND uses > 0'
         ).bind(upCode).run();
@@ -166,15 +155,6 @@ export default {
         }, { headers: cors });
       }
 
-      // GET /api/promos
-      if (url.pathname === '/api/promos' && request.method === 'GET') {
-        const rows = await env.DB.prepare(
-          'SELECT code, stars, max_uses, uses FROM promos ORDER BY code'
-        ).all();
-        return Response.json(rows.results, { headers: cors });
-      }
-
-      // POST /api/promos — создать промокод
       if (url.pathname === '/api/promos' && request.method === 'POST') {
         const { admin_token, code, stars, uses } = await request.json();
         if (!admin_token || admin_token !== env.ADMIN_TOKEN) {
@@ -223,7 +203,6 @@ export default {
         const { user_id, case_key } = await request.json();
         if (!user_id || !case_key) return Response.json({ error: 'Неверные данные' }, { status: 400, headers: cors });
 
-        // Атомарно: списываем кейс, только если он есть
         const upd = await env.DB.prepare(`
           UPDATE inventory SET count = count - 1
           WHERE user_id = ? AND case_key = ? AND count > 0
@@ -238,6 +217,90 @@ export default {
         ).bind(user_id, case_key).first();
 
         return Response.json({ ok: true, count: row ? row.count : 0 }, { headers: cors });
+      }
+
+      // ============ ПОДПИСОЧНЫЙ КЕЙС ============
+      // POST /api/sub-case/status { user_id }
+      if (url.pathname === '/api/sub-case/status' && request.method === 'POST') {
+        const { user_id } = await request.json();
+        if (!user_id) return Response.json({ error: 'Нет user_id' }, { status: 400, headers: cors });
+
+        // Проверяем подписку через Telegram API
+        let subscribed = false;
+        try {
+          const tgResp = await fetch(
+            `https://api.telegram.org/bot${env.BOT_TOKEN}/getChatMember?chat_id=@${CHANNEL}&user_id=${user_id}`
+          );
+          const data = await tgResp.json();
+          if (data.ok) {
+            const status = data.result.status;
+            subscribed = (status === 'member' || status === 'administrator' || status === 'creator');
+          }
+        } catch (e) {}
+
+        // Проверяем кулдаун
+        const row = await env.DB.prepare(
+          'SELECT last_opened FROM subscription_cases WHERE user_id = ?'
+        ).bind(user_id).first();
+
+        let nextAt = 0;
+        if (row && row.last_opened) {
+          const last = new Date(row.last_opened + 'Z').getTime();
+          nextAt = last + 24 * 60 * 60 * 1000;
+        }
+
+        const now = Date.now();
+        const canOpen = subscribed && now >= nextAt;
+
+        return Response.json({
+          subscribed,
+          can_open: canOpen,
+          next_at: nextAt
+        }, { headers: cors });
+      }
+
+      // POST /api/sub-case/open { user_id }
+      if (url.pathname === '/api/sub-case/open' && request.method === 'POST') {
+        const { user_id } = await request.json();
+        if (!user_id) return Response.json({ error: 'Нет user_id' }, { status: 400, headers: cors });
+
+        // Ещё раз проверяем подписку (нельзя доверять фронту)
+        let subscribed = false;
+        try {
+          const tgResp = await fetch(
+            `https://api.telegram.org/bot${env.BOT_TOKEN}/getChatMember?chat_id=@${CHANNEL}&user_id=${user_id}`
+          );
+          const data = await tgResp.json();
+          if (data.ok) {
+            const status = data.result.status;
+            subscribed = (status === 'member' || status === 'administrator' || status === 'creator');
+          }
+        } catch (e) {}
+
+        if (!subscribed) {
+          return Response.json({ error: 'Подпишись на канал' }, { status: 400, headers: cors });
+        }
+
+        // Проверяем кулдаун
+        const row = await env.DB.prepare(
+          'SELECT last_opened FROM subscription_cases WHERE user_id = ?'
+        ).bind(user_id).first();
+
+        if (row && row.last_opened) {
+          const last = new Date(row.last_opened + 'Z').getTime();
+          const nextAt = last + 24 * 60 * 60 * 1000;
+          if (Date.now() < nextAt) {
+            return Response.json({ error: 'Кейс уже открыт' }, { status: 400, headers: cors });
+          }
+        }
+
+        // Записываем время открытия
+        await env.DB.prepare(`
+          INSERT INTO subscription_cases (user_id, last_opened) VALUES (?, CURRENT_TIMESTAMP)
+          ON CONFLICT(user_id) DO UPDATE SET last_opened = CURRENT_TIMESTAMP
+        `).bind(user_id).run();
+
+        return Response.json({ ok: true }, { headers: cors });
       }
 
       // ============ ПОПОЛНЕНИЕ ЗВЁЗДАМИ ============
@@ -276,7 +339,6 @@ export default {
           return Response.json({ error: 'Минимум 100 ★' }, { status: 400, headers: cors });
         }
 
-        // Атомарно: списываем только если withdrawable >= amount
         const upd = await env.DB.prepare(`
           UPDATE users SET
             balance = balance - ?,
