@@ -37,46 +37,50 @@ export default {
       }
 
       // POST /api/balance/change { user_id, amount }
-      // amount < 0 — списание (сначала withdrawable, потом balance)
-      // amount > 0 — пополнение к balance
+      // АТОМАРНОЕ списание: один UPDATE с условием balance >= need.
+      // Если условие не выполняется — changes = 0, ничего не списывается.
       if (url.pathname === '/api/balance/change' && request.method === 'POST') {
         const { user_id, amount } = await request.json();
         if (!user_id || typeof amount !== 'number') {
           return Response.json({ error: 'Неверные данные' }, { status: 400, headers: cors });
         }
 
-        let user = await env.DB.prepare(
+        // Убеждаемся, что юзер есть
+        await env.DB.prepare(
+          'INSERT OR IGNORE INTO users (user_id, balance, withdrawable) VALUES (?, 0, 0)'
+        ).bind(user_id).run();
+
+        if (amount > 0) {
+          // Пополнение
+          await env.DB.prepare(
+            'UPDATE users SET balance = balance + ? WHERE user_id = ?'
+          ).bind(amount, user_id).run();
+        } else {
+          const need = -amount;
+
+          // Одна атомарная операция:
+          //   balance -= need   (только если balance >= need)
+          //   withdrawable -= min(withdrawable, need)
+          const result = await env.DB.prepare(`
+            UPDATE users SET
+              balance = balance - ?,
+              withdrawable = CASE
+                WHEN withdrawable >= ? THEN withdrawable - ?
+                ELSE 0
+              END
+            WHERE user_id = ? AND balance >= ?
+          `).bind(need, need, need, user_id, need).run();
+
+          if (!result.meta || result.meta.changes === 0) {
+            return Response.json({ error: 'Недостаточно звёзд' }, { status: 400, headers: cors });
+          }
+        }
+
+        const user = await env.DB.prepare(
           'SELECT balance, withdrawable FROM users WHERE user_id = ?'
         ).bind(user_id).first();
 
-        if (!user) {
-          await env.DB.prepare(
-            'INSERT INTO users (user_id, balance, withdrawable) VALUES (?, 0, 0)'
-          ).bind(user_id).run();
-          user = { balance: 0, withdrawable: 0 };
-        }
-
-        let { balance, withdrawable } = user;
-        if (amount > 0) {
-          balance += amount;
-        } else {
-          let left = -amount;
-          if (balance < left) {
-            return Response.json({ error: 'Недостаточно звёзд' }, { status: 400, headers: cors });
-          }
-          if (withdrawable > 0) {
-            const fromWd = Math.min(withdrawable, left);
-            withdrawable -= fromWd;
-            left -= fromWd;
-          }
-          balance -= left;
-        }
-
-        await env.DB.prepare(
-          'UPDATE users SET balance = ?, withdrawable = ? WHERE user_id = ?'
-        ).bind(balance, withdrawable, user_id).run();
-
-        return Response.json({ balance, withdrawable }, { headers: cors });
+        return Response.json(user, { headers: cors });
       }
 
       // POST /api/balance/win { user_id, amount }
@@ -120,7 +124,6 @@ export default {
       }
 
       // ============ ПРОМОКОДЫ ============
-      // POST /api/promo/activate { user_id, code }
       if (url.pathname === '/api/promo/activate' && request.method === 'POST') {
         const { user_id, code } = await request.json();
         if (!user_id || !code) return Response.json({ error: 'Неверные данные' }, { status: 400, headers: cors });
@@ -137,8 +140,15 @@ export default {
         ).bind(user_id, upCode).first();
         if (used) return Response.json({ error: 'Вы уже использовали этот промокод' }, { status: 400, headers: cors });
 
+        // Атомарно уменьшаем uses с условием uses > 0
+        const upd = await env.DB.prepare(
+          'UPDATE promos SET uses = uses - 1 WHERE code = ? AND uses > 0'
+        ).bind(upCode).run();
+        if (!upd.meta || upd.meta.changes === 0) {
+          return Response.json({ error: 'Промокод исчерпан' }, { status: 400, headers: cors });
+        }
+
         await env.DB.batch([
-          env.DB.prepare('UPDATE promos SET uses = uses - 1 WHERE code = ?').bind(upCode),
           env.DB.prepare('INSERT INTO used_promos (user_id, code) VALUES (?, ?)').bind(user_id, upCode),
           env.DB.prepare(`
             INSERT INTO users (user_id, balance, withdrawable) VALUES (?, ?, 0)
@@ -156,7 +166,7 @@ export default {
         }, { headers: cors });
       }
 
-      // GET /api/promos — список промокодов
+      // GET /api/promos
       if (url.pathname === '/api/promos' && request.method === 'GET') {
         const rows = await env.DB.prepare(
           'SELECT code, stars, max_uses, uses FROM promos ORDER BY code'
@@ -180,7 +190,6 @@ export default {
       }
 
       // ============ ИНВЕНТАРЬ ============
-      // GET /api/inventory?user_id=123
       if (url.pathname === '/api/inventory' && request.method === 'GET') {
         const user_id = url.searchParams.get('user_id');
         if (!user_id) return Response.json({ error: 'Нет user_id' }, { status: 400, headers: cors });
@@ -194,7 +203,6 @@ export default {
         return Response.json(inv, { headers: cors });
       }
 
-      // POST /api/inventory/add { user_id, case_key }
       if (url.pathname === '/api/inventory/add' && request.method === 'POST') {
         const { user_id, case_key } = await request.json();
         if (!user_id || !case_key) return Response.json({ error: 'Неверные данные' }, { status: 400, headers: cors });
@@ -211,29 +219,28 @@ export default {
         return Response.json({ ok: true, count: row ? row.count : 0 }, { headers: cors });
       }
 
-      // POST /api/inventory/spend { user_id, case_key }
       if (url.pathname === '/api/inventory/spend' && request.method === 'POST') {
         const { user_id, case_key } = await request.json();
         if (!user_id || !case_key) return Response.json({ error: 'Неверные данные' }, { status: 400, headers: cors });
+
+        // Атомарно: списываем кейс, только если он есть
+        const upd = await env.DB.prepare(`
+          UPDATE inventory SET count = count - 1
+          WHERE user_id = ? AND case_key = ? AND count > 0
+        `).bind(user_id, case_key).run();
+
+        if (!upd.meta || upd.meta.changes === 0) {
+          return Response.json({ error: 'Нет кейса' }, { status: 400, headers: cors });
+        }
 
         const row = await env.DB.prepare(
           'SELECT count FROM inventory WHERE user_id = ? AND case_key = ?'
         ).bind(user_id, case_key).first();
 
-        if (!row || row.count <= 0) {
-          return Response.json({ error: 'Нет кейса' }, { status: 400, headers: cors });
-        }
-
-        await env.DB.prepare(
-          'UPDATE inventory SET count = count - 1 WHERE user_id = ? AND case_key = ?'
-        ).bind(user_id, case_key).run();
-
-        return Response.json({ ok: true, count: row.count - 1 }, { headers: cors });
+        return Response.json({ ok: true, count: row ? row.count : 0 }, { headers: cors });
       }
 
       // ============ ПОПОЛНЕНИЕ ЗВЁЗДАМИ ============
-      // POST /api/create-invoice { user_id, stars }
-      // stars — любое число от 1 до 100000
       if (url.pathname === '/api/create-invoice' && request.method === 'POST') {
         const { user_id, stars } = await request.json();
         if (!user_id || !stars) return Response.json({ error: 'Неверные данные' }, { status: 400, headers: cors });
@@ -263,34 +270,31 @@ export default {
       }
 
       // ============ ВЫВОДЫ ============
-      // POST /api/withdraw { user_id, amount }
       if (url.pathname === '/api/withdraw' && request.method === 'POST') {
         const { user_id, amount } = await request.json();
         if (!user_id || !amount || amount < 100) {
           return Response.json({ error: 'Минимум 100 ★' }, { status: 400, headers: cors });
         }
 
-        const user = await env.DB.prepare(
-          'SELECT withdrawable FROM users WHERE user_id = ?'
-        ).bind(user_id).first();
+        // Атомарно: списываем только если withdrawable >= amount
+        const upd = await env.DB.prepare(`
+          UPDATE users SET
+            balance = balance - ?,
+            withdrawable = withdrawable - ?
+          WHERE user_id = ? AND withdrawable >= ?
+        `).bind(amount, amount, user_id, amount).run();
 
-        if (!user || user.withdrawable < amount) {
+        if (!upd.meta || upd.meta.changes === 0) {
           return Response.json({ error: 'Недостаточно доступных для вывода' }, { status: 400, headers: cors });
         }
 
-        await env.DB.batch([
-          env.DB.prepare(
-            'UPDATE users SET balance = balance - ?, withdrawable = withdrawable - ? WHERE user_id = ?'
-          ).bind(amount, amount, user_id),
-          env.DB.prepare(
-            'INSERT INTO withdrawals (user_id, amount, status) VALUES (?, ?, "pending")'
-          ).bind(user_id, amount),
-        ]);
+        await env.DB.prepare(
+          'INSERT INTO withdrawals (user_id, amount, status) VALUES (?, ?, "pending")'
+        ).bind(user_id, amount).run();
 
         return Response.json({ ok: true }, { headers: cors });
       }
 
-      // GET /api/withdrawals — pending заявки (для админ-меню)
       if (url.pathname === '/api/withdrawals' && request.method === 'GET') {
         const rows = await env.DB.prepare(
           'SELECT id, user_id, amount, status, created_at FROM withdrawals WHERE status = "pending" ORDER BY created_at DESC'
@@ -298,8 +302,6 @@ export default {
         return Response.json(rows.results || [], { headers: cors });
       }
 
-      // POST /api/withdrawals/action { admin_token, id, action }
-      // action: 'approve' | 'reject'
       if (url.pathname === '/api/withdrawals/action' && request.method === 'POST') {
         const { admin_token, id, action } = await request.json();
         if (!admin_token || admin_token !== env.ADMIN_TOKEN) {
