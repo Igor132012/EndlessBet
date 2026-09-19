@@ -1082,17 +1082,25 @@ async function finishSpin(prize, c) {
   };
 }
 
-/* ==================== ПРОМОКОД ==================== */
+/* ==================== ПРОМОКОД (с отладкой) ==================== */
 async function applyPromo() {
+  alert('1. Функция applyPromo вызвана');
+
   haptic('light');
+
   const code = $('promoInput').value.trim().toUpperCase();
-  if (!code) return toastText('Введи код');
+  alert('2. Код: "' + code + '"');
+  if (!code) { toastText('Введи код'); return; }
 
   const uid = getUserId();
-  if (!uid) return toastText('Открой из Telegram');
+  alert('3. user_id: ' + uid + '\ninitData: ' + (tg?.initData ? 'есть (' + tg.initData.length + ')' : 'ПУСТО'));
+  if (!uid) { toastText('Открой из Telegram'); return; }
 
   try {
+    alert('4. Отправляю запрос:\n' + API_URL + '/api/promo/activate');
     const d = await apiCall('/api/promo/activate', { user_id: uid, code });
+    alert('5. Ответ: ' + JSON.stringify(d));
+
     state.balance = d.balance;
     state.withdrawable = d.withdrawable;
     updateBalance(); updateStatsUI();
@@ -1100,6 +1108,7 @@ async function applyPromo() {
     haptic('success');
     toastDelta(d.stars);
   } catch (e) {
+    alert('ОШИБКА: ' + e.message);
     toastText(e.message);
   }
 }
@@ -1128,6 +1137,17 @@ async function withdrawOpen() {
 renderIcons();
 updateBalance();
 updateStatsUI();
+
+// Отладка при загрузке
+setTimeout(() => {
+  const uid = getUserId();
+  if (!uid) {
+    console.warn('initDataUnsafe.user пустой — открывай через кнопку в боте');
+  } else {
+    console.log('User ID:', uid);
+  }
+}, 500);
+
 if (getUserId()) syncBalance();
 </script>
 </body>
