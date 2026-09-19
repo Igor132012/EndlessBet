@@ -1,0 +1,10 @@
+name = "endlessbet"
+main = "worker.js"
+compatibility_date = "2026-09-18"
+
+[[kv_namespaces]]
+binding = "ENDLESSBET_KV"
+id = "ВСТАВЬ_ID_ИЗ_KV"
+
+[vars]
+ADMIN_TOKEN = "endlessbet_admin_2026_change_me"
