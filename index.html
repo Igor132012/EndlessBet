@@ -503,7 +503,7 @@
     <button class="case-item case-sub" onclick="openCaseScreen('subcase')">
       <div class="info">
         <div class="name">За подписку</div>
-        <div class="range">1 <span class="ico" data-icon="star"></span> — 10 000 <span class="ico" data-icon="star"></span></div>
+        <div class="range">1 <span class="ico" data-icon="star"></span> — 50 <span class="ico" data-icon="star"></span></div>
       </div>
       <div class="price" id="subcaseLabel">Бесплатно</div>
     </button>
@@ -704,7 +704,6 @@ const state = {
   busySpin: false,
   idleSpinRaf: null,
   currentCase: null,
-  // Подписочный кейс
   subcaseSubscribed: false,
   subcaseCanOpen: false,
   subcaseNextAt: 0,
@@ -1102,7 +1101,7 @@ function setBet(v) {
   else $('betInput').value = v;
 }
 
-/* ==================== КЕЙСЫ (уменьшенные шансы) ==================== */
+/* ==================== КЕЙСЫ ==================== */
 const CASES = {
   case10: {
     price: 10, min: 1, max: 1000,
@@ -1150,18 +1149,18 @@ const CASES = {
     ]
   },
   subcase: {
-    price: 0, min: 1, max: 10000,
+    price: 0, min: 1, max: 50,
     prizes: [
-      { prize: 5,     weight: 4500 },
-      { prize: 15,    weight: 3000 },
-      { prize: 50,    weight: 1500 },
-      { prize: 100,   weight: 800 },
-      { prize: 300,   weight: 150 },
-      { prize: 700,   weight: 40 },
-      { prize: 1500,  weight: 8 },
-      { prize: 3000,  weight: 1.8 },
-      { prize: 6000,  weight: 0.18 },
-      { prize: 10000, weight: 0.02 },
+      { prize: 1,  weight: 4000 },
+      { prize: 2,  weight: 2500 },
+      { prize: 3,  weight: 1500 },
+      { prize: 5,  weight: 1000 },
+      { prize: 8,  weight: 600 },
+      { prize: 12, weight: 250 },
+      { prize: 18, weight: 100 },
+      { prize: 25, weight: 35 },
+      { prize: 35, weight: 12 },
+      { prize: 50, weight: 3 },
     ]
   }
 };
@@ -1346,7 +1345,6 @@ function mainCaseAction() {
   else buyCase(caseKey);
 }
 
-/* ==== Покупка кейса ==== */
 async function buyCase(caseKey) {
   if (state.busyCase) return;
   haptic('light');
@@ -1370,7 +1368,6 @@ async function buyCase(caseKey) {
   updateSpinButton();
 }
 
-/* ==== Прокрутка кейса ==== */
 async function spinCase() {
   if (state.busySpin) return;
   initAudio(); haptic('medium');
@@ -1471,7 +1468,6 @@ async function finishSpin(prize, c, caseKey) {
   }, 2000);
 }
 
-/* ==== Подписочный кейс ==== */
 async function spinSubcase() {
   if (state.busySpin) return;
   initAudio(); haptic('medium');
