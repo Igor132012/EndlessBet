@@ -12,11 +12,13 @@ export default {
 
     try {
 
+      // ============ HEALTH ============
       if (url.pathname === '/api/health') {
         return Response.json({ status: 'ok' }, { headers: cors });
       }
 
       // ============ БАЛАНС ============
+      // POST /api/balance { user_id }
       if (url.pathname === '/api/balance' && request.method === 'POST') {
         const { user_id } = await request.json();
         if (!user_id) return Response.json({ error: 'Нет user_id' }, { status: 400, headers: cors });
@@ -34,6 +36,9 @@ export default {
         return Response.json(user, { headers: cors });
       }
 
+      // POST /api/balance/change { user_id, amount }
+      // amount < 0 — списание (сначала withdrawable, потом balance)
+      // amount > 0 — пополнение к balance
       if (url.pathname === '/api/balance/change' && request.method === 'POST') {
         const { user_id, amount } = await request.json();
         if (!user_id || typeof amount !== 'number') {
@@ -74,6 +79,8 @@ export default {
         return Response.json({ balance, withdrawable }, { headers: cors });
       }
 
+      // POST /api/balance/win { user_id, amount }
+      // Начисление выигрыша: +X к balance И +X к withdrawable
       if (url.pathname === '/api/balance/win' && request.method === 'POST') {
         const { user_id, amount } = await request.json();
         if (!user_id || typeof amount !== 'number' || amount <= 0) {
@@ -93,6 +100,8 @@ export default {
         return Response.json(user, { headers: cors });
       }
 
+      // POST /api/balance/deposit { user_id, amount }
+      // Пополнение: только к balance (не к выводу)
       if (url.pathname === '/api/balance/deposit' && request.method === 'POST') {
         const { user_id, amount } = await request.json();
         if (!user_id || typeof amount !== 'number' || amount <= 0) {
@@ -111,6 +120,7 @@ export default {
       }
 
       // ============ ПРОМОКОДЫ ============
+      // POST /api/promo/activate { user_id, code }
       if (url.pathname === '/api/promo/activate' && request.method === 'POST') {
         const { user_id, code } = await request.json();
         if (!user_id || !code) return Response.json({ error: 'Неверные данные' }, { status: 400, headers: cors });
@@ -146,6 +156,15 @@ export default {
         }, { headers: cors });
       }
 
+      // GET /api/promos — список промокодов
+      if (url.pathname === '/api/promos' && request.method === 'GET') {
+        const rows = await env.DB.prepare(
+          'SELECT code, stars, max_uses, uses FROM promos ORDER BY code'
+        ).all();
+        return Response.json(rows.results, { headers: cors });
+      }
+
+      // POST /api/promos — создать промокод
       if (url.pathname === '/api/promos' && request.method === 'POST') {
         const { admin_token, code, stars, uses } = await request.json();
         if (!admin_token || admin_token !== env.ADMIN_TOKEN) {
@@ -161,6 +180,7 @@ export default {
       }
 
       // ============ ИНВЕНТАРЬ ============
+      // GET /api/inventory?user_id=123
       if (url.pathname === '/api/inventory' && request.method === 'GET') {
         const user_id = url.searchParams.get('user_id');
         if (!user_id) return Response.json({ error: 'Нет user_id' }, { status: 400, headers: cors });
@@ -174,6 +194,7 @@ export default {
         return Response.json(inv, { headers: cors });
       }
 
+      // POST /api/inventory/add { user_id, case_key }
       if (url.pathname === '/api/inventory/add' && request.method === 'POST') {
         const { user_id, case_key } = await request.json();
         if (!user_id || !case_key) return Response.json({ error: 'Неверные данные' }, { status: 400, headers: cors });
@@ -190,6 +211,7 @@ export default {
         return Response.json({ ok: true, count: row ? row.count : 0 }, { headers: cors });
       }
 
+      // POST /api/inventory/spend { user_id, case_key }
       if (url.pathname === '/api/inventory/spend' && request.method === 'POST') {
         const { user_id, case_key } = await request.json();
         if (!user_id || !case_key) return Response.json({ error: 'Неверные данные' }, { status: 400, headers: cors });
@@ -210,29 +232,26 @@ export default {
       }
 
       // ============ ПОПОЛНЕНИЕ ЗВЁЗДАМИ ============
+      // POST /api/create-invoice { user_id, stars }
+      // stars — любое число от 1 до 100000
       if (url.pathname === '/api/create-invoice' && request.method === 'POST') {
-        const { user_id, package: pkg } = await request.json();
-        if (!user_id || !pkg) return Response.json({ error: 'Неверные данные' }, { status: 400, headers: cors });
+        const { user_id, stars } = await request.json();
+        if (!user_id || !stars) return Response.json({ error: 'Неверные данные' }, { status: 400, headers: cors });
 
-        const PACKAGES = {
-          topup_50:   { stars: 50,   price: 50 },
-          topup_100:  { stars: 100,  price: 100 },
-          topup_500:  { stars: 500,  price: 500 },
-          topup_1000: { stars: 1000, price: 1000 },
-        };
-
-        const info = PACKAGES[pkg];
-        if (!info) return Response.json({ error: 'Пакет не найден' }, { status: 400, headers: cors });
+        const amount = parseInt(stars, 10);
+        if (!amount || amount < 1 || amount > 100000) {
+          return Response.json({ error: 'Сумма 1–100 000' }, { status: 400, headers: cors });
+        }
 
         const tgResp = await fetch(`https://api.telegram.org/bot${env.BOT_TOKEN}/createInvoiceLink`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            title: `Пополнение на ${info.stars} ★`,
-            description: `Баланс EndlessBet пополнится на ${info.stars} звёзд.`,
-            payload: `topup:${pkg}:${user_id}`,
+            title: `Пополнение на ${amount} ★`,
+            description: `Баланс EndlessBet пополнится на ${amount} звёзд.`,
+            payload: `topup:custom:${user_id}`,
             currency: 'XTR',
-            prices: [{ label: `${info.stars} звёзд`, amount: info.price }],
+            prices: [{ label: `${amount} звёзд`, amount: amount }],
           }),
         });
 
@@ -244,6 +263,7 @@ export default {
       }
 
       // ============ ВЫВОДЫ ============
+      // POST /api/withdraw { user_id, amount }
       if (url.pathname === '/api/withdraw' && request.method === 'POST') {
         const { user_id, amount } = await request.json();
         if (!user_id || !amount || amount < 100) {
@@ -270,6 +290,7 @@ export default {
         return Response.json({ ok: true }, { headers: cors });
       }
 
+      // GET /api/withdrawals — pending заявки (для админ-меню)
       if (url.pathname === '/api/withdrawals' && request.method === 'GET') {
         const rows = await env.DB.prepare(
           'SELECT id, user_id, amount, status, created_at FROM withdrawals WHERE status = "pending" ORDER BY created_at DESC'
@@ -277,6 +298,8 @@ export default {
         return Response.json(rows.results || [], { headers: cors });
       }
 
+      // POST /api/withdrawals/action { admin_token, id, action }
+      // action: 'approve' | 'reject'
       if (url.pathname === '/api/withdrawals/action' && request.method === 'POST') {
         const { admin_token, id, action } = await request.json();
         if (!admin_token || admin_token !== env.ADMIN_TOKEN) {
