@@ -30,6 +30,7 @@
   }
   .ico svg { width:100%; height:100%; display:block; }
 
+  /* Меню */
   #menu { align-items:center; justify-content:center; padding:28px; text-align:center; }
   .brand {
     font-size:11px; color:#2a6a3a; letter-spacing:6px; text-transform:uppercase;
@@ -69,6 +70,7 @@
   }
   .mini-btn:active { border-color:#0a8040; color:#5cff9a; }
 
+  /* Топбар */
   .topbar {
     padding:20px 24px; display:flex; justify-content:space-between; align-items:center;
   }
@@ -86,6 +88,7 @@
   }
   .topbar-balance .ico { font-size:14px; color:#5cff9a; }
 
+  /* КРАШ */
   .crash-stage {
     flex:1; display:flex; flex-direction:column;
     align-items:center; justify-content:center; position:relative;
@@ -173,13 +176,18 @@
   }
   .main-btn:active { background:#031a0a; border-color:#5cff9a; }
   .main-btn.cashout { color:#000; background:#5cff9a; border-color:#5cff9a; }
-  .main-btn:disabled {
-    color:#1a4a2a;
-    border-color:#0a2a15;
-    cursor:not-allowed;
-    opacity:.6;
+
+  /* Затемнённая заблокированная кнопка */
+  .main-btn:disabled,
+  .main-btn.disabled {
+    color:#1a4a2a !important;
+    border-color:#0a2a15 !important;
+    background:#000 !important;
+    cursor:not-allowed !important;
+    letter-spacing:2px;
   }
 
+  /* КЕЙСЫ */
   .cases-list {
     flex:1; padding:0 24px; display:flex; flex-direction:column;
     justify-content:center; gap:12px;
@@ -205,6 +213,7 @@
   }
   .case-item .price .ico { font-size:14px; }
 
+  /* РУЛЕТКА */
   .roulette-stage {
     flex:1; display:flex; flex-direction:column;
     align-items:center; justify-content:center;
@@ -260,6 +269,7 @@
 
   .spin-controls { padding:0 24px 34px; }
 
+  /* ПРОФИЛЬ */
   .profile-content { flex:1; padding:0 24px; overflow-y:auto; }
   .profile-card {
     border:1px solid #0a3a1a; background:#000;
@@ -279,6 +289,7 @@
   .profile-info .name { font-size:18px; font-weight:400; color:#5cff9a; }
   .profile-info .username { color:#3a7a4a; font-size:13px; margin-top:4px; }
 
+  /* Оставил баланс сверху профиля в виде двух карточек */
   .stats-grid {
     display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:18px;
   }
@@ -349,6 +360,7 @@
   #toast .ico { font-size:13px; }
   #toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
 
+  /* МОДАЛКА */
   .modal-bg {
     position:fixed; inset:0; background:rgba(0,0,0,0.9);
     z-index:200; display:none; align-items:center; justify-content:center;
@@ -405,7 +417,6 @@
     display:flex;
     align-items:center;
     justify-content:center;
-    height:auto;
   }
   .custom-btn:active { background:#031a0a; border-color:#5cff9a; }
 
@@ -575,26 +586,6 @@
       </div>
     </div>
 
-    <div class="section-title">Статистика</div>
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-label">Всего ставок</div>
-        <div class="stat-value" id="statBets">0</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Побед</div>
-        <div class="stat-value" id="statWins">0</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Макс. краш</div>
-        <div class="stat-value" id="statMaxCrash">0x</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Профит</div>
-        <div class="stat-value" id="statProfit"></div>
-      </div>
-    </div>
-
     <div class="section-title">Промокод</div>
     <div class="promo-row">
       <input type="text" class="promo-input" id="promoInput" placeholder="ВВЕДИ КОД" maxlength="16">
@@ -709,7 +700,6 @@ const state = {
   busySpin: false,
   idleSpinRaf: null,
   currentCase: null,
-  stats: { totalBets:0, wins:0, maxCrash:0, profit:0 },
 };
 
 const $ = id => document.getElementById(id);
@@ -749,12 +739,7 @@ function updateBalance() {
   $('profileBalance').innerHTML = h;
 }
 
-function updateStatsUI() {
-  $('statBets').textContent = fmt(state.stats.totalBets);
-  $('statWins').textContent = fmt(state.stats.wins);
-  $('statMaxCrash').textContent = state.stats.maxCrash.toFixed(2) + 'x';
-  $('statProfit').innerHTML = (state.stats.profit >= 0 ? '+' : '') + fmt(state.stats.profit) + starIco();
-  $('statProfit').style.color = state.stats.profit >= 0 ? '#5cff9a' : '#ff4d4d';
+function updateProfileBalance() {
   $('statBalance').innerHTML = fmt(state.balance) + starIco();
   $('statWithdrawable').innerHTML = fmt(state.withdrawable) + starIco();
 }
@@ -800,7 +785,7 @@ async function syncBalance() {
     const d = await apiCall('/api/balance', { user_id: uid });
     state.balance = d.balance || 0;
     state.withdrawable = d.withdrawable || 0;
-    updateBalance(); updateStatsUI();
+    updateBalance(); updateProfileBalance();
   } catch (e) { console.warn('syncBalance:', e); }
 }
 
@@ -821,7 +806,7 @@ async function spendAPI(amount) {
     const d = await apiCall('/api/balance/change', { user_id: uid, amount: -amount });
     state.balance = d.balance;
     state.withdrawable = d.withdrawable;
-    updateBalance(); updateStatsUI();
+    updateBalance(); updateProfileBalance();
     return true;
   } catch (e) {
     toastText(e.message);
@@ -837,7 +822,7 @@ async function winAPI(amount) {
     const d = await apiCall('/api/balance/win', { user_id: uid, amount });
     state.balance = d.balance;
     state.withdrawable = d.withdrawable;
-    updateBalance(); updateStatsUI();
+    updateBalance(); updateProfileBalance();
   } catch (e) { console.warn(e); }
 }
 
@@ -881,11 +866,11 @@ function backToMenu() {
   state.crashPhase = 'idle';
   stopIdleSpin();
   showScreen('menu');
-  updateBalance(); updateStatsUI();
+  updateBalance(); updateProfileBalance();
 }
 function closeCase() {
   haptic('light');
-  if (state.busySpin) return;
+  if (state.busySpin || state.busyCase) return;
   stopIdleSpin();
   showScreen('cases');
   updateBalance();
@@ -902,7 +887,7 @@ function openProfile() {
   } else {
     av.innerHTML = `<span class="ico">${ICONS.user}</span>`;
   }
-  updateStatsUI(); updateBalance();
+  updateProfileBalance(); updateBalance();
   showScreen('profile');
 }
 
@@ -927,7 +912,6 @@ async function startCrashRound() {
   if (!ok) return;
 
   toastDelta(-bet);
-  state.stats.totalBets++;
   state.crashBet = bet;
   state.crashPhase = 'flying';
   state.crashMultiplier = 1.0;
@@ -981,8 +965,6 @@ function crashBoom() {
   tone(200, 0.5, 'sawtooth', 0.1);
   haptic('error');
 
-  if (state.crashAt > state.stats.maxCrash) state.stats.maxCrash = state.crashAt;
-
   const el = $('multiplier');
   el.className = 'crash-x crashed';
   el.textContent = state.crashAt.toFixed(2) + 'x';
@@ -1007,12 +989,8 @@ async function cashoutCrash() {
   haptic('success');
 
   const win = Math.floor(state.crashBet * state.crashMultiplier);
-  const profit = win - state.crashBet;
 
   await winAPI(win);
-  state.stats.wins++;
-  state.stats.profit += profit;
-  updateStatsUI();
 
   $('multiplier').style.color = '#5cff9a';
   $('crashCaption').textContent = `забрано`;
@@ -1147,17 +1125,29 @@ function stopIdleSpin() {
   }
 }
 
+/* ==== Управление кнопкой ==== */
+function setSpinBtnText(text) {
+  const btn = $('spinBtn');
+  btn.textContent = text;
+}
+function lockSpinBtn(text) {
+  const btn = $('spinBtn');
+  btn.disabled = true;
+  btn.classList.add('disabled');
+  btn.textContent = text;
+}
+function unlockSpinBtn(text) {
+  const btn = $('spinBtn');
+  btn.disabled = false;
+  btn.classList.remove('disabled');
+  btn.textContent = text;
+}
+
 function openCaseScreen(caseKey) {
   initAudio(); haptic('light');
   state.currentCase = caseKey;
   state.busySpin = false;
   state.busyCase = false;
-
-  // На случай, если кнопка осталась заблокированной с прошлого раза
-  const btn = $('spinBtn');
-  btn.disabled = false;
-  btn.style.opacity = '';
-  btn.style.cursor = '';
 
   showScreen('caseOpen');
   updateSpinButton();
@@ -1169,53 +1159,46 @@ function openCaseScreen(caseKey) {
 function updateSpinButton() {
   const caseKey = state.currentCase;
   const count = state.inventory[caseKey] || 0;
-  const btn = $('spinBtn');
-  if (count > 0) btn.textContent = `Открыть (${count})`;
-  else btn.textContent = `Купить за ${CASES[caseKey].price} ★`;
+  if (count > 0) unlockSpinBtn(`Открыть (${count})`);
+  else unlockSpinBtn(`Купить за ${CASES[caseKey].price} ★`);
 }
 
 function mainCaseAction() {
+  if (state.busyCase || state.busySpin) return;
   const caseKey = state.currentCase;
   const count = state.inventory[caseKey] || 0;
   if (count > 0) spinCase();
   else buyCase(caseKey);
 }
 
+/* ==== Покупка кейса ==== */
 async function buyCase(caseKey) {
   if (state.busyCase) return;
   haptic('light');
   const c = CASES[caseKey];
   if (state.balance < c.price) return toastText('Недостаточно звёзд');
 
-  // Блокируем кнопку
-  const btn = $('spinBtn');
-  btn.disabled = true;
-  btn.style.opacity = '0.6';
-  btn.style.cursor = 'not-allowed';
-
+  lockSpinBtn('Подождите...');
   state.busyCase = true;
+
   const ok = await spendAPI(c.price);
   if (!ok) {
     state.busyCase = false;
-    btn.disabled = false;
-    btn.style.opacity = '';
-    btn.style.cursor = '';
+    updateSpinButton();
     return;
   }
 
   await inventoryAdd(caseKey);
   state.busyCase = false;
 
-  // Разблокируем кнопку
-  btn.disabled = false;
-  btn.style.opacity = '';
-  btn.style.cursor = '';
-
   toastDelta(-c.price);
+
+  // После списания кнопка сразу активна и ждёт открытия
   updateSpinButton();
 }
 
-function spinCase() {
+/* ==== Прокрутка кейса ==== */
+async function spinCase() {
   if (state.busySpin) return;
   initAudio(); haptic('medium');
   state.busySpin = true;
@@ -1226,12 +1209,15 @@ function spinCase() {
   const winPrize = pickPrize(caseKey);
 
   stopIdleSpin();
+  lockSpinBtn('Открываем...');
 
-  // Блокируем кнопку
-  const btn = $('spinBtn');
-  btn.disabled = true;
-  btn.style.opacity = '0.6';
-  btn.style.cursor = 'not-allowed';
+  // Списываем кейс из инвентаря сразу (до прокрутки), чтобы не было багов
+  const spent = await inventorySpend(caseKey);
+  if (!spent) {
+    state.busySpin = false;
+    updateSpinButton();
+    return;
+  }
 
   track.innerHTML = '';
   for (let i = 0; i < TRACK_SIZE; i++) {
@@ -1278,24 +1264,12 @@ function spinCase() {
   });
 
   setTimeout(async () => {
-    state.busySpin = false;
     await finishSpin(winPrize, c, caseKey);
   }, duration + 80);
 }
 
 async function finishSpin(prize, c, caseKey) {
-  const ok = await inventorySpend(caseKey);
-  if (!ok) {
-    toastText('Ошибка');
-    // Разблокируем на случай ошибки
-    const btn = $('spinBtn');
-    btn.disabled = false;
-    btn.style.opacity = '';
-    btn.style.cursor = '';
-    state.busySpin = false;
-    return;
-  }
-
+  // Зачисляем выигрыш
   await winAPI(prize);
   updateBalance();
 
@@ -1305,19 +1279,16 @@ async function finishSpin(prize, c, caseKey) {
   haptic(prize >= c.price ? 'success' : 'error');
   toastDelta(prize);
 
+  // Как только звёзды зачислены — разблокируем кнопку.
+  // Она сразу покажет "Купить" или "Открыть (N)" в зависимости от инвентаря.
+  state.busySpin = false;
   updateSpinButton();
 
-  // Разблокируем кнопку через 2 секунды, когда трек снова начинает idle-вращение
+  // Через 2 секунды трек снова начинает idle-вращение
   setTimeout(() => {
     if (state.currentCase === caseKey) {
       $('spinResult').className = 'spin-result';
       startIdleSpin(caseKey);
-
-      const btn = $('spinBtn');
-      btn.disabled = false;
-      btn.style.opacity = '';
-      btn.style.cursor = '';
-      updateSpinButton();
     }
   }, 2000);
 }
@@ -1335,7 +1306,7 @@ async function applyPromo() {
     const d = await apiCall('/api/promo/activate', { user_id: uid, code });
     state.balance = d.balance;
     state.withdrawable = d.withdrawable;
-    updateBalance(); updateStatsUI();
+    updateBalance(); updateProfileBalance();
     $('promoInput').value = '';
     haptic('success');
     toastDelta(d.stars);
@@ -1421,7 +1392,7 @@ async function buyTopup(stars) {
 /* ==================== INIT ==================== */
 renderIcons();
 updateBalance();
-updateStatsUI();
+updateProfileBalance();
 updateCaseLabels();
 if (getUserId()) {
   syncBalance();
