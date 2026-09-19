@@ -715,6 +715,7 @@ const $ = id => document.getElementById(id);
 const AudioCtx = window.AudioContext || window.webkitAudioContext;
 let actx = null;
 function initAudio() { if (!actx) actx = new AudioCtx(); if (actx.state === 'suspended') actx.resume(); }
+
 function tone(freq, dur, type='sine', vol=0.05) {
   if (!actx) return;
   const o = actx.createOscillator(), g = actx.createGain();
@@ -723,6 +724,35 @@ function tone(freq, dur, type='sine', vol=0.05) {
   g.gain.exponentialRampToValueAtTime(0.0001, actx.currentTime + dur);
   o.connect(g); g.connect(actx.destination);
   o.start(); o.stop(actx.currentTime + dur);
+}
+
+/* Короткий "чпок" — играется при пересечении границы слота */
+function popSound() {
+  if (!actx) return;
+  const now = actx.currentTime;
+
+  // Основной тон — короткий, с падающей частотой
+  const o = actx.createOscillator();
+  const g = actx.createGain();
+  o.type = 'triangle';
+  o.frequency.setValueAtTime(900, now);
+  o.frequency.exponentialRampToValueAtTime(200, now + 0.035);
+  g.gain.setValueAtTime(0.08, now);
+  g.gain.exponentialRampToValueAtTime(0.0001, now + 0.04);
+  o.connect(g); g.connect(actx.destination);
+  o.start(now);
+  o.stop(now + 0.05);
+
+  // Второй тон — для "щелчка"
+  const o2 = actx.createOscillator();
+  const g2 = actx.createGain();
+  o2.type = 'square';
+  o2.frequency.setValueAtTime(1500, now);
+  g2.gain.setValueAtTime(0.03, now);
+  g2.gain.exponentialRampToValueAtTime(0.0001, now + 0.02);
+  o2.connect(g2); g2.connect(actx.destination);
+  o2.start(now);
+  o2.stop(now + 0.025);
 }
 
 function haptic(type) {
@@ -1249,19 +1279,45 @@ async function spinCase() {
   void track.offsetWidth;
 
   const duration = 5000;
+
+  // Запускаем анимацию
   track.style.transition = `transform ${duration}ms cubic-bezier(0.12, 0.85, 0.18, 1)`;
   track.style.transform = `translateX(${targetX}px)`;
 
-  let elapsed = 0;
-  const tickSchedule = [];
-  while (elapsed < duration - 200) {
-    const interval = 40 + elapsed * 0.08;
-    elapsed += interval;
-    tickSchedule.push(elapsed);
+  // ===== СИНХРОНИЗАЦИЯ ЗВУКА С ПОЗИЦИЕЙ ЛЕНТЫ =====
+  // Ширина слота + отступы = 90px (80 + 5*2)
+  const SLOT_STEP = 90;
+  const startTime = performance.now();
+  const wrapLeft = wrap.getBoundingClientRect().left;
+
+  let lastSlotIndex = 0;
+
+  function tick(now) {
+    if (!state.busySpin) return;
+
+    const elapsed = now - startTime;
+    if (elapsed > duration) return;
+
+    // Реальная позиция ленты
+    const currentLeft = track.getBoundingClientRect().left;
+    const currentX = currentLeft - wrapLeft;
+
+    // Позиция указателя (по центру wrap) относительно начала ленты
+    const pointerPos = wrapW / 2 - currentX;
+    // Индекс слота, который сейчас под указателем
+    const slotIndex = Math.floor(pointerPos / SLOT_STEP);
+
+    if (slotIndex !== lastSlotIndex) {
+      const diff = slotIndex - lastSlotIndex;
+      if (diff > 0) {
+        popSound();
+      }
+      lastSlotIndex = slotIndex;
+    }
+
+    requestAnimationFrame(tick);
   }
-  tickSchedule.forEach(t => {
-    setTimeout(() => tone(1200, 0.015, 'square', 0.02), t);
-  });
+  requestAnimationFrame(tick);
 
   setTimeout(async () => {
     await finishSpin(winPrize, c, caseKey);
