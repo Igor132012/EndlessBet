@@ -15,20 +15,7 @@
 
   #space {
     position:fixed; inset:0; z-index:0; pointer-events:none;
-    background:
-      radial-gradient(circle at 15% 15%, rgba(0,255,120,0.10), transparent 40%),
-      radial-gradient(circle at 85% 75%, rgba(0,200,90,0.08), transparent 45%),
-      radial-gradient(circle at 50% 100%, rgba(0,255,80,0.05), transparent 50%),
-      #000;
-  }
-  .glow {
-    position:absolute; border-radius:50%;
-    filter:blur(80px); opacity:.3;
-    animation:floatGlow 14s infinite ease-in-out alternate;
-  }
-  @keyframes floatGlow {
-    0%   { transform:translate(0,0) scale(1); }
-    100% { transform:translate(40px,-40px) scale(1.25); }
+    background:#000;
   }
 
   .screen {
@@ -43,66 +30,71 @@
   }
   .ico svg { width:100%; height:100%; display:block; }
 
+  /* Меню */
   #menu { align-items:center; justify-content:center; padding:28px; text-align:center; }
   .brand {
-    font-size:11px; color:#2a6a3a; letter-spacing:5px; text-transform:uppercase;
-    margin-bottom:44px;
+    font-size:11px; color:#2a6a3a; letter-spacing:6px; text-transform:uppercase;
+    margin-bottom:52px; font-weight:500;
   }
-  .balance-block { margin-bottom:56px; }
-  .balance-label { font-size:10px; color:#1a5a2a; letter-spacing:3px; text-transform:uppercase; margin-bottom:12px; }
+  .balance-block { margin-bottom:64px; }
+  .balance-label {
+    font-size:10px; color:#1a5a2a; letter-spacing:4px; text-transform:uppercase;
+    margin-bottom:14px;
+  }
   .balance-value {
-    font-size:54px; font-weight:200; letter-spacing:-1px;
+    font-size:58px; font-weight:200; letter-spacing:-2px;
     color:#5cff9a; font-variant-numeric:tabular-nums;
     display:flex; align-items:center; justify-content:center; gap:10px;
-    text-shadow:0 0 30px rgba(92,255,154,0.5);
   }
-  .balance-value .ico { font-size:40px; color:#5cff9a; opacity:.9; }
+  .balance-value .ico { font-size:42px; color:#5cff9a; opacity:.85; }
 
-  .modes { display:flex; flex-direction:column; gap:10px; width:100%; max-width:320px; }
+  .modes { display:flex; flex-direction:column; gap:12px; width:100%; max-width:320px; }
   .mode-btn {
-    border:1.5px solid #0a3a1a; background:rgba(0,30,15,0.5);
-    backdrop-filter:blur(8px); border-radius:14px;
-    padding:20px 24px; color:#fff; cursor:pointer;
+    border:1px solid #0a3a1a; background:#000;
+    border-radius:16px;
+    padding:22px 26px; color:#fff; cursor:pointer;
     display:flex; justify-content:space-between; align-items:center;
-    transition:border-color .2s, background .2s; font-family:inherit;
+    transition:border-color .25s, background .25s; font-family:inherit;
     font-size:15px; letter-spacing:1px;
   }
-  .mode-btn:active { background:rgba(0,60,30,0.6); border-color:#0a8040; }
+  .mode-btn:active { background:#031a0a; border-color:#0a8040; }
   .mode-btn .label { font-weight:500; color:#5cff9a; }
-  .mode-btn .sub { color:#2a6a3a; font-size:11px; margin-top:3px; letter-spacing:0; }
+  .mode-btn .sub { color:#1a5a2a; font-size:11px; margin-top:4px; letter-spacing:0; }
 
-  .menu-footer { margin-top:36px; display:flex; gap:10px; }
+  .menu-footer { margin-top:44px; display:flex; gap:10px; }
   .mini-btn {
-    background:transparent; border:1.5px solid #0a3a1a; color:#2a6a3a;
-    font-size:12px; letter-spacing:1px; cursor:pointer;
-    font-family:inherit; padding:10px 18px; border-radius:10px;
+    background:transparent; border:1px solid #0a3a1a; color:#2a6a3a;
+    font-size:12px; letter-spacing:1.5px; cursor:pointer;
+    font-family:inherit; padding:12px 22px; border-radius:12px;
     transition:all .2s;
   }
   .mini-btn:active { border-color:#0a8040; color:#5cff9a; }
 
+  /* Топбар */
   .topbar {
-    padding:18px 22px; display:flex; justify-content:space-between; align-items:center;
+    padding:20px 24px; display:flex; justify-content:space-between; align-items:center;
   }
   .close-btn {
     background:transparent; border:none; color:#2a6a3a;
-    cursor:pointer; padding:6px 10px; line-height:1;
+    cursor:pointer; padding:8px; line-height:1;
     display:flex; align-items:center; justify-content:center;
     transition:color .2s;
   }
   .close-btn:active { color:#5cff9a; }
   .close-btn .ico { font-size:20px; }
   .topbar-balance {
-    color:#5cff9a; font-size:14px; font-variant-numeric:tabular-nums;
-    display:flex; align-items:center; gap:6px;
+    color:#5cff9a; font-size:15px; font-variant-numeric:tabular-nums;
+    display:flex; align-items:center; gap:6px; font-weight:300;
   }
   .topbar-balance .ico { font-size:14px; color:#5cff9a; }
 
+  /* Краш */
   .crash-stage {
     flex:1; display:flex; flex-direction:column;
     align-items:center; justify-content:center; position:relative;
   }
   .crash-x {
-    font-size:112px; font-weight:100; letter-spacing:-4px;
+    font-size:118px; font-weight:100; letter-spacing:-5px;
     color:#fff; font-variant-numeric:tabular-nums;
     line-height:1;
     transition:color .15s ease, opacity .5s ease, transform .5s cubic-bezier(0.4,0,0.2,1);
@@ -123,39 +115,39 @@
   }
   .crash-label {
     position:absolute;
-    font-size:80px; font-weight:200; letter-spacing:8px;
+    font-size:82px; font-weight:200; letter-spacing:8px;
     color:#ff4d4d; opacity:0;
     transform:translateY(40px) scale(0.85);
     transition:opacity .5s ease .15s, transform .5s cubic-bezier(0.34,1.56,0.64,1) .15s;
-    text-shadow:0 0 40px rgba(255,77,77,0.5);
   }
   .crash-label.show { opacity:1; transform:translateY(0) scale(1); }
 
   .crash-caption {
-    margin-top:20px; font-size:11px; color:#2a5a3a; letter-spacing:2px;
+    margin-top:24px; font-size:11px; color:#2a5a3a; letter-spacing:3px;
     text-transform:uppercase; transition:opacity .3s;
   }
   .crash-caption.hidden { opacity:0; }
 
-  .crash-controls { padding:0 22px 30px; }
+  .crash-controls { padding:0 24px 34px; }
   .crash-info {
-    text-align:center; font-size:13px; color:#3a7a4a;
-    margin-bottom:14px; height:20px; letter-spacing:.5px;
+    text-align:center; font-size:14px; color:#3a7a4a;
+    margin-bottom:16px; height:22px; letter-spacing:.5px;
     display:flex; align-items:center; justify-content:center; gap:5px;
+    font-weight:300;
   }
   .crash-info.active { color:#5cff9a; }
-  .crash-info .ico { font-size:13px; }
+  .crash-info .ico { font-size:14px; }
 
   .bet-row {
     display:flex; align-items:center;
-    border:1.5px solid #0a3a1a; background:rgba(0,30,15,0.5);
-    border-radius:14px; padding:0 18px; margin-bottom:10px;
+    border:1px solid #0a3a1a; background:#000;
+    border-radius:16px; padding:0 20px; margin-bottom:12px;
     transition:border-color .2s;
   }
   .bet-row:focus-within { border-color:#0a8040; }
   #betInput {
     flex:1; background:none; border:none; color:#5cff9a;
-    font-size:20px; font-weight:400; padding:18px 0; outline:none;
+    font-size:22px; font-weight:300; padding:20px 0; outline:none;
     width:100%; font-family:inherit; font-variant-numeric:tabular-nums;
   }
   #betInput::placeholder { color:#1a4a2a; }
@@ -165,41 +157,42 @@
   }
   .bet-row .unit .ico { font-size:16px; color:#5cff9a; }
 
-  .quick-row { display:flex; gap:6px; margin-bottom:10px; }
+  .quick-row { display:flex; gap:8px; margin-bottom:12px; }
   .quick-btn {
-    flex:1; background:rgba(0,30,15,0.5); border:1.5px solid #0a3a1a;
-    color:#3a7a4a; padding:10px; border-radius:10px; font-size:12px;
+    flex:1; background:#000; border:1px solid #0a3a1a;
+    color:#3a7a4a; padding:12px; border-radius:12px; font-size:13px;
     cursor:pointer; transition:all .15s; font-family:inherit;
     font-variant-numeric:tabular-nums;
   }
   .quick-btn:active { border-color:#0a8040; color:#5cff9a; }
 
   .main-btn {
-    width:100%; background:rgba(0,40,20,0.5); border:1.5px solid #0a8040;
-    border-radius:14px; padding:20px; color:#5cff9a;
+    width:100%; background:#000; border:1px solid #0a8040;
+    border-radius:16px; padding:22px; color:#5cff9a;
     font-size:14px; font-weight:500; letter-spacing:3px;
     cursor:pointer; transition:all .2s; font-family:inherit;
-    text-transform:uppercase; backdrop-filter:blur(8px);
+    text-transform:uppercase;
   }
-  .main-btn:active { background:rgba(0,80,40,0.6); border-color:#5cff9a; }
+  .main-btn:active { background:#031a0a; border-color:#5cff9a; }
   .main-btn.cashout { color:#000; background:#5cff9a; border-color:#5cff9a; }
   .main-btn:disabled { color:#1a4a2a; border-color:#0a2a15; cursor:not-allowed; }
 
+  /* Кейсы */
   .cases-list {
-    flex:1; padding:0 22px; display:flex; flex-direction:column;
-    justify-content:center; gap:10px;
+    flex:1; padding:0 24px; display:flex; flex-direction:column;
+    justify-content:center; gap:12px;
   }
   .case-item {
-    border:1.5px solid #0a3a1a; background:rgba(0,30,15,0.5);
-    backdrop-filter:blur(8px); border-radius:14px;
-    padding:20px 24px; color:#fff; cursor:pointer;
+    border:1px solid #0a3a1a; background:#000;
+    border-radius:16px;
+    padding:22px 26px; color:#fff; cursor:pointer;
     display:flex; justify-content:space-between; align-items:center;
     transition:border-color .2s; font-family:inherit; text-align:left;
   }
   .case-item:active { border-color:#0a8040; }
   .case-item .info .name { font-size:15px; letter-spacing:1px; font-weight:500; color:#5cff9a; }
   .case-item .info .range {
-    color:#3a7a4a; font-size:11px; margin-top:4px;
+    color:#3a7a4a; font-size:11px; margin-top:5px;
     display:flex; align-items:center; gap:3px;
   }
   .case-item .info .range .ico { font-size:10px; }
@@ -209,6 +202,7 @@
   }
   .case-item .price .ico { font-size:14px; }
 
+  /* Рулетка */
   .roulette-stage {
     flex:1; display:flex; flex-direction:column;
     align-items:center; justify-content:center;
@@ -228,73 +222,72 @@
   }
   .slot {
     width:80px; height:90px; margin:0 5px; flex-shrink:0;
-    border:1.5px solid #0a3a1a; border-radius:12px;
+    border:1px solid #0a3a1a; border-radius:12px;
     display:flex; align-items:center; justify-content:center; gap:4px;
-    font-size:16px; font-weight:400; color:#3a7a4a;
+    font-size:16px; font-weight:300; color:#3a7a4a;
     font-variant-numeric:tabular-nums;
     transition:border-color .3s, color .3s;
-    background:rgba(0,20,10,0.6);
+    background:#000;
   }
   .slot .ico { font-size:12px; }
   .slot.rare    { color:#7affaa; border-color:#0a5a2a; }
   .slot.epic    { color:#aaffcc; border-color:#0a8040; }
-  .slot.legend  { color:#5cff9a; border-color:#5cff9a; box-shadow:0 0 12px rgba(92,255,154,0.5); }
+  .slot.legend  { color:#5cff9a; border-color:#5cff9a; }
 
   .pointer {
     position:absolute; top:50%; left:50%;
     transform:translate(-50%,-50%);
     width:2px; height:120px; background:#5cff9a; z-index:5;
     border-radius:1px;
-    box-shadow:0 0 20px #5cff9a;
   }
   .spin-result {
-    text-align:center; margin-top:36px;
+    text-align:center; margin-top:40px;
     opacity:0; transition:opacity .3s;
   }
   .spin-result.show { opacity:1; }
   .spin-result .label {
-    font-size:10px; color:#3a7a4a; letter-spacing:3px; text-transform:uppercase;
-    margin-bottom:8px;
+    font-size:10px; color:#3a7a4a; letter-spacing:4px; text-transform:uppercase;
+    margin-bottom:10px;
   }
   .spin-result .val {
-    font-size:44px; font-weight:200; letter-spacing:-1px;
+    font-size:48px; font-weight:200; letter-spacing:-1px;
     color:#5cff9a; font-variant-numeric:tabular-nums;
-    display:flex; align-items:center; justify-content:center; gap:8px;
-    text-shadow:0 0 30px rgba(92,255,154,0.5);
+    display:flex; align-items:center; justify-content:center; gap:10px;
   }
-  .spin-result .val .ico { font-size:26px; }
+  .spin-result .val .ico { font-size:28px; }
 
-  .spin-controls { padding:0 22px 30px; }
+  .spin-controls { padding:0 24px 34px; }
 
-  .profile-content { flex:1; padding:0 22px; overflow-y:auto; }
+  /* Профиль */
+  .profile-content { flex:1; padding:0 24px; overflow-y:auto; }
   .profile-card {
-    border:1.5px solid #0a3a1a; background:rgba(0,30,15,0.5);
-    backdrop-filter:blur(8px); border-radius:18px;
-    padding:24px; margin-bottom:16px;
-    display:flex; align-items:center; gap:16px;
+    border:1px solid #0a3a1a; background:#000;
+    border-radius:18px;
+    padding:26px; margin-bottom:18px;
+    display:flex; align-items:center; gap:18px;
   }
   .profile-avatar {
-    width:60px; height:60px; border-radius:50%;
-    border:1.5px solid #0a5a2a; flex-shrink:0;
+    width:62px; height:62px; border-radius:50%;
+    border:1px solid #0a5a2a; flex-shrink:0;
     display:flex; align-items:center; justify-content:center;
-    color:#5cff9a; background:rgba(0,40,20,0.6);
+    color:#5cff9a; background:#000;
     overflow:hidden;
   }
   .profile-avatar img { width:100%; height:100%; object-fit:cover; }
   .profile-avatar .ico { font-size:30px; }
-  .profile-info .name { font-size:18px; font-weight:500; color:#5cff9a; }
-  .profile-info .username { color:#3a7a4a; font-size:13px; margin-top:3px; }
+  .profile-info .name { font-size:18px; font-weight:400; color:#5cff9a; }
+  .profile-info .username { color:#3a7a4a; font-size:13px; margin-top:4px; }
 
   .stats-grid {
-    display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px;
+    display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:18px;
   }
   .stat-card {
-    border:1.5px solid #0a3a1a; background:rgba(0,20,10,0.6);
-    border-radius:14px; padding:18px; text-align:center;
+    border:1px solid #0a3a1a; background:#000;
+    border-radius:14px; padding:20px 16px; text-align:center;
   }
   .stat-card .stat-label {
-    font-size:10px; color:#2a5a3a; letter-spacing:2px; text-transform:uppercase;
-    margin-bottom:8px;
+    font-size:10px; color:#2a5a3a; letter-spacing:3px; text-transform:uppercase;
+    margin-bottom:10px;
   }
   .stat-card .stat-value {
     font-size:22px; font-weight:300; color:#5cff9a;
@@ -304,65 +297,119 @@
   .stat-card .stat-value .ico { font-size:16px; }
 
   .section-title {
-    font-size:10px; color:#2a5a3a; letter-spacing:3px; text-transform:uppercase;
-    margin:20px 0 10px;
+    font-size:10px; color:#2a5a3a; letter-spacing:4px; text-transform:uppercase;
+    margin:22px 0 12px;
   }
 
-  .promo-row { display:flex; gap:8px; }
+  .promo-row { display:flex; gap:10px; }
   .promo-input {
-    flex:1; background:rgba(0,20,10,0.6); border:1.5px solid #0a3a1a;
-    border-radius:12px; padding:16px 18px; color:#5cff9a;
+    flex:1; background:#000; border:1px solid #0a3a1a;
+    border-radius:12px; padding:18px; color:#5cff9a;
     font-size:14px; outline:none; font-family:inherit;
     letter-spacing:1px;
   }
   .promo-input::placeholder { color:#1a4a2a; }
   .promo-input:focus { border-color:#0a8040; }
   .promo-btn {
-    background:rgba(0,40,20,0.6); border:1.5px solid #0a8040;
-    border-radius:12px; padding:0 20px; color:#5cff9a;
+    background:#000; border:1px solid #0a8040;
+    border-radius:12px; padding:0 24px; color:#5cff9a;
     font-size:13px; cursor:pointer; font-family:inherit;
-    letter-spacing:1px; transition:all .2s;
+    letter-spacing:1.5px; transition:all .2s;
   }
-  .promo-btn:active { background:rgba(0,80,40,0.6); border-color:#5cff9a; }
+  .promo-btn:active { background:#031a0a; border-color:#5cff9a; }
 
-  .pay-row { display:flex; gap:10px; margin-bottom:10px; }
+  .pay-row { display:flex; gap:12px; margin-bottom:12px; }
   .pay-btn {
-    flex:1; background:rgba(0,30,15,0.5); border:1.5px solid #0a3a1a;
-    border-radius:14px; padding:18px; color:#5cff9a;
+    flex:1; background:#000; border:1px solid #0a3a1a;
+    border-radius:16px; padding:20px 16px; color:#5cff9a;
     cursor:pointer; font-family:inherit; font-size:13px;
     letter-spacing:1px; transition:all .2s;
     display:flex; flex-direction:column; align-items:center; gap:8px;
   }
-  .pay-btn:active { border-color:#0a8040; background:rgba(0,60,30,0.6); }
+  .pay-btn:active { border-color:#0a8040; }
   .pay-btn .pay-icon { display:flex; align-items:center; justify-content:center; color:#5cff9a; }
   .pay-btn .pay-icon .ico { font-size:28px; }
-  .pay-btn .pay-label { font-weight:500; }
+  .pay-btn .pay-label { font-weight:400; }
   .pay-btn .pay-sub { font-size:10px; color:#3a7a4a; }
 
   #toast {
     position:fixed; top:60px; left:50%;
     transform:translateX(-50%) translateY(-40px);
-    background:rgba(0,40,20,0.95); color:#5cff9a;
-    padding:12px 22px; border-radius:100px;
-    font-size:13px; z-index:100;
+    background:#000; color:#5cff9a;
+    padding:14px 24px; border-radius:100px;
+    font-size:14px; z-index:100;
     border:1px solid #0a8040;
     transition:transform .35s cubic-bezier(.34,1.56,.64,1), opacity .35s;
     pointer-events:none; white-space:nowrap; opacity:0;
-    letter-spacing:.5px; backdrop-filter:blur(10px);
+    letter-spacing:.5px;
     display:flex; align-items:center; gap:6px;
-    box-shadow:0 0 30px rgba(92,255,154,0.3);
   }
-  #toast .ico { font-size:12px; }
+  #toast .ico { font-size:13px; }
   #toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
+
+  /* Модалка */
+  .modal-bg {
+    position:fixed; inset:0; background:rgba(0,0,0,0.9);
+    z-index:200; display:none; align-items:center; justify-content:center;
+    padding:24px;
+  }
+  .modal-card {
+    width:100%; max-width:340px;
+    border:1px solid #0a8040; background:#000;
+    border-radius:20px; padding:26px;
+  }
+  .modal-title {
+    text-align:center; margin-bottom:22px;
+  }
+  .modal-title .t1 {
+    font-size:10px; color:#2a6a3a; letter-spacing:4px; text-transform:uppercase;
+  }
+  .modal-title .t2 {
+    font-size:16px; color:#5cff9a; margin-top:10px; font-weight:400;
+  }
+  .pack-btn {
+    background:#000; border:1px solid #0a8040; border-radius:14px;
+    padding:18px 20px; color:#5cff9a; font-family:inherit;
+    font-size:15px; letter-spacing:1px; cursor:pointer;
+    display:flex; justify-content:space-between; align-items:center;
+    width:100%; margin-bottom:10px; transition:all .2s;
+  }
+  .pack-btn:active { background:#031a0a; border-color:#5cff9a; }
+  .pack-btn .left { display:flex; align-items:center; gap:8px; }
+  .pack-btn .left .ico { font-size:16px; }
+  .pack-btn .right { color:#3a7a4a; font-size:12px; }
+
+  .custom-row {
+    display:flex; gap:8px; margin-top:12px; margin-bottom:10px;
+  }
+  .custom-input {
+    flex:1; background:#000; border:1px solid #0a3a1a;
+    border-radius:12px; padding:16px; color:#5cff9a;
+    font-size:15px; outline:none; font-family:inherit;
+    font-variant-numeric:tabular-nums;
+  }
+  .custom-input::placeholder { color:#1a4a2a; }
+  .custom-input:focus { border-color:#0a8040; }
+  .custom-btn {
+    background:#000; border:1px solid #0a8040;
+    border-radius:12px; padding:0 22px; color:#5cff9a;
+    font-size:14px; cursor:pointer; font-family:inherit;
+    letter-spacing:1px; transition:all .2s;
+  }
+  .custom-btn:active { background:#031a0a; border-color:#5cff9a; }
+
+  .modal-close {
+    width:100%; margin-top:12px; background:transparent;
+    border:1px solid #0a3a1a; color:#3a7a4a;
+    border-radius:12px; padding:14px; font-size:13px;
+    font-family:inherit; letter-spacing:1.5px; cursor:pointer;
+  }
+  .modal-close:active { border-color:#0a8040; color:#5cff9a; }
 </style>
 </head>
 <body>
 
-<div id="space">
-  <div class="glow" style="width:300px;height:300px;left:-100px;top:-100px;background:#00ff78;"></div>
-  <div class="glow" style="width:250px;height:250px;right:-80px;bottom:20%;background:#00cc55;animation-delay:-4s;"></div>
-  <div class="glow" style="width:200px;height:200px;left:30%;bottom:-80px;background:#00ff44;animation-delay:-8s;"></div>
-</div>
+<div id="space"></div>
 
 <!-- ГЛАВНОЕ МЕНЮ -->
 <div class="screen" id="menu">
@@ -560,14 +607,21 @@
 </div>
 
 <!-- МОДАЛКА ПОПОЛНЕНИЯ -->
-<div id="topupModal" style="position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:200;display:none;align-items:center;justify-content:center;padding:22px;">
-  <div style="width:100%;max-width:340px;border:1.5px solid #0a8040;background:rgba(0,20,10,0.98);border-radius:20px;padding:24px;">
-    <div style="text-align:center;margin-bottom:20px;">
-      <div style="font-size:11px;color:#2a6a3a;letter-spacing:3px;text-transform:uppercase;">Пополнение</div>
-      <div style="font-size:16px;color:#5cff9a;margin-top:8px;">Выбери пакет</div>
+<div class="modal-bg" id="topupModal">
+  <div class="modal-card">
+    <div class="modal-title">
+      <div class="t1">Пополнение</div>
+      <div class="t2">Выбери пакет или введи сумму</div>
     </div>
-    <div id="topupPacks" style="display:flex;flex-direction:column;gap:8px;"></div>
-    <button onclick="closeTopupSheet()" style="width:100%;margin-top:16px;background:transparent;border:1.5px solid #0a3a1a;color:#3a7a4a;border-radius:12px;padding:14px;font-size:13px;font-family:inherit;letter-spacing:1px;cursor:pointer;">Закрыть</button>
+
+    <div id="topupPacks"></div>
+
+    <div class="custom-row">
+      <input type="number" class="custom-input" id="customTopup" placeholder="Своя сумма" min="1">
+      <button class="custom-btn" onclick="buyCustomTopup()">ОК</button>
+    </div>
+
+    <button class="modal-close" onclick="closeTopupSheet()">Закрыть</button>
   </div>
 </div>
 
@@ -632,13 +686,15 @@ function renderIcons(root = document) {
 const state = {
   balance: 0,
   withdrawable: 0,
-  inventory: {},          // { case10: 2, case50: 0, ... }
+  inventory: {},
   crashPhase: 'idle',
   crashMultiplier: 1.0,
   crashAt: 2.0,
   crashStart: 0,
   crashBet: 0,
   crashRaf: null,
+  // Блокировка, чтобы нельзя было дважды списать/открыть во время запроса
+  busy: false,
   spinning: false,
   idleSpinRaf: null,
   currentCase: null,
@@ -646,8 +702,6 @@ const state = {
 };
 
 const $ = id => document.getElementById(id);
-
-/* ==================== ФОН ==================== */
 
 /* ==================== ЗВУК ==================== */
 const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -696,35 +750,33 @@ function updateStatsUI() {
 
 function updateCaseLabels() {
   const map = { case10: 'case10Label', case50: 'case50Label', case100: 'case100Label' };
+  const prices = { case10: 10, case50: 50, case100: 100 };
   for (const key in map) {
     const cnt = state.inventory[key] || 0;
     const el = $(map[key]);
     if (!el) continue;
     if (cnt > 0) {
       el.innerHTML = `${cnt} шт.`;
-      el.style.color = '#5cff9a';
     } else {
-      const prices = { case10: 10, case50: 50, case100: 100 };
       el.innerHTML = `${prices[key]} ${starIco()}`;
-      el.style.color = '#5cff9a';
     }
   }
 }
 
 function toastDelta(amount) {
   const t = $('toast');
-  const sign = amount >= 0 ? '+' : '';
-  t.innerHTML = `<span>${sign}${fmt(amount)}</span>${starIco()}`;
+  const sign = amount >= 0 ? '+' : '−';
+  t.innerHTML = `<span>${sign}${fmt(Math.abs(amount))}</span>${starIco()}`;
   t.className = 'show';
   clearTimeout(t._t);
-  t._t = setTimeout(() => t.className = '', 1800);
+  t._t = setTimeout(() => t.className = '', 1600);
 }
 function toastText(msg) {
   const t = $('toast');
   t.innerHTML = `<span>${msg}</span>`;
   t.className = 'show';
   clearTimeout(t._t);
-  t._t = setTimeout(() => t.className = '', 1800);
+  t._t = setTimeout(() => t.className = '', 1600);
 }
 
 function showScreen(id) {
@@ -754,6 +806,7 @@ async function syncInventory() {
   } catch (e) { console.warn('syncInventory:', e); }
 }
 
+// Списывает звёзды. Возвращает true, если списание прошло.
 async function spendAPI(amount) {
   const uid = getUserId();
   if (!uid) { toastText('Открой из Telegram'); return false; }
@@ -851,11 +904,15 @@ function generateCrashPoint() {
 }
 
 async function startCrashRound() {
+  if (state.busy) return;
   const bet = Math.floor(Number($('betInput').value) || 0);
   if (bet <= 0) return toastText('Введи ставку');
   if (bet > state.balance) return toastText('Недостаточно звёзд');
 
+  state.busy = true;
   const ok = await spendAPI(bet);
+  state.busy = false;
+
   if (!ok) return;
 
   toastDelta(-bet);
@@ -947,7 +1004,7 @@ async function cashoutCrash() {
   updateStatsUI();
 
   $('multiplier').style.color = '#5cff9a';
-  $('crashCaption').textContent = `забрано · +${fmt(win)}`;
+  $('crashCaption').textContent = `забрано`;
   $('crashCaption').classList.remove('hidden');
   $('crashInfo').innerHTML = '';
   $('crashInfo').className = 'crash-info';
@@ -1048,7 +1105,7 @@ function makeSlot(prize, c) {
 const TRACK_SIZE = 60;
 const STOP_INDEX = 50;
 
-/* ====== БЕСКОНЕЧНОЕ МЕДЛЕННОЕ ВРАЩЕНИЕ (idle) ====== */
+/* ==== Idle вращение ==== */
 function startIdleSpin(caseKey) {
   stopIdleSpin();
   const c = CASES[caseKey];
@@ -1066,7 +1123,7 @@ function startIdleSpin(caseKey) {
   function frame(now) {
     const dt = now - last;
     last = now;
-    pos -= dt * 0.04;   // скорость: 40px в секунду
+    pos -= dt * 0.04;
     if (pos < -60 * 90) pos += 60 * 90;
     track.style.transform = `translateX(${pos}px)`;
     state.idleSpinRaf = requestAnimationFrame(frame);
@@ -1080,7 +1137,7 @@ function stopIdleSpin() {
   }
 }
 
-/* ====== ОТКРЫТИЕ ЭКРАНА КЕЙСА ====== */
+/* ==== Открытие экрана ==== */
 function openCaseScreen(caseKey) {
   initAudio(); haptic('light');
   state.currentCase = caseKey;
@@ -1097,37 +1154,38 @@ function updateSpinButton() {
   const btn = $('spinBtn');
   if (count > 0) {
     btn.textContent = `Открыть (${count})`;
-    btn.className = 'main-btn';
   } else {
     const price = CASES[caseKey].price;
     btn.textContent = `Купить за ${price} ★`;
-    btn.className = 'main-btn';
   }
 }
 
 function mainCaseAction() {
   const caseKey = state.currentCase;
   const count = state.inventory[caseKey] || 0;
-  if (count > 0) {
-    spinCase();
-  } else {
-    buyCase(caseKey);
-  }
+  if (count > 0) spinCase();
+  else buyCase(caseKey);
 }
 
+/* ==== Покупка кейса: списываем и добавляем в инвентарь ==== */
 async function buyCase(caseKey) {
+  if (state.busy) return;
   haptic('light');
   const c = CASES[caseKey];
   if (state.balance < c.price) return toastText('Недостаточно звёзд');
 
+  state.busy = true;
   const ok = await spendAPI(c.price);
-  if (!ok) return;
-  toastDelta(-c.price);
+  if (!ok) { state.busy = false; return; }
+
   await inventoryAdd(caseKey);
+  state.busy = false;
+
+  toastDelta(-c.price);
   updateSpinButton();
-  toastText('Кейс куплен');
 }
 
+/* ==== Прокрутка ==== */
 function spinCase() {
   if (state.spinning) return;
   initAudio(); haptic('medium');
@@ -1191,7 +1249,10 @@ function spinCase() {
 }
 
 async function finishSpin(prize, c, caseKey) {
-  await inventorySpend(caseKey);
+  // Списываем кейс из инвентаря (если не получится — не начисляем)
+  const ok = await inventorySpend(caseKey);
+  if (!ok) { toastText('Ошибка'); return; }
+
   await winAPI(prize);
   updateBalance();
 
@@ -1203,7 +1264,6 @@ async function finishSpin(prize, c, caseKey) {
 
   updateSpinButton();
 
-  // Через 2 секунды — снова idle-вращение и новый трек
   setTimeout(() => {
     if (state.currentCase === caseKey) {
       $('spinResult').className = 'spin-result';
@@ -1254,7 +1314,7 @@ async function withdrawOpen() {
   }
 }
 
-/* ==================== ПОПОЛНЕНИЕ В ПРИЛОЖЕНИИ ==================== */
+/* ==================== ПОПОЛНЕНИЕ ==================== */
 const TOPUP_PACKAGES = [
   { key: 'topup_50',   stars: 50 },
   { key: 'topup_100',  stars: 100 },
@@ -1268,11 +1328,12 @@ function openTopupSheet() {
   box.innerHTML = '';
   TOPUP_PACKAGES.forEach(p => {
     const btn = document.createElement('button');
-    btn.style.cssText = 'background:rgba(0,40,20,0.6);border:1.5px solid #0a8040;border-radius:12px;padding:16px;color:#5cff9a;font-family:inherit;font-size:15px;letter-spacing:1px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;';
-    btn.innerHTML = `<span>${p.stars} ${starIco()}</span><span style="color:#3a7a4a;font-size:12px;">${p.stars} ★</span>`;
-    btn.onclick = () => buyTopup(p.key);
+    btn.className = 'pack-btn';
+    btn.innerHTML = `<span class="left">${starIco()}<span>${p.stars}</span></span><span class="right">${p.stars} ★</span>`;
+    btn.onclick = () => buyTopup(p.stars);
     box.appendChild(btn);
   });
+  $('customTopup').value = '';
   $('topupModal').style.display = 'flex';
 }
 
@@ -1280,7 +1341,14 @@ function closeTopupSheet() {
   $('topupModal').style.display = 'none';
 }
 
-async function buyTopup(packageKey) {
+function buyCustomTopup() {
+  const v = parseInt($('customTopup').value, 10);
+  if (!v || v < 1) return toastText('Введи сумму');
+  if (v > 100000) return toastText('Максимум 100 000');
+  buyTopup(v);
+}
+
+async function buyTopup(stars) {
   haptic('light');
   const uid = getUserId();
   if (!uid) return toastText('Открой из Telegram');
@@ -1288,17 +1356,14 @@ async function buyTopup(packageKey) {
   closeTopupSheet();
 
   try {
-    const d = await apiCall('/api/create-invoice', { user_id: uid, package: packageKey });
+    const d = await apiCall('/api/create-invoice', { user_id: uid, stars: stars });
     if (!d.invoice_link) return toastText('Ошибка создания счёта');
 
     tg.openInvoice(d.invoice_link, async (status) => {
       if (status === 'paid') {
-        toastText('Оплата прошла!');
         await syncBalance();
       } else if (status === 'cancelled') {
-        toastText('Оплата отменена');
-      } else if (status === 'failed') {
-        toastText('Ошибка оплаты');
+        toastText('Отменено');
       }
     });
   } catch (e) {
