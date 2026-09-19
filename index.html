@@ -173,7 +173,12 @@
   }
   .main-btn:active { background:#031a0a; border-color:#5cff9a; }
   .main-btn.cashout { color:#000; background:#5cff9a; border-color:#5cff9a; }
-  .main-btn:disabled { color:#1a4a2a; border-color:#0a2a15; cursor:not-allowed; }
+  .main-btn:disabled {
+    color:#1a4a2a;
+    border-color:#0a2a15;
+    cursor:not-allowed;
+    opacity:.6;
+  }
 
   .cases-list {
     flex:1; padding:0 24px; display:flex; flex-direction:column;
@@ -699,9 +704,9 @@ const state = {
   crashStart: 0,
   crashBet: 0,
   crashRaf: null,
-  busyCrash: false,      // блокировка старта раунда
-  busyCase: false,       // блокировка покупки кейса
-  busySpin: false,       // блокировка прокрутки
+  busyCrash: false,
+  busyCase: false,
+  busySpin: false,
   idleSpinRaf: null,
   currentCase: null,
   stats: { totalBets:0, wins:0, maxCrash:0, profit:0 },
@@ -820,7 +825,6 @@ async function spendAPI(amount) {
     return true;
   } catch (e) {
     toastText(e.message);
-    // Подстраховка: подтягиваем реальный баланс с сервера
     setTimeout(syncBalance, 100);
     return false;
   }
@@ -1146,6 +1150,15 @@ function stopIdleSpin() {
 function openCaseScreen(caseKey) {
   initAudio(); haptic('light');
   state.currentCase = caseKey;
+  state.busySpin = false;
+  state.busyCase = false;
+
+  // На случай, если кнопка осталась заблокированной с прошлого раза
+  const btn = $('spinBtn');
+  btn.disabled = false;
+  btn.style.opacity = '';
+  btn.style.cursor = '';
+
   showScreen('caseOpen');
   updateSpinButton();
   startIdleSpin(caseKey);
@@ -1174,12 +1187,29 @@ async function buyCase(caseKey) {
   const c = CASES[caseKey];
   if (state.balance < c.price) return toastText('Недостаточно звёзд');
 
+  // Блокируем кнопку
+  const btn = $('spinBtn');
+  btn.disabled = true;
+  btn.style.opacity = '0.6';
+  btn.style.cursor = 'not-allowed';
+
   state.busyCase = true;
   const ok = await spendAPI(c.price);
-  if (!ok) { state.busyCase = false; return; }
+  if (!ok) {
+    state.busyCase = false;
+    btn.disabled = false;
+    btn.style.opacity = '';
+    btn.style.cursor = '';
+    return;
+  }
 
   await inventoryAdd(caseKey);
   state.busyCase = false;
+
+  // Разблокируем кнопку
+  btn.disabled = false;
+  btn.style.opacity = '';
+  btn.style.cursor = '';
 
   toastDelta(-c.price);
   updateSpinButton();
@@ -1196,6 +1226,12 @@ function spinCase() {
   const winPrize = pickPrize(caseKey);
 
   stopIdleSpin();
+
+  // Блокируем кнопку
+  const btn = $('spinBtn');
+  btn.disabled = true;
+  btn.style.opacity = '0.6';
+  btn.style.cursor = 'not-allowed';
 
   track.innerHTML = '';
   for (let i = 0; i < TRACK_SIZE; i++) {
@@ -1249,7 +1285,16 @@ function spinCase() {
 
 async function finishSpin(prize, c, caseKey) {
   const ok = await inventorySpend(caseKey);
-  if (!ok) { toastText('Ошибка'); return; }
+  if (!ok) {
+    toastText('Ошибка');
+    // Разблокируем на случай ошибки
+    const btn = $('spinBtn');
+    btn.disabled = false;
+    btn.style.opacity = '';
+    btn.style.cursor = '';
+    state.busySpin = false;
+    return;
+  }
 
   await winAPI(prize);
   updateBalance();
@@ -1262,10 +1307,17 @@ async function finishSpin(prize, c, caseKey) {
 
   updateSpinButton();
 
+  // Разблокируем кнопку через 2 секунды, когда трек снова начинает idle-вращение
   setTimeout(() => {
     if (state.currentCase === caseKey) {
       $('spinResult').className = 'spin-result';
       startIdleSpin(caseKey);
+
+      const btn = $('spinBtn');
+      btn.disabled = false;
+      btn.style.opacity = '';
+      btn.style.cursor = '';
+      updateSpinButton();
     }
   }, 2000);
 }
