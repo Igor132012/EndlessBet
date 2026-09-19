@@ -30,7 +30,6 @@
   }
   .ico svg { width:100%; height:100%; display:block; }
 
-  /* Меню */
   #menu { align-items:center; justify-content:center; padding:28px; text-align:center; }
   .brand {
     font-size:11px; color:#2a6a3a; letter-spacing:6px; text-transform:uppercase;
@@ -70,7 +69,6 @@
   }
   .mini-btn:active { border-color:#0a8040; color:#5cff9a; }
 
-  /* Топбар */
   .topbar {
     padding:20px 24px; display:flex; justify-content:space-between; align-items:center;
   }
@@ -88,7 +86,6 @@
   }
   .topbar-balance .ico { font-size:14px; color:#5cff9a; }
 
-  /* Краш */
   .crash-stage {
     flex:1; display:flex; flex-direction:column;
     align-items:center; justify-content:center; position:relative;
@@ -146,7 +143,7 @@
   }
   .bet-row:focus-within { border-color:#0a8040; }
   #betInput {
-    flex:1; background:none; border:none; color:#5cff9a;
+    flex:1; min-width:0; background:none; border:none; color:#5cff9a;
     font-size:22px; font-weight:300; padding:20px 0; outline:none;
     width:100%; font-family:inherit; font-variant-numeric:tabular-nums;
   }
@@ -154,6 +151,7 @@
   .bet-row .unit {
     color:#3a7a4a; font-size:14px;
     display:flex; align-items:center; gap:5px;
+    flex-shrink:0;
   }
   .bet-row .unit .ico { font-size:16px; color:#5cff9a; }
 
@@ -177,7 +175,6 @@
   .main-btn.cashout { color:#000; background:#5cff9a; border-color:#5cff9a; }
   .main-btn:disabled { color:#1a4a2a; border-color:#0a2a15; cursor:not-allowed; }
 
-  /* Кейсы */
   .cases-list {
     flex:1; padding:0 24px; display:flex; flex-direction:column;
     justify-content:center; gap:12px;
@@ -199,10 +196,10 @@
   .case-item .price {
     font-size:15px; color:#5cff9a; font-variant-numeric:tabular-nums;
     letter-spacing:1px; display:flex; align-items:center; gap:5px;
+    flex-shrink:0;
   }
   .case-item .price .ico { font-size:14px; }
 
-  /* Рулетка */
   .roulette-stage {
     flex:1; display:flex; flex-direction:column;
     align-items:center; justify-content:center;
@@ -258,7 +255,6 @@
 
   .spin-controls { padding:0 24px 34px; }
 
-  /* Профиль */
   .profile-content { flex:1; padding:0 24px; overflow-y:auto; }
   .profile-card {
     border:1px solid #0a3a1a; background:#000;
@@ -303,7 +299,7 @@
 
   .promo-row { display:flex; gap:10px; }
   .promo-input {
-    flex:1; background:#000; border:1px solid #0a3a1a;
+    flex:1; min-width:0; background:#000; border:1px solid #0a3a1a;
     border-radius:12px; padding:18px; color:#5cff9a;
     font-size:14px; outline:none; font-family:inherit;
     letter-spacing:1px;
@@ -315,12 +311,13 @@
     border-radius:12px; padding:0 24px; color:#5cff9a;
     font-size:13px; cursor:pointer; font-family:inherit;
     letter-spacing:1.5px; transition:all .2s;
+    flex-shrink:0;
   }
   .promo-btn:active { background:#031a0a; border-color:#5cff9a; }
 
   .pay-row { display:flex; gap:12px; margin-bottom:12px; }
   .pay-btn {
-    flex:1; background:#000; border:1px solid #0a3a1a;
+    flex:1; min-width:0; background:#000; border:1px solid #0a3a1a;
     border-radius:16px; padding:20px 16px; color:#5cff9a;
     cursor:pointer; font-family:inherit; font-size:13px;
     letter-spacing:1px; transition:all .2s;
@@ -347,7 +344,6 @@
   #toast .ico { font-size:13px; }
   #toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
 
-  /* Модалка */
   .modal-bg {
     position:fixed; inset:0; background:rgba(0,0,0,0.9);
     z-index:200; display:none; align-items:center; justify-content:center;
@@ -381,9 +377,11 @@
 
   .custom-row {
     display:flex; gap:8px; margin-top:12px; margin-bottom:10px;
+    align-items:stretch;
   }
   .custom-input {
-    flex:1; background:#000; border:1px solid #0a3a1a;
+    flex:1; min-width:0;
+    background:#000; border:1px solid #0a3a1a;
     border-radius:12px; padding:16px; color:#5cff9a;
     font-size:15px; outline:none; font-family:inherit;
     font-variant-numeric:tabular-nums;
@@ -395,6 +393,14 @@
     border-radius:12px; padding:0 22px; color:#5cff9a;
     font-size:14px; cursor:pointer; font-family:inherit;
     letter-spacing:1px; transition:all .2s;
+    flex-shrink:0;
+    min-width:64px;
+    white-space:nowrap;
+    line-height:1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    height:auto;
   }
   .custom-btn:active { background:#031a0a; border-color:#5cff9a; }
 
@@ -693,9 +699,9 @@ const state = {
   crashStart: 0,
   crashBet: 0,
   crashRaf: null,
-  // Блокировка, чтобы нельзя было дважды списать/открыть во время запроса
-  busy: false,
-  spinning: false,
+  busyCrash: false,      // блокировка старта раунда
+  busyCase: false,       // блокировка покупки кейса
+  busySpin: false,       // блокировка прокрутки
   idleSpinRaf: null,
   currentCase: null,
   stats: { totalBets:0, wins:0, maxCrash:0, profit:0 },
@@ -755,11 +761,8 @@ function updateCaseLabels() {
     const cnt = state.inventory[key] || 0;
     const el = $(map[key]);
     if (!el) continue;
-    if (cnt > 0) {
-      el.innerHTML = `${cnt} шт.`;
-    } else {
-      el.innerHTML = `${prices[key]} ${starIco()}`;
-    }
+    if (cnt > 0) el.innerHTML = `${cnt} шт.`;
+    else el.innerHTML = `${prices[key]} ${starIco()}`;
   }
 }
 
@@ -806,7 +809,6 @@ async function syncInventory() {
   } catch (e) { console.warn('syncInventory:', e); }
 }
 
-// Списывает звёзды. Возвращает true, если списание прошло.
 async function spendAPI(amount) {
   const uid = getUserId();
   if (!uid) { toastText('Открой из Telegram'); return false; }
@@ -816,7 +818,12 @@ async function spendAPI(amount) {
     state.withdrawable = d.withdrawable;
     updateBalance(); updateStatsUI();
     return true;
-  } catch (e) { toastText(e.message); return false; }
+  } catch (e) {
+    toastText(e.message);
+    // Подстраховка: подтягиваем реальный баланс с сервера
+    setTimeout(syncBalance, 100);
+    return false;
+  }
 }
 
 async function winAPI(amount) {
@@ -874,7 +881,7 @@ function backToMenu() {
 }
 function closeCase() {
   haptic('light');
-  if (state.spinning) return;
+  if (state.busySpin) return;
   stopIdleSpin();
   showScreen('cases');
   updateBalance();
@@ -904,14 +911,14 @@ function generateCrashPoint() {
 }
 
 async function startCrashRound() {
-  if (state.busy) return;
+  if (state.busyCrash) return;
   const bet = Math.floor(Number($('betInput').value) || 0);
   if (bet <= 0) return toastText('Введи ставку');
   if (bet > state.balance) return toastText('Недостаточно звёзд');
 
-  state.busy = true;
+  state.busyCrash = true;
   const ok = await spendAPI(bet);
-  state.busy = false;
+  state.busyCrash = false;
 
   if (!ok) return;
 
@@ -1105,7 +1112,6 @@ function makeSlot(prize, c) {
 const TRACK_SIZE = 60;
 const STOP_INDEX = 50;
 
-/* ==== Idle вращение ==== */
 function startIdleSpin(caseKey) {
   stopIdleSpin();
   const c = CASES[caseKey];
@@ -1137,7 +1143,6 @@ function stopIdleSpin() {
   }
 }
 
-/* ==== Открытие экрана ==== */
 function openCaseScreen(caseKey) {
   initAudio(); haptic('light');
   state.currentCase = caseKey;
@@ -1152,12 +1157,8 @@ function updateSpinButton() {
   const caseKey = state.currentCase;
   const count = state.inventory[caseKey] || 0;
   const btn = $('spinBtn');
-  if (count > 0) {
-    btn.textContent = `Открыть (${count})`;
-  } else {
-    const price = CASES[caseKey].price;
-    btn.textContent = `Купить за ${price} ★`;
-  }
+  if (count > 0) btn.textContent = `Открыть (${count})`;
+  else btn.textContent = `Купить за ${CASES[caseKey].price} ★`;
 }
 
 function mainCaseAction() {
@@ -1167,29 +1168,27 @@ function mainCaseAction() {
   else buyCase(caseKey);
 }
 
-/* ==== Покупка кейса: списываем и добавляем в инвентарь ==== */
 async function buyCase(caseKey) {
-  if (state.busy) return;
+  if (state.busyCase) return;
   haptic('light');
   const c = CASES[caseKey];
   if (state.balance < c.price) return toastText('Недостаточно звёзд');
 
-  state.busy = true;
+  state.busyCase = true;
   const ok = await spendAPI(c.price);
-  if (!ok) { state.busy = false; return; }
+  if (!ok) { state.busyCase = false; return; }
 
   await inventoryAdd(caseKey);
-  state.busy = false;
+  state.busyCase = false;
 
   toastDelta(-c.price);
   updateSpinButton();
 }
 
-/* ==== Прокрутка ==== */
 function spinCase() {
-  if (state.spinning) return;
+  if (state.busySpin) return;
   initAudio(); haptic('medium');
-  state.spinning = true;
+  state.busySpin = true;
 
   const caseKey = state.currentCase;
   const c = CASES[caseKey];
@@ -1243,13 +1242,12 @@ function spinCase() {
   });
 
   setTimeout(async () => {
-    state.spinning = false;
+    state.busySpin = false;
     await finishSpin(winPrize, c, caseKey);
   }, duration + 80);
 }
 
 async function finishSpin(prize, c, caseKey) {
-  // Списываем кейс из инвентаря (если не получится — не начисляем)
   const ok = await inventorySpend(caseKey);
   if (!ok) { toastText('Ошибка'); return; }
 
@@ -1360,11 +1358,8 @@ async function buyTopup(stars) {
     if (!d.invoice_link) return toastText('Ошибка создания счёта');
 
     tg.openInvoice(d.invoice_link, async (status) => {
-      if (status === 'paid') {
-        await syncBalance();
-      } else if (status === 'cancelled') {
-        toastText('Отменено');
-      }
+      if (status === 'paid') await syncBalance();
+      else if (status === 'cancelled') toastText('Отменено');
     });
   } catch (e) {
     toastText(e.message);
