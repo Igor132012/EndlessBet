@@ -38,7 +38,6 @@
   }
   .ico svg { width:100%; height:100%; display:block; }
 
-  /* Меню */
   #menu { align-items:center; justify-content:center; padding:28px; text-align:center; }
   .brand {
     font-size:11px; color:#5a5a8a; letter-spacing:5px; text-transform:uppercase;
@@ -75,7 +74,6 @@
   }
   .mini-btn:active { border-color:#3a3a6a; color:#8a8aba; }
 
-  /* Топбар */
   .topbar {
     padding:18px 22px; display:flex; justify-content:space-between; align-items:center;
   }
@@ -93,7 +91,6 @@
   }
   .topbar-balance .ico { font-size:14px; color:#8a8aba; }
 
-  /* КРАШ */
   .crash-stage {
     flex:1; display:flex; flex-direction:column;
     align-items:center; justify-content:center; position:relative;
@@ -185,7 +182,6 @@
   .main-btn.cashout { color:#5cd65c; border-color:#2a4a2a; }
   .main-btn:disabled { color:#2a2a4a; border-color:#151530; cursor:not-allowed; }
 
-  /* Кейсы */
   .cases-list {
     flex:1; padding:0 22px; display:flex; flex-direction:column;
     justify-content:center; gap:10px;
@@ -210,7 +206,6 @@
   }
   .case-item .price .ico { font-size:14px; color:#8a8aba; }
 
-  /* Рулетка */
   .roulette-stage {
     flex:1; display:flex; flex-direction:column;
     align-items:center; justify-content:center;
@@ -267,7 +262,6 @@
 
   .spin-controls { padding:0 22px 30px; }
 
-  /* Профиль */
   .profile-content { flex:1; padding:0 22px; overflow-y:auto; }
   .profile-card {
     border:1.5px solid #22224a; background:rgba(20,20,40,0.35);
@@ -361,7 +355,6 @@
 
 <div id="space"></div>
 
-<!-- ГЛАВНОЕ МЕНЮ -->
 <div class="screen" id="menu">
   <div class="brand">Endless</div>
 
@@ -390,7 +383,6 @@
   </div>
 </div>
 
-<!-- КРАШ -->
 <div class="screen hidden" id="crash">
   <div class="topbar">
     <button class="close-btn" onclick="backToMenu()">
@@ -422,7 +414,6 @@
   </div>
 </div>
 
-<!-- ВЫБОР КЕЙСА -->
 <div class="screen hidden" id="cases">
   <div class="topbar">
     <button class="close-btn" onclick="backToMenu()">
@@ -458,7 +449,6 @@
   </div>
 </div>
 
-<!-- ОТКРЫТИЕ -->
 <div class="screen hidden" id="caseOpen">
   <div class="topbar">
     <button class="close-btn" onclick="closeCase()">
@@ -484,7 +474,6 @@
   </div>
 </div>
 
-<!-- ПРОФИЛЬ -->
 <div class="screen hidden" id="profile">
   <div class="topbar">
     <button class="close-btn" onclick="backToMenu()">
@@ -1082,25 +1071,17 @@ async function finishSpin(prize, c) {
   };
 }
 
-/* ==================== ПРОМОКОД (с отладкой) ==================== */
+/* ==================== ПРОМОКОД ==================== */
 async function applyPromo() {
-  alert('1. Функция applyPromo вызвана');
-
   haptic('light');
-
   const code = $('promoInput').value.trim().toUpperCase();
-  alert('2. Код: "' + code + '"');
-  if (!code) { toastText('Введи код'); return; }
+  if (!code) return toastText('Введи код');
 
   const uid = getUserId();
-  alert('3. user_id: ' + uid + '\ninitData: ' + (tg?.initData ? 'есть (' + tg.initData.length + ')' : 'ПУСТО'));
-  if (!uid) { toastText('Открой из Telegram'); return; }
+  if (!uid) return toastText('Открой из Telegram');
 
   try {
-    alert('4. Отправляю запрос:\n' + API_URL + '/api/promo/activate');
     const d = await apiCall('/api/promo/activate', { user_id: uid, code });
-    alert('5. Ответ: ' + JSON.stringify(d));
-
     state.balance = d.balance;
     state.withdrawable = d.withdrawable;
     updateBalance(); updateStatsUI();
@@ -1108,7 +1089,6 @@ async function applyPromo() {
     haptic('success');
     toastDelta(d.stars);
   } catch (e) {
-    alert('ОШИБКА: ' + e.message);
     toastText(e.message);
   }
 }
@@ -1137,17 +1117,6 @@ async function withdrawOpen() {
 renderIcons();
 updateBalance();
 updateStatsUI();
-
-// Отладка при загрузке
-setTimeout(() => {
-  const uid = getUserId();
-  if (!uid) {
-    console.warn('initDataUnsafe.user пустой — открывай через кнопку в боте');
-  } else {
-    console.log('User ID:', uid);
-  }
-}, 500);
-
 if (getUserId()) syncBalance();
 </script>
 </body>
