@@ -171,13 +171,15 @@
     width:100%; background:#000; border:1px solid #0a8040;
     border-radius:16px; padding:22px; color:#5cff9a;
     font-size:14px; font-weight:500; letter-spacing:3px;
-    cursor:pointer; transition:all .2s; font-family:inherit;
-    text-transform:uppercase;
+    cursor:pointer; transition:background .2s, border-color .2s;
+    font-family:inherit; text-transform:uppercase;
   }
-  .main-btn:active { background:#031a0a; border-color:#5cff9a; }
+  .main-btn:active:not(.disabled):not(:disabled) {
+    background:#031a0a; border-color:#5cff9a;
+  }
   .main-btn.cashout { color:#000; background:#5cff9a; border-color:#5cff9a; }
 
-  /* Затемнённая заблокированная кнопка */
+  /* Затемнённая заблокированная кнопка — без :active-анимации */
   .main-btn:disabled,
   .main-btn.disabled {
     color:#1a4a2a !important;
@@ -185,6 +187,12 @@
     background:#000 !important;
     cursor:not-allowed !important;
     letter-spacing:2px;
+    pointer-events:none;
+  }
+  .main-btn.disabled:active,
+  .main-btn:disabled:active {
+    background:#000 !important;
+    border-color:#0a2a15 !important;
   }
 
   /* КЕЙСЫ */
@@ -289,7 +297,6 @@
   .profile-info .name { font-size:18px; font-weight:400; color:#5cff9a; }
   .profile-info .username { color:#3a7a4a; font-size:13px; margin-top:4px; }
 
-  /* Оставил баланс сверху профиля в виде двух карточек */
   .stats-grid {
     display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:18px;
   }
@@ -1126,10 +1133,6 @@ function stopIdleSpin() {
 }
 
 /* ==== Управление кнопкой ==== */
-function setSpinBtnText(text) {
-  const btn = $('spinBtn');
-  btn.textContent = text;
-}
 function lockSpinBtn(text) {
   const btn = $('spinBtn');
   btn.disabled = true;
@@ -1192,8 +1195,6 @@ async function buyCase(caseKey) {
   state.busyCase = false;
 
   toastDelta(-c.price);
-
-  // После списания кнопка сразу активна и ждёт открытия
   updateSpinButton();
 }
 
@@ -1211,7 +1212,6 @@ async function spinCase() {
   stopIdleSpin();
   lockSpinBtn('Открываем...');
 
-  // Списываем кейс из инвентаря сразу (до прокрутки), чтобы не было багов
   const spent = await inventorySpend(caseKey);
   if (!spent) {
     state.busySpin = false;
@@ -1269,7 +1269,6 @@ async function spinCase() {
 }
 
 async function finishSpin(prize, c, caseKey) {
-  // Зачисляем выигрыш
   await winAPI(prize);
   updateBalance();
 
@@ -1279,12 +1278,9 @@ async function finishSpin(prize, c, caseKey) {
   haptic(prize >= c.price ? 'success' : 'error');
   toastDelta(prize);
 
-  // Как только звёзды зачислены — разблокируем кнопку.
-  // Она сразу покажет "Купить" или "Открыть (N)" в зависимости от инвентаря.
   state.busySpin = false;
   updateSpinButton();
 
-  // Через 2 секунды трек снова начинает idle-вращение
   setTimeout(() => {
     if (state.currentCase === caseKey) {
       $('spinResult').className = 'spin-result';
