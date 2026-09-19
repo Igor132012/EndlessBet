@@ -13,10 +13,7 @@
     background:#000; color:#fff; user-select:none;
   }
 
-  #space {
-    position:fixed; inset:0; z-index:0; pointer-events:none;
-    background:#000;
-  }
+  #space { position:fixed; inset:0; z-index:0; pointer-events:none; background:#000; }
 
   .screen {
     position:fixed; inset:0; display:flex; flex-direction:column;
@@ -179,7 +176,6 @@
   }
   .main-btn.cashout { color:#000; background:#5cff9a; border-color:#5cff9a; }
 
-  /* Затемнённая заблокированная кнопка — без :active-анимации */
   .main-btn:disabled,
   .main-btn.disabled {
     color:#1a4a2a !important;
@@ -220,6 +216,7 @@
     flex-shrink:0;
   }
   .case-item .price .ico { font-size:14px; }
+  .case-item.case-sub { border-color:#0a8040; }
 
   /* РУЛЕТКА */
   .roulette-stage {
@@ -367,7 +364,6 @@
   #toast .ico { font-size:13px; }
   #toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
 
-  /* МОДАЛКА */
   .modal-bg {
     position:fixed; inset:0; background:rgba(0,0,0,0.9);
     z-index:200; display:none; align-items:center; justify-content:center;
@@ -378,9 +374,7 @@
     border:1px solid #0a8040; background:#000;
     border-radius:20px; padding:26px;
   }
-  .modal-title {
-    text-align:center; margin-bottom:22px;
-  }
+  .modal-title { text-align:center; margin-bottom:22px; }
   .modal-title .t1 {
     font-size:10px; color:#2a6a3a; letter-spacing:4px; text-transform:uppercase;
   }
@@ -417,13 +411,8 @@
     border-radius:12px; padding:0 22px; color:#5cff9a;
     font-size:14px; cursor:pointer; font-family:inherit;
     letter-spacing:1px; transition:all .2s;
-    flex-shrink:0;
-    min-width:64px;
-    white-space:nowrap;
-    line-height:1;
-    display:flex;
-    align-items:center;
-    justify-content:center;
+    flex-shrink:0; min-width:64px; white-space:nowrap;
+    line-height:1; display:flex; align-items:center; justify-content:center;
   }
   .custom-btn:active { background:#031a0a; border-color:#5cff9a; }
 
@@ -511,6 +500,14 @@
   </div>
 
   <div class="cases-list">
+    <button class="case-item case-sub" onclick="openCaseScreen('subcase')">
+      <div class="info">
+        <div class="name">За подписку</div>
+        <div class="range">1 <span class="ico" data-icon="star"></span> — 10 000 <span class="ico" data-icon="star"></span></div>
+      </div>
+      <div class="price" id="subcaseLabel">Бесплатно</div>
+    </button>
+
     <button class="case-item" onclick="openCaseScreen('case10')">
       <div class="info">
         <div class="name">Обычный</div>
@@ -707,6 +704,11 @@ const state = {
   busySpin: false,
   idleSpinRaf: null,
   currentCase: null,
+  // Подписочный кейс
+  subcaseSubscribed: false,
+  subcaseCanOpen: false,
+  subcaseNextAt: 0,
+  subcaseTimerRaf: null,
 };
 
 const $ = id => document.getElementById(id);
@@ -726,12 +728,10 @@ function tone(freq, dur, type='sine', vol=0.05) {
   o.start(); o.stop(actx.currentTime + dur);
 }
 
-/* Короткий "чпок" — играется при пересечении границы слота */
 function popSound() {
   if (!actx) return;
   const now = actx.currentTime;
 
-  // Основной тон — короткий, с падающей частотой
   const o = actx.createOscillator();
   const g = actx.createGain();
   o.type = 'triangle';
@@ -740,10 +740,8 @@ function popSound() {
   g.gain.setValueAtTime(0.08, now);
   g.gain.exponentialRampToValueAtTime(0.0001, now + 0.04);
   o.connect(g); g.connect(actx.destination);
-  o.start(now);
-  o.stop(now + 0.05);
+  o.start(now); o.stop(now + 0.05);
 
-  // Второй тон — для "щелчка"
   const o2 = actx.createOscillator();
   const g2 = actx.createGain();
   o2.type = 'square';
@@ -751,8 +749,7 @@ function popSound() {
   g2.gain.setValueAtTime(0.03, now);
   g2.gain.exponentialRampToValueAtTime(0.0001, now + 0.02);
   o2.connect(g2); g2.connect(actx.destination);
-  o2.start(now);
-  o2.stop(now + 0.025);
+  o2.start(now); o2.stop(now + 0.025);
 }
 
 function haptic(type) {
@@ -836,6 +833,42 @@ async function syncInventory() {
   } catch (e) { console.warn('syncInventory:', e); }
 }
 
+async function checkSubcaseStatus() {
+  const uid = getUserId();
+  if (!uid) return;
+  try {
+    const d = await apiCall('/api/sub-case/status', { user_id: uid });
+    state.subcaseSubscribed = d.subscribed;
+    state.subcaseCanOpen = d.can_open;
+    state.subcaseNextAt = d.next_at || 0;
+  } catch (e) {
+    console.warn('checkSubcaseStatus:', e);
+  }
+}
+
+async function openSubcaseForReal() {
+  const uid = getUserId();
+  if (!uid) return false;
+  try {
+    await apiCall('/api/sub-case/open', { user_id: uid });
+    return true;
+  } catch (e) {
+    toastText(e.message);
+    return false;
+  }
+}
+
+function formatTimer(ms) {
+  if (ms < 0) ms = 0;
+  const total = Math.floor(ms / 1000);
+  const h = Math.floor(total / 3600);
+  const m = Math.floor((total % 3600) / 60);
+  const s = total % 60;
+  return String(h).padStart(2, '0') + ':' +
+         String(m).padStart(2, '0') + ':' +
+         String(s).padStart(2, '0');
+}
+
 async function spendAPI(amount) {
   const uid = getUserId();
   if (!uid) { toastText('Открой из Telegram'); return false; }
@@ -902,6 +935,7 @@ function backToMenu() {
   cancelAnimationFrame(state.crashRaf);
   state.crashPhase = 'idle';
   stopIdleSpin();
+  stopSubcaseTimer();
   showScreen('menu');
   updateBalance(); updateProfileBalance();
 }
@@ -909,6 +943,7 @@ function closeCase() {
   haptic('light');
   if (state.busySpin || state.busyCase) return;
   stopIdleSpin();
+  stopSubcaseTimer();
   showScreen('cases');
   updateBalance();
 }
@@ -1067,36 +1102,66 @@ function setBet(v) {
   else $('betInput').value = v;
 }
 
-/* ==================== КЕЙСЫ ==================== */
+/* ==================== КЕЙСЫ (уменьшенные шансы) ==================== */
 const CASES = {
   case10: {
     price: 10, min: 1, max: 1000,
     prizes: [
-      { prize: 1, weight: 3500 }, { prize: 2, weight: 2500 },
-      { prize: 5, weight: 1500 }, { prize: 10, weight: 1000 },
-      { prize: 25, weight: 700 }, { prize: 50, weight: 500 },
-      { prize: 100, weight: 200 }, { prize: 250, weight: 70 },
-      { prize: 500, weight: 25 }, { prize: 1000, weight: 5 },
+      { prize: 1,    weight: 4500 },
+      { prize: 2,    weight: 3000 },
+      { prize: 5,    weight: 1500 },
+      { prize: 10,   weight: 800 },
+      { prize: 25,   weight: 150 },
+      { prize: 50,   weight: 40 },
+      { prize: 100,  weight: 8 },
+      { prize: 250,  weight: 1.8 },
+      { prize: 500,  weight: 0.18 },
+      { prize: 1000, weight: 0.02 },
     ]
   },
   case50: {
     price: 50, min: 5, max: 2000,
     prizes: [
-      { prize: 5, weight: 3500 }, { prize: 15, weight: 2500 },
-      { prize: 30, weight: 1500 }, { prize: 60, weight: 1000 },
-      { prize: 100, weight: 700 }, { prize: 200, weight: 500 },
-      { prize: 400, weight: 200 }, { prize: 700, weight: 70 },
-      { prize: 1200, weight: 25 }, { prize: 2000, weight: 5 },
+      { prize: 5,    weight: 4500 },
+      { prize: 15,   weight: 3000 },
+      { prize: 30,   weight: 1500 },
+      { prize: 60,   weight: 800 },
+      { prize: 100,  weight: 150 },
+      { prize: 200,  weight: 40 },
+      { prize: 400,  weight: 8 },
+      { prize: 700,  weight: 1.8 },
+      { prize: 1200, weight: 0.18 },
+      { prize: 2000, weight: 0.02 },
     ]
   },
   case100: {
     price: 100, min: 10, max: 5000,
     prizes: [
-      { prize: 10, weight: 3500 }, { prize: 30, weight: 2500 },
-      { prize: 70, weight: 1500 }, { prize: 150, weight: 1000 },
-      { prize: 300, weight: 700 }, { prize: 600, weight: 500 },
-      { prize: 1000, weight: 200 }, { prize: 2000, weight: 70 },
-      { prize: 3500, weight: 25 }, { prize: 5000, weight: 5 },
+      { prize: 10,   weight: 4500 },
+      { prize: 30,   weight: 3000 },
+      { prize: 70,   weight: 1500 },
+      { prize: 150,  weight: 800 },
+      { prize: 300,  weight: 150 },
+      { prize: 600,  weight: 40 },
+      { prize: 1000, weight: 8 },
+      { prize: 2000, weight: 1.8 },
+      { prize: 3500, weight: 0.18 },
+      { prize: 5000, weight: 0.02 },
+    ]
+  },
+  subcase: {
+    price: 0, min: 1, max: 10000,
+    prizes: [
+      { prize: 5,     weight: 4500 },
+      { prize: 15,    weight: 3000 },
+      { prize: 50,    weight: 1500 },
+      { prize: 100,   weight: 800 },
+      { prize: 300,   weight: 150 },
+      { prize: 700,   weight: 40 },
+      { prize: 1500,  weight: 8 },
+      { prize: 3000,  weight: 1.8 },
+      { prize: 6000,  weight: 0.18 },
+      { prize: 10000, weight: 0.02 },
     ]
   }
 };
@@ -1162,7 +1227,6 @@ function stopIdleSpin() {
   }
 }
 
-/* ==== Управление кнопкой ==== */
 function lockSpinBtn(text) {
   const btn = $('spinBtn');
   btn.disabled = true;
@@ -1183,10 +1247,21 @@ function openCaseScreen(caseKey) {
   state.busyCase = false;
 
   showScreen('caseOpen');
-  updateSpinButton();
   startIdleSpin(caseKey);
   $('spinResult').className = 'spin-result';
   updateBalance();
+
+  if (caseKey === 'subcase') {
+    stopSubcaseTimer();
+    lockSpinBtn('Проверяем...');
+    checkSubcaseStatus().then(() => {
+      updateSubcaseButton();
+      startSubcaseTimer();
+    });
+  } else {
+    stopSubcaseTimer();
+    updateSpinButton();
+  }
 }
 
 function updateSpinButton() {
@@ -1196,9 +1271,76 @@ function updateSpinButton() {
   else unlockSpinBtn(`Купить за ${CASES[caseKey].price} ★`);
 }
 
+function updateSubcaseButton() {
+  const btn = $('spinBtn');
+
+  if (!state.subcaseSubscribed) {
+    btn.disabled = false;
+    btn.classList.remove('disabled');
+    btn.textContent = 'Подписаться';
+    return;
+  }
+
+  if (state.subcaseCanOpen) {
+    btn.disabled = false;
+    btn.classList.remove('disabled');
+    btn.textContent = 'Открыть';
+  } else {
+    btn.disabled = true;
+    btn.classList.add('disabled');
+    const ms = state.subcaseNextAt - Date.now();
+    btn.textContent = formatTimer(ms);
+  }
+}
+
+function startSubcaseTimer() {
+  stopSubcaseTimer();
+  function frame() {
+    if (state.currentCase !== 'subcase') return;
+    if (!state.subcaseCanOpen && state.subcaseSubscribed) {
+      const ms = state.subcaseNextAt - Date.now();
+      if (ms <= 0) {
+        state.subcaseCanOpen = true;
+        updateSubcaseButton();
+        return;
+      }
+      const btn = $('spinBtn');
+      if (btn && btn.classList.contains('disabled')) {
+        btn.textContent = formatTimer(ms);
+      }
+    }
+    state.subcaseTimerRaf = requestAnimationFrame(frame);
+  }
+  state.subcaseTimerRaf = requestAnimationFrame(frame);
+}
+
+function stopSubcaseTimer() {
+  if (state.subcaseTimerRaf) {
+    cancelAnimationFrame(state.subcaseTimerRaf);
+    state.subcaseTimerRaf = null;
+  }
+}
+
 function mainCaseAction() {
   if (state.busyCase || state.busySpin) return;
   const caseKey = state.currentCase;
+
+  if (caseKey === 'subcase') {
+    if (!state.subcaseSubscribed) {
+      if (tg) tg.openTelegramLink('https://t.me/EndlessBet_channel');
+      else window.open('https://t.me/EndlessBet_channel', '_blank');
+      setTimeout(async () => {
+        await checkSubcaseStatus();
+        updateSubcaseButton();
+        startSubcaseTimer();
+      }, 2000);
+      return;
+    }
+    if (!state.subcaseCanOpen) return;
+    spinSubcase();
+    return;
+  }
+
   const count = state.inventory[caseKey] || 0;
   if (count > 0) spinCase();
   else buyCase(caseKey);
@@ -1279,42 +1421,26 @@ async function spinCase() {
   void track.offsetWidth;
 
   const duration = 5000;
-
-  // Запускаем анимацию
   track.style.transition = `transform ${duration}ms cubic-bezier(0.12, 0.85, 0.18, 1)`;
   track.style.transform = `translateX(${targetX}px)`;
 
-  // ===== СИНХРОНИЗАЦИЯ ЗВУКА С ПОЗИЦИЕЙ ЛЕНТЫ =====
-  // Ширина слота + отступы = 90px (80 + 5*2)
   const SLOT_STEP = 90;
   const startTime = performance.now();
   const wrapLeft = wrap.getBoundingClientRect().left;
-
   let lastSlotIndex = 0;
 
   function tick(now) {
     if (!state.busySpin) return;
-
     const elapsed = now - startTime;
     if (elapsed > duration) return;
-
-    // Реальная позиция ленты
     const currentLeft = track.getBoundingClientRect().left;
     const currentX = currentLeft - wrapLeft;
-
-    // Позиция указателя (по центру wrap) относительно начала ленты
     const pointerPos = wrapW / 2 - currentX;
-    // Индекс слота, который сейчас под указателем
     const slotIndex = Math.floor(pointerPos / SLOT_STEP);
-
     if (slotIndex !== lastSlotIndex) {
-      const diff = slotIndex - lastSlotIndex;
-      if (diff > 0) {
-        popSound();
-      }
+      if (slotIndex > lastSlotIndex) popSound();
       lastSlotIndex = slotIndex;
     }
-
     requestAnimationFrame(tick);
   }
   requestAnimationFrame(tick);
@@ -1341,6 +1467,106 @@ async function finishSpin(prize, c, caseKey) {
     if (state.currentCase === caseKey) {
       $('spinResult').className = 'spin-result';
       startIdleSpin(caseKey);
+    }
+  }, 2000);
+}
+
+/* ==== Подписочный кейс ==== */
+async function spinSubcase() {
+  if (state.busySpin) return;
+  initAudio(); haptic('medium');
+  state.busySpin = true;
+
+  const caseKey = 'subcase';
+  const c = CASES.subcase;
+  const track = $('track');
+  const winPrize = pickPrize(caseKey);
+
+  stopIdleSpin();
+  stopSubcaseTimer();
+  lockSpinBtn('Открываем...');
+
+  const ok = await openSubcaseForReal();
+  if (!ok) {
+    state.busySpin = false;
+    state.subcaseCanOpen = false;
+    updateSubcaseButton();
+    startSubcaseTimer();
+    return;
+  }
+
+  await checkSubcaseStatus();
+
+  track.innerHTML = '';
+  for (let i = 0; i < TRACK_SIZE; i++) {
+    let prize;
+    if (i === STOP_INDEX) prize = winPrize;
+    else prize = c.prizes[Math.floor(Math.random() * c.prizes.length)].prize;
+    track.appendChild(makeSlot(prize, c));
+  }
+
+  void track.offsetWidth;
+
+  const wrap = track.parentElement;
+  const wrapW = wrap.clientWidth;
+  const targetSlot = track.children[STOP_INDEX];
+  const trackRect = track.getBoundingClientRect();
+  const slotRect = targetSlot.getBoundingClientRect();
+  const slotCenter = (slotRect.left - trackRect.left) + slotRect.width / 2;
+  const targetX = wrapW / 2 - slotCenter;
+
+  track.style.transition = 'none';
+  track.style.transform = 'translateX(0)';
+  void track.offsetWidth;
+
+  const duration = 5000;
+  track.style.transition = `transform ${duration}ms cubic-bezier(0.12, 0.85, 0.18, 1)`;
+  track.style.transform = `translateX(${targetX}px)`;
+
+  const SLOT_STEP = 90;
+  const startTime = performance.now();
+  const wrapLeft = wrap.getBoundingClientRect().left;
+  let lastSlotIndex = 0;
+
+  function tick(now) {
+    if (!state.busySpin) return;
+    const elapsed = now - startTime;
+    if (elapsed > duration) return;
+    const currentLeft = track.getBoundingClientRect().left;
+    const currentX = currentLeft - wrapLeft;
+    const pointerPos = wrapW / 2 - currentX;
+    const slotIndex = Math.floor(pointerPos / SLOT_STEP);
+    if (slotIndex !== lastSlotIndex) {
+      if (slotIndex > lastSlotIndex) popSound();
+      lastSlotIndex = slotIndex;
+    }
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+
+  setTimeout(async () => {
+    await finishSubcase(winPrize, c);
+  }, duration + 80);
+}
+
+async function finishSubcase(prize, c) {
+  await winAPI(prize);
+  updateBalance();
+
+  $('spinValue').innerHTML = fmt(prize) + ' ' + starIco();
+  $('spinResult').className = 'spin-result show';
+
+  haptic(prize >= c.price ? 'success' : 'error');
+  toastDelta(prize);
+
+  state.busySpin = false;
+  updateSubcaseButton();
+  startSubcaseTimer();
+
+  setTimeout(() => {
+    if (state.currentCase === 'subcase') {
+      $('spinResult').className = 'spin-result';
+      startIdleSpin('subcase');
     }
   }, 2000);
 }
