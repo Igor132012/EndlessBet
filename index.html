@@ -494,7 +494,7 @@
     <div class="section-title">Баланс</div>
     <div class="stats-grid">
       <div class="stat-card">
-        <div class="stat-label">Обычные</div>
+        <div class="stat-label">Баланс</div>
         <div class="stat-value" id="statBalance"></div>
       </div>
       <div class="stat-card">
@@ -529,12 +529,17 @@
       <button class="promo-btn" onclick="applyPromo()">ОК</button>
     </div>
 
-    <div class="section-title">Вывод</div>
+    <div class="section-title">Действия</div>
     <div class="pay-row">
       <button class="pay-btn" onclick="withdrawOpen()">
         <span class="pay-icon"><span class="ico" data-icon="star"></span></span>
         <span class="pay-label">Вывод</span>
         <span class="pay-sub">от 100 ★</span>
+      </button>
+      <button class="pay-btn" onclick="openTopup()">
+        <span class="pay-icon"><span class="ico" data-icon="star"></span></span>
+        <span class="pay-label">Пополнить</span>
+        <span class="pay-sub">Telegram Stars</span>
       </button>
     </div>
   </div>
@@ -549,6 +554,7 @@ if (tg) { tg.ready(); tg.expand(); }
 
 /* ==================== API ==================== */
 const API_URL = 'https://endlessbet.i-makarov2012.workers.dev';
+const BOT_URL = 'https://t.me/test01_mybot';
 
 async function apiCall(path, body) {
   const r = await fetch(API_URL + path, {
@@ -607,10 +613,10 @@ const state = {
 
 const $ = id => document.getElementById(id);
 
-/* ==================== ФОН ==================== */
+/* ==================== ФОН (45 звёзд) ==================== */
 (function makeStars(){
   const box = $('space');
-  for (let i = 0; i < 120; i++) {
+  for (let i = 0; i < 45; i++) {
     const s = document.createElement('div');
     s.className = 'star';
     const size = Math.random() * 1.8 + 0.4;
@@ -1111,6 +1117,14 @@ async function withdrawOpen() {
   } catch (e) {
     toastText(e.message);
   }
+}
+
+/* ==================== ПОПОЛНЕНИЕ ==================== */
+function openTopup() {
+  haptic('light');
+  if (!tg) return toastText('Открой из Telegram');
+  tg.openTelegramLink(BOT_URL);
+  toastText('Выбери пакет в боте');
 }
 
 /* ==================== INIT ==================== */
